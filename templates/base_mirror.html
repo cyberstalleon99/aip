@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+
+<html>
+<head>
+<style>
+body {background-color: black;}
+h2   {color: powderblue;}
+p    {color: white;}
+
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+tr {
+    color: white;
+}
+tr:nth-child(even) {
+  background-color: grey;
+}
+</style>
+</head>
+<body>
+
+<h2>Active Padala</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Request By</th>
+            <th>Source</th>
+            <th>Destination</th>
+            <th>Description</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+  {% for padala in active %}
+  <tr>
+    <th>{{ padala.request_by }}</th>
+    <th>{{ padala.source }}</th>
+    <th>{{ padala.destination }}</th>
+    <th>{{ padala.description }}</th>
+    <th>{{ padala.status }}</th>
+  </tr>
+  {% endfor %}
+</table>
+
+</body>
+</html>

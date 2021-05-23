@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load humanize %}
+{% load widget_tweaks %}
+{% load extra_tags %}
+
+
+{% block body_block %}
+
+<div class="row">
+    <section class="col-md-3 col-12 p-0">
+    	<div class="card border-warning mb-1">
+    		<div class="card-header pb-0">
+    			<h4 class="warning " id="basic-layout-tooltip">Advance Query - Outgoing</h4>
+    		</div>
+    		<div class="card-content collapse show">
+			    <div class="card-body">
+                    <form method="get">
+                        <div class="well">
+                          <div class="well">
+                              <div class="row">
+                                <div class="form-group col-6">
+                                    Project Site: {% render_field labas.form.base_in__project_site class="form-control" %}
+                                </div>
+                                <div class="form-group col-6">
+                                    Trans Type: {% render_field labas.form.trans_type class="form-control" %}
+                                </div>
+                              </div>
+                          </div>
+
+
+                          <div class="row">
+                            <div class="form-group col-12">
+                              Item: {% render_field labas.form.base_in__item__item_name class="form-control" %}
+                            </div>
+                            <div class="form-group col-12">
+                              Released By: {% render_field labas.form.released_by class="form-control" %}
+                            </div>
+                            <div class="form-group col-12">
+                              Released For: {% render_field labas.form.released_to class="form-control" %}
+                            </div>
+                          </div>
+
+                          <div class="well">
+                              <div class="row">
+                                <div class="form-group col-6">
+                                    Category: {% render_field labas.form.base_in__item__item_category class="form-control" %}
+                                </div>
+                                <div class="form-group col-6">
+                                    General Name: {% render_field labas.form.base_in__item__general_name class="form-control" %}
+                                </div>
+                              </div>
+                          </div>
+                          <div class="row">
+                              <div class="ml-1">
+                              Date Range (yyyy-mm-dd):
+                              <div class="form-group form-inline">
+                                  {% render_field labas.form.trans_date class="form-control" %}
+                              </div>
+                              </div>
+                          </div>
+                          <div class="row">
+                            <div class="form-group col-12">
+                              Equipment Unit: {% render_field labas.form.unit class="form-control" %}
+                            </div>
+                          </div>
+                        </div>
+                        <div class="form-actions right">
+							<button type="submit" class="btn btn-primary">
+								<i class="la la-check-square-o"></i> Search
+							</button>
+						</div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="alert alert-primary mb-2" role="alert">
+			<h4 class="mb-2">Note!</h4>
+			<p>Use this if you want to do refined/specific queries, this is powerful if you know what you are doing. Initial value of table when no selection is done will be the latest 100 items.</p>
+			<strong>Sample cases you can do.</strong>
+			<ul class="mb-0 pl-1">
+    			<li>- Trace a specific ITEM from ALL project sites.</li>
+    			<li>- Query transaction from a specific DATE Range (daily, weekly, monthly, etc)</li>
+    			<li>- Get a specific CATEGORY from all project site (good for equipment analysis)</li>
+    			<li>- Determine all SPARE PARTS used for a specific UNIT regardless of its location. (for equipment analysis)</li>
+			</ul>
+		</div>
+
+	</section>
+
+    <section class="col-md-9 col-12 pr-0">
+        <div class="card">
+            <div class="card-header pb-0">
+                <h4 class="primary">Outgoing Search Results</h4>
+                <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                <div class="heading-elements">
+                    <ul class="list-inline mb-0">
+                        <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card-content collapse show">
+                <div class="card-body card-dashboard">
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-middle multi-ordering dataex-html5-selectors" data-page-length='15'>
+                        <thead>
+                            <tr>
+                                <td>Date</td>
+                                <td>ID</td>
+                                <td>Trans Type</td>
+                                <td>Form No</td>
+                                <td>From Site</td>
+                                <td>To Site</td>
+                                <td>Item</td>
+                                <td>Quantity</td>
+                                <td>Unit</td>
+                                <td>Price</td>
+                                <td>Category</td>
+                                <td>Released By</td>
+                                <td>Released To</td>
+                                <td>Released Out</td>
+                                <td>Equipment Unit</td>
+                                <td class="text-truncate">Type of Work</td>
+                                <td class="text-truncate">Details</td>
+                                <td>Edit/View</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for outgoing in labas.qs %}
+                            <tr>
+                                <td class="text-truncate">{{ outgoing.trans_date|date:"Y-m-d" }}</td>
+                                <td class="text-truncate">{{ outgoing.id }}</td>
+                                <td class="text-truncate info">{{ outgoing.trans_type }}</td>
+                                <td class="text-truncate">{{ outgoing.form_no }}</td>
+                                <td class="text-truncate">{{ outgoing.base_in.project_site }}</td>
+                                <td class="text-truncate">{{ outgoing.project_site }}</td>
+                                <td class="text-truncate">{{ outgoing.base_in.item }}</td>
+                                <td class="text-truncate danger">{{ outgoing.quantity|intcomma }}</td>
+                                <td class="text-truncate">{{ outgoing.base_in.item.item_unit }}</td>
+                                <td class="text-truncate">{{ outgoing.base_in.unit_price|intcomma }}</td>
+                                <td class="text-truncate">{{ outgoing.base_in.item.item_category }}</td>
+                                <td class="text-truncate">{{ outgoing.released_by }}</td>
+                                <td class="text-truncate">{{ outgoing.released_to }}</td>
+                                <td class="text-truncate">{{ outgoing.released_out }}</td>
+                                <td class="text-truncate">{{ outgoing.unit }}</td>
+                                <td class="text-truncate">{{ outgoing.item_work }}</td>
+                                <td class="text-truncate">{{ outgoing.details }}</td>
+                                <td class="text-truncate">
+                                    {% if request.user|has_group:"Warehouse Level 3" %}
+                                    <a href="{% url 'warehouse:out_status' pk=outgoing.id %}">
+                                        <span class="badge {% if outgoing.status == 'For Verification' %}badge-danger{% else %}badge-info{% endif %}">{{ outgoing.status }}</span>
+                                    </a>
+
+                                    {% if outgoing.base_in.id %}
+                                    <a href="{% url 'warehouse:update_outgoing' outgoing.id outgoing.base_in.id %}" target="_blank">
+                                        <i class="la la-pencil font-medium-3"></i>
+                                    </a>
+                                    {% else %}
+                                    <a href="#">
+                                        <i class="la la-exclamation-triangle warning"></i>
+                                    </a>
+                                    {% endif %}
+                                    {% endif %}
+                                    <!--<a href="{% if outgoing.base_in.id %}{% url 'admin:warehouse_incoming_change' outgoing.base_in.id %}{% endif %}" target="_blank">-->
+                                    <!--    {% if outgoing.base_in.id %}-->
+                                    <!--        <i class="la la-pencil font-medium-3"></i>-->
+                                    <!--    {% else %}-->
+                                    <!--        <i class="la la-exclamation-triangle warning"></i>-->
+                                    <!--    {% endif %}-->
+                                    <!--</a>-->
+                                    {% if outgoing.base_in.id %}
+                                    <a href="{% url 'warehouse:checker_page' pk=outgoing.base_in.id %}" target="_blank">
+                                        <i class="la la-print font-medium-3"></i>
+                                    </a>
+                                    {% else %}
+                                    <a href="#">
+                                        <i class="la la-exclamation-triangle warning"></i>
+                                    </a>
+                                    {% endif %}
+                                    <a href="{% if outgoing.attachment %}{{ outgoing.attachment.url }}{% endif %}" target="_blank">
+                                        {% if outgoing.attachment == "None" or outgoing.attachment == "" %}
+                                            <i class="la la-exclamation-triangle warning"></i>
+                                        {% else %}
+                                            <i class="la la la-sticky-note"></i>
+                                        {% endif %}
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                </div>
+            </div>
+        </div>
+	</section>
+</div>
+
+
+
+
+{% endblock %}

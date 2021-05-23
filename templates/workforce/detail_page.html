@@ -1,0 +1,462 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load humanize %}
+{% load mathfilters %}
+
+{% block body_block %}
+    <section id="user-profile-cards" class="row mt-0">
+        <div class="col-lg-2 col-md-3 col-12 p-0">
+            <div class="card box-shadow-2 border-teal p-0">
+                <div class="text-center">
+                    <div class="card-body">
+                        <img src="{{ profile_detail.profile_pic.url }}" class="rounded-circle height-150" alt="Card image">
+                    </div>
+                    <div class="card-body">
+                        <h4 class="card-title"><a href="{% url 'admin:workforce_basicprofile_change' profile_detail.id %}" target="_blank">{{ profile_detail.fullname }}</a></h4>
+                        <h6 class="card-subtitle text-muted">{{ profile_detail.employee_profile.designation }}</h6>
+                        <div class="btn-group justify-content-center mt-1" role="group">
+                            <button type="button" class="btn btn-secondary">VL: {{leave_stat.vacation|default_if_none:0}}</button>
+                            <button type="button" class="btn btn-primary">SL: {{leave_stat.sick|default_if_none:0}}</button>
+                            <button type="button" class="btn btn-success">Others: {{leave_stat.others|default_if_none:0}}</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="list-group list-group-flush">
+                    {% for work in profile_detail.attachment_record.all %}
+                        {% if work.document_type == 'EDS' %}
+                            <a href="{{ work.doc_file.url }}" class="list-group-item"><i class="ft-mail"></i> Employee Data Sheet </a>
+                        {% endif %}
+                    {% endfor %}
+                    <p class="list-group-item"><i class="ft-mail"></i> Email: {{ profile_detail.email }}</p>
+                    <p href="#" class="list-group-item"><i class="ft-check-square"></i> Smart: {{ profile_detail.mobile }}</p>
+                    <p href="#" class="list-group-item"><i class="ft-check-square"></i> Globe: {{ profile_detail.mobile2 }}</p>
+                </div>
+            </div>
+
+            <div class="alert bg-primary alert-icon-left alert-arrow-left mb-1" role="alert">
+				<span class="alert-icon"><strong>{{leave_stat.with_pay|default_if_none:0}}</strong></span>
+				Accumulated leaves <strong>with</strong> pay.
+			</div>
+
+			<div class="alert bg-warning alert-icon-left alert-arrow-left mb-2" role="alert">
+				<span class="alert-icon"><strong>{{leave_stat.without|default_if_none:0}}</strong></span>
+				Accumulated leaves <strong>without</strong> pay.
+			</div>
+
+            <div class="card
+                {% if profile_detail.bmi < 16 %} bg-danger bg-lighten-3
+                {% elif profile_detail.bmi >= 16 and profile_detail.bmi < 17 %} bg-danger bg-lighten-2
+                {% elif profile_detail.bmi >= 17 and profile_detail.bmi < 18.5 %} bg-danger bg-lighten-1
+                {% elif profile_detail.bmi >= 18.5 and profile_detail.bmi < 25 %} bg-success
+                {% elif profile_detail.bmi >= 25 and profile_detail.bmi < 30 %} bg-warning
+                {% elif profile_detail.bmi >= 30 and profile_detail.bmi < 35 %} bg-danger bg-darken-1
+                {% elif profile_detail.bmi >= 35 and profile_detail.bmi <= 40 %} bg-danger bg-darken-2
+                {% elif profile_detail.bmi > 40 %} bg-danger bg-darken-3
+                {% else %} bg-info
+                {% endif %}
+                ">
+                <div class="card-content">
+                    <div class="card-body">
+                        <div class="media d-flex">
+                            <div class="media-body text-white text-left">
+                                <h3 class="text-white">BMI: {{ profile_detail.bmi }}</h3>
+                                <span>
+                                    {% if profile_detail.bmi < 16 %} Severe Thinness, Haanen nga sexy dayta!
+                                    {% elif profile_detail.bmi >= 16 and profile_detail.bmi < 17 %} Moderate Thinness, Mangan ka met ah!
+                                    {% elif profile_detail.bmi >= 17 and profile_detail.bmi < 18.5 %} Mild Thinness, Diet pa more!
+                                    {% elif profile_detail.bmi >= 18.5 and profile_detail.bmi < 25 %} Normal, Keep it up!
+                                    {% elif profile_detail.bmi >= 25 and profile_detail.bmi < 30 %} Overweight, hala ka!
+                                    {% elif profile_detail.bmi >= 30 and profile_detail.bmi < 35 %} Obese Class I, Dandani!
+                                    {% elif profile_detail.bmi >= 35 and profile_detail.bmi <= 40 %} Obese Class II
+                                    {% elif profile_detail.bmi > 40 %} Obese Class III, Delikado!
+                                    {% else %} Insufficient Data, Please check height and weight fields
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="ft-activity text-white font-large-2 float-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-lg-10 col-md-9 col-12 p-0 pl-1">
+    			<div class="card">
+    				<div class="card-content">
+    					<div class="card-body">
+    						<ul class="nav nav-tabs nav-top-border no-hover-bg">
+    							<li class="nav-item">
+    							<a class="nav-link active" id="baseIcon-tab11" data-toggle="tab" aria-controls="tabIcon11" href="#tabIcon11" aria-expanded="true"><i class="la la-play"></i> Profile</a>
+    							</li>
+    							<li class="nav-item">
+    							<a class="nav-link" id="baseIcon-tab12" data-toggle="tab" aria-controls="tabIcon12" href="#tabIcon12" aria-expanded="false"><i class="la la-flag"></i> Leaves</a>
+    							</li>
+    							<li class="nav-item">
+    							<a class="nav-link" id="baseIcon-tab13" data-toggle="tab" aria-controls="tabIcon13" href="#tabIcon13" aria-expanded="false"><i class="la la-clipboard"></i> Memos/Warnings/Notice</a>
+    							</li>
+    							<li class="nav-item">
+    							<a class="nav-link" id="baseIcon-tab14" data-toggle="tab" aria-controls="tabIcon14" href="#tabIcon14" aria-expanded="false"><i class="la la-folder-o"></i> Certificates/Licenses</a>
+    							</li>
+    							<li class="nav-item">
+    							<a class="nav-link" id="baseIcon-tab15" data-toggle="tab" aria-controls="tabIcon15" href="#tabIcon15" aria-expanded="false"><i class="la la-archive"></i> Performance Evaluations</a>
+    							</li>
+    							<li class="nav-item">
+    							<a class="nav-link" id="baseIcon-tab16" data-toggle="tab" aria-controls="tabIcon16" href="#tabIcon16" aria-expanded="false"><i class="la la-clipboard"></i> Loan Applications</a>
+    							</li>
+    							<li class="nav-item">
+    							<a class="nav-link" id="baseIcon-tab17" data-toggle="tab" aria-controls="tabIcon17" href="#tabIcon17" aria-expanded="false"><i class="la la-clipboard"></i> Other Attachments (EDS, Violations)</a>
+    							</li>
+    						</ul>
+    						<div class="tab-content px-1 pt-1 mt-1">
+    							<div role="tabpanel" class="tab-pane active" id="tabIcon11" aria-expanded="true" aria-labelledby="baseIcon-tab11">
+                                    <div class="row">
+                                      <div class="col-lg-4 col-12">
+                                        <h5 class="card-title"><i class="la la-briefcase text-bold-600"></i> Basic Profile</h5>
+                                        <hr>
+                                        <p>Age: {{ profile_detail.age }}</p>
+                                        <p>Gender: {{ profile_detail.gender }}</p>
+                                        <p>Civil Status: {{ profile_detail.civil_status }}</p>
+                                        <p>Religion: {{ profile_detail.religion }}</p>
+                                        <p>Date of Birth: {{ profile_detail.dbirth }}</p>
+                                        <p>Birth Place: {{ profile_detail.birthplace }}</p>
+                                        <p>Primary #:{{ profile_detail.mobile }}, Secondary #:{{ profile_detail.mobile2 }}</p>
+                                        <p>Email Address: {{ profile_detail.email }}</p>
+                                        <p>Current Address: {{ profile_detail.current_address }}</p>
+                                        <p>Home Address: {{ profile_detail.home_address }}</p>
+                                        <p>Height: {{ profile_detail.height }} | Weight: {{ profile_detail.weight }}</p>
+                                      </div>
+                                      <div class="col-lg-4 col-12">
+                                        <h5 class="card-title"><i class="la la-briefcase text-bold-600"></i> Employment</h5>
+                                        <hr>
+                                        <p>ID Number: {{ profile_detail.employee_profile.id_no }}</p>
+                                        <p>Employment Status: {{ profile_detail.employee_profile.employment_status }}</p>
+                                        <p>Employment Type: {{ profile_detail.employee_profile.employment_type }}</p>
+                                        <p>Date Hired: {{ profile_detail.employee_profile.date_hired }}</p>
+                                        <p>Designation: {{ profile_detail.employee_profile.designation }}</p>
+                                        <p>Branch: {{ profile_detail.employee_profile.branch }}</p>
+                                        <p>Project Site: {{ profile_detail.employee_profile.project_site }}</p>
+                                        <p>End of Probationary: {{ profile_detail.employee_profile.end_probation }}</p>
+                                        <p>Date of Regularization: {{ profile_detail.employee_profile.regularization }}</p>
+                                        <p>Date of Separation: {{ profile_detail.employee_profile.separation }}</p>
+                                        <p>Referral: {{ profile_detail.employee_profile.referral }}</p>
+                                      </div>
+                                      <div class="col-lg-4 col-12">
+                                        <h5 class="card-title"><i class="la la-briefcase text-bold-600"></i> Family & Dependents</h5>
+                                        <hr>
+                                        {% for member in profile_detail.family.all %}
+                                          <p>{{ member.name }} | {{ member.relation }} | {{ member.contact_no }}</p>
+                                        {% endfor %}
+                                        <br>
+                                        <h5 class="card-title"><i class="la la-briefcase text-bold-600"></i> Accounts</h5>
+                                        <hr>
+                                        {% for account in profile_detail.accounts.all %}
+                                          <p>{{ account.title }}: {{ account.account }}</p>
+                                        {% endfor %}
+                                        <br>
+                                      </div>
+                                    </div>
+                                    <div class="row mt-1">
+                                      <div class="col-12 table-responsive">
+                                        <h5 class="card-title"><i class="la la-briefcase text-bold-600"></i> Educational Background </h5>
+                                        <hr>
+                                        <table class="table table-hover">
+                                          <thead>
+                                            <tr>
+                                                <th>Level</th>
+                                                <th>School</th>
+                                                <th>Start Year</th>
+                                                <th>End Year</th>
+                                                <th>Remarks</th>
+                                            </tr>
+                                          </thead>
+                                          <tbody>
+                                          {% for work in profile_detail.education.all %}
+                                            <tr>
+                                              <td>{{ work.level }}</td>
+                                              <td>{{ work.school }}</td>
+                                              <td>{{ work.start_year }}</td>
+                                              <td>{{ work.end_year }}</td>
+                                              <td>{{ work.remarks }}</td>
+                                            </tr>
+                                          {% endfor %}
+                                          </tbody>
+                                        </table>
+                                        <br>
+                                      </div>
+                                    </div>
+                                    <div class="row mt-1">
+                                      <div class="col-12 table-responsive">
+                                        <h5 class="card-title"><i class="la la-briefcase text-bold-600"></i> Work History </h5>
+                                        <hr>
+                                        <table class="table table-hover">
+                                          <thead>
+                                            <tr>
+                                                <th>Company Name</th>
+                                                <th>Designation</th>
+                                                <th>Start Year</th>
+                                                <th>End Year</th>
+                                                <th>Work Description</th>
+                                                <th>Supervisor</th>
+                                                <th>Contact No.</th>
+                                            </tr>
+                                          </thead>
+                                          <tbody>
+                                          {% for work in profile_detail.work_history.all %}
+                                            <tr>
+                                              <td>{{ work.company_name }}</td>
+                                              <td>{{ work.designation }}</td>
+                                              <td>{{ work.start_year }}</td>
+                                              <td>{{ work.end_year }}</td>
+                                              <td>{{ work.work_description }}</td>
+                                              <td>{{ work.supervisor }}</td>
+                                              <td>{{ work.contact_no }}</td>
+                                            </tr>
+                                          {% endfor %}
+                                          </tbody>
+                                        </table>
+                                        <br>
+                                      </div>
+                                    </div>
+    							</div>
+    							<div class="tab-pane" id="tabIcon12" aria-labelledby="baseIcon-tab12">
+                                    <div class="row">
+                                		<div class="col-12 mb-2">
+                                		    <h4 class="card-title">Leave Stats</h4>
+                    						<div class="text-left mt-0" id="example-caption-1">You have {{leave_stat.vacation}} vacation leaves out of 5 </div>
+                    						<div class="progress mb-1">
+                    							<div class="progress-bar" role="progressbar"
+                    							    aria-valuenow="{{leave_stat.vacation}}"
+                    							    aria-valuemin="0" aria-valuemax="5"
+                    							    style="width: {{ leave_stat.vacation|div:5|mul:100 }}%"
+                    							    aria-describedby="example-caption-1">
+                    							</div>
+                    						</div>
+
+                    						<div class="text-left mt-1" id="example-caption-2">You have {{leave_stat.sick}} sick leaves out of 5 </div>
+                    						<div class="progress mb-1">
+                    							<div class="progress-bar" role="progressbar"
+                    							    aria-valuenow="{{leave_stat.sick}}"
+                    							    aria-valuemin="0" aria-valuemax="5"
+                    							    style="width: {{ leave_stat.sick|div:5|mul:100 }}%"
+                    							    aria-describedby="example-caption-2">
+                    							</div>
+                    						</div>
+
+                    						<div class="text-left mt-1" id="example-caption-3">You have {{leave_stat.others}} other leaves out of 5 </div>
+                    						<div class="progress">
+                    							<div class="progress-bar" role="progressbar"
+                        							aria-valuenow="{{leave_stat.others}}"
+                        							aria-valuemin="0" aria-valuemax="5"
+                        							style="width: {{ leave_stat.others|div:5|mul:100 }}%"
+                        							aria-describedby="example-caption-3">
+                    						    </div>
+                    						</div>
+                                		</div>
+                                    </div>
+                                    <div class="row">
+                                      <div class="col-12 table-responsive">
+                                        <h5 class="card-title"><i class="la la-briefcase text-bold-600"></i> Leave of Absence </h5>
+                                        <hr>
+                                        <table class="table table-hover">
+                                          <thead>
+                                            <tr>
+                                                <th>Type</th>
+                                                <th>From</th>
+                                                <th>Until</th>
+                                                <th>Tots</th>
+                                                <th>Reason</th>
+                                                <th>Status</th>
+                                                <th>Supervisor</th>
+                                            </tr>
+                                          </thead>
+                                          <tbody>
+                                          {% for work in profile_detail.leave_record.all %}
+                                            <tr>
+                                              <td>{{ work.leave_type }}</td>
+                                              <td>{{ work.date_from }}</td>
+                                              <td>{{ work.date_to }}</td>
+                                              <td>{{ work.tots_days }}</td>
+                                              <td>{{ work.reason }}</td>
+                                              <td>{{ work.approval }}</td>
+                                              <td>{{ work.approved_by }}</td>
+                                            </tr>
+                                          {% endfor %}
+                                          </tbody>
+                                        </table>
+                                        <br>
+                                      </div>
+                                    </div>
+    							</div>
+    							<div class="tab-pane" id="tabIcon13" aria-labelledby="baseIcon-tab13">
+                                    <div class="row">
+                                      <div class="col-12 table-responsive">
+                                        <h5 class="card-title"><i class="la la-folder-0 text-bold-600"></i> Memos/Warnings/Notices </h5>
+                                        <hr>
+                                        <table class="table table-hover">
+                                          <thead>
+                                            <tr>
+                                                <th>Title</th>
+                                                <th>Type</th>
+                                                <th>Issued Date</th>
+                                                <th>Expiry Date</th>
+                                                <th>File</th>
+                                            </tr>
+                                          </thead>
+                                          <tbody>
+                                          {% for attachment in memo %}
+                                            <tr>
+                                              <td><strong>{{ attachment.document_title }}</strong></td>
+                                              <td class='info'>{{ attachment.document_type }}</td>
+                                              <td>{{ attachment.issued_date }}</td>
+                                              <td>{{ attachment.expiry_date }}</td>
+                                              <td><a href="{{ attachment.doc_file.url }}"><i class="la la-file"></i></a></td>
+                                            </tr>
+                                          {% endfor %}
+                                          </tbody>
+                                        </table>
+                                        <br>
+                                      </div>
+                                    </div>
+    							</div>
+    							<div class="tab-pane" id="tabIcon14" aria-labelledby="baseIcon-tab14">
+                                    <div class="row">
+                                      <div class="col-12 table-responsive">
+                                        <h5 class="card-title"><i class="la la-file-pdf text-bold-600"></i> Certificates </h5>
+                                        <hr>
+                                        <table class="table table-hover">
+                                          <thead>
+                                            <tr>
+                                                <th>Title</th>
+                                                <th>Type</th>
+                                                <th>Issued Date</th>
+                                                <th>Expiry Date</th>
+                                                <th>File</th>
+                                            </tr>
+                                          </thead>
+                                          <tbody>
+                                          {% for attachment in certificates %}
+                                            <tr>
+                                              <td><strong>{{ attachment.document_title }}</strong></td>
+                                              <td class='info'>{{ attachment.document_type }}</td>
+                                              <td>{{ attachment.issued_date }}</td>
+                                              <td>{{ attachment.expiry_date }}</td>
+                                              <td><a href="{{ attachment.doc_file.url }}"><i class="la la-file"></i></a></td>
+                                            </tr>
+                                          {% endfor %}
+                                          </tbody>
+                                        </table>
+                                        <br>
+                                      </div>
+                                    </div>
+    							</div>
+    							<div class="tab-pane" id="tabIcon15" aria-labelledby="baseIcon-tab15">
+                                    <div class="row">
+                                      <div class="col-12 table-responsive">
+                                        <h5 class="card-title"><i class="la la-archive text-bold-600"></i> Performance Evaluation </h5>
+                                        <hr>
+                                        <table class="table table-hover">
+                                          <thead>
+                                            <tr>
+                                                <th>Title</th>
+                                                <th>Type</th>
+                                                <th>Issued Date</th>
+                                                <th>Expiry Date</th>
+                                                <th>File</th>
+                                            </tr>
+                                          </thead>
+                                          <tbody>
+                                          {% for attachment in evaluations %}
+                                            <tr>
+                                              <td><strong>{{ attachment.document_title }}</strong></td>
+                                              <td class='info'>{{ attachment.document_type }}</td>
+                                              <td>{{ attachment.issued_date }}</td>
+                                              <td>{{ attachment.expiry_date }}</td>
+                                              <td><a href="{{ attachment.doc_file.url }}"><i class="la la-file"></i></a></td>
+                                            </tr>
+                                          {% endfor %}
+                                          </tbody>
+                                        </table>
+                                        <br>
+                                      </div>
+                                    </div>
+    							</div>
+    							<div class="tab-pane" id="tabIcon16" aria-labelledby="baseIcon-tab16">
+                                    <div class="row">
+                                      <div class="col-12 table-responsive">
+                                        <h5 class="card-title"><i class="la la-archive text-bold-600"></i> History of Loans </h5>
+                                        <hr>
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Date</th>
+                                                    <th>Amount</th>
+                                                    <th>Balance</th>
+                                                    <th>Detail</th>
+                                                    <th>Status</th>
+                                                    <th>Approved By</th>
+                                                    <th>Edit/View</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for loan in loan_stat %}
+                                                <tr>
+                                                    <td>{{ loan.trans_date }}</td>
+                                                    <td class="hide-on-small-only warning">{{ loan.amount|intcomma }}</td>
+                                                    <td class="hide-on-small-only danger">{{ loan.balance|intcomma }}</td>
+                                                    <td>{{ loan.detail }}</td>
+                                                    <td>{{ loan.status }}</td>
+                                                    <td>{{ loan.issued_by }}</td>
+                                                    <td>
+                                                        <a href="{% url 'admin:workforce_loans_change' loan.id %}" target="_blank"><i class="la la-pencil font-medium-3"></i></a>
+                                                        <a href="{% url 'workforce:loan_detail_page' pk=loan.id %}" target="_blank"><i class="la la-clipboard font-medium-3"></i></a>
+                                                        <a href="{{ loan.doc_file.url }}" target="_blank"><i class="la la-file-pdf-o font-medium-3"></i></a>
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                        <br>
+                                      </div>
+                                    </div>
+    							</div>
+    							<div class="tab-pane" id="tabIcon17" aria-labelledby="baseIcon-tab17">
+                                    <div class="row">
+                                      <div class="col-12 table-responsive">
+                                        <h5 class="card-title"><i class="la la-archive text-bold-600"></i> Other Attachments (EDS, Violations, Tickets) </h5>
+                                        <hr>
+                                        <table class="table table-hover">
+                                          <thead>
+                                            <tr>
+                                                <th>Title</th>
+                                                <th>Type</th>
+                                                <th>Issued Date</th>
+                                                <th>Expiry Date</th>
+                                                <th>File</th>
+                                            </tr>
+                                          </thead>
+                                          <tbody>
+                                          {% for attachment in others %}
+                                            <tr>
+                                              <td><strong>{{ attachment.document_title }}</strong></td>
+                                              <td class='info'>{{ attachment.document_type }}</td>
+                                              <td>{{ attachment.issued_date }}</td>
+                                              <td>{{ attachment.expiry_date }}</td>
+                                              <td><a href="{{ attachment.doc_file.url }}"><i class="la la-file"></i></a></td>
+                                            </tr>
+                                          {% endfor %}
+                                          </tbody>
+                                        </table>
+                                        <br>
+                                      </div>
+                                    </div>
+    							</div>
+    						</div>
+    					</div>
+    				</div>
+    			</div>
+        </div>
+    </section>
+
+{% endblock %}

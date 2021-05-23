@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load humanize %}
+{% load widget_tweaks %}
+{% load extra_tags %}
+{% load mathfilters %}
+
+{% block body_block %}
+    <div class="alert bg-secondary alert-icon-left" role="alert">
+		<span class="alert-icon"><i class="la la-info"></i></span>
+		<p class="mb-0">Tip: If your internet is slow, use your phone to liquidate its much faster.</p>
+	</div>
+    <section class="row">
+
+    	<div class="col-12">
+            <div class="mb-0 badge badge-square badge-info font-medium-3"> Liquidation of Cash Advance</div>
+	        <hr class="m-0">
+
+    		<div id="invoice-items-details" class="pt-2">
+    		    <div class="media">
+            		<h4 class="media-body">
+            		    <a href="{% url 'accounting:update_cashbudget' pk=liquidation_detail.id %}"><span class="badge badge-secondary">
+            		        <i class="la la-pencil font-medium-3"></i>
+            		    </a> Inted da nga budget
+            		</h4>
+            		<div class="media-right badge badge-square badge-warning font-medium-3">Total: {{ liquidation_detail.amount|intcomma }}</div>
+        	    </div>
+    			<div class="row">
+    				<div class="table-responsive col-sm-12">
+    					<table class="table">
+                            <thead class="bg-blue-grey bg-lighten-4">
+                                <tr>
+                                    <th class="border-top-0">Date</th>
+                                    <th class="border-top-0">Form No</th>
+                                    <th class="border-top-0">Issued By</th>
+                                    <th class="border-top-0">Issued To</th>
+                                    <th class="border-top-0">Amount</th>
+                                    <th class="border-top-0">Detail</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class='bg-success bg-accent-1'>
+                                    <td class="text-truncate">{{ liquidation_detail.trans_date }}</td>
+                                    <td class="info text-truncate">{{ liquidation_detail.form_no }}</td>
+                                    <td class="text-truncate">{{ liquidation_detail.issued_by }}</td>
+                                    <td class="text-truncate">{{ liquidation_detail.issued_to }}</td>
+                                    <td class="text-truncate danger">P{{ liquidation_detail.amount|intcomma }}</td>
+                                    <td class="text-truncate">{{ liquidation_detail.detail }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+    		</div>
+    		<div id="invoice-items-details" class="pt-2">
+    		    <div class="media">
+            		<h4 class="media-body">
+            		    <a href="{% url 'accounting:new_liquidation' pk=liquidation_detail.id %}"><span class="badge badge-secondary">
+            		        <i class="la la-plus font-medium-3"></i>
+            		    </a> Ayna nang gastusam?
+            		</h4>
+            		<div class="media-right badge badge-square badge-warning font-medium-3">Total: {% for tot in total %}P{{ tot.tot|floatformat:2|intcomma }}{% endfor %}</div>
+        	    </div>
+    			<div class="row">
+    				<div class="table-responsive col-sm-12">
+    					<table class="table">
+                            <thead class="bg-blue-grey bg-lighten-4">
+                                <tr>
+                                    <th class="border-top-0">Date</th>
+                                    <th class="border-top-0">Project Site</th>
+                                    <th class="border-top-0">Item</th>
+                                    <th class="border-top-0">Quantity</th>
+                                    <th class="border-top-0">Amount</th>
+                                    <th class="border-top-0">Detail</th>
+                                    <th class="border-top-0">Delete?</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for liquidation in liquidation_debit.all %}
+                                <tr>
+                                    <td class="text-truncate">
+                                        <a href="{% url 'accounting:update_liquidation' pk=liquidation.id %}">
+                                            <span class="badge badge-info"><i class="la la-pencil font-medium-1"></i></span> {{ liquidation.trans_date }}
+                                        </a></td>
+                                    <td class="text-truncate">{{ liquidation.project_site }}</td>
+                                    <td class="text-truncate">{{ liquidation.item }}</td>
+                                    <td class="text-truncate danger">{{ liquidation.quantity|intcomma }}</td>
+                                    <td class="text-truncate danger">P{{ liquidation.amount|intcomma }}</td>
+                                    <td class="text-truncate">{{ liquidation.detail }}</td>
+                                    <td class="text-truncate">
+                                        <a href="{% url 'accounting:delete_liquidation' pk=liquidation.id %}">
+                                            <span class="badge badge-danger">
+                            		            <i class="la la-close font-medium-1"></i>
+                            		        </span>
+                            		    </a>
+                            		</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+    					</table>
+    				</div>
+    			</div>
+
+    			<div class="row">
+    				<div class="col-sm-12">
+    					<p class="lead">Total Due</p>
+    					<div class="table-responsive">
+    						<table class="table">
+    						  <tbody>
+    						  	<tr>
+    						  		<td>Sub Total (+12% Tax)</td>
+    						  		<td class="h4 card-title text-right">{% for tot in total %}P{{ tot.vatable|floatformat:2|intcomma }} + P{{ tot.vat|floatformat:2|intcomma }}{% endfor %}</td>
+    						  	</tr>
+    						  	<tr>
+    						  		<td>Total</td>
+    						  		<td class="h4 card-title text-right">{% for tot in total %}P{{ tot.tot|floatformat:2|intcomma }}{% endfor %}</td>
+    						  	</tr>
+    						  </tbody>
+    						</table>
+    					</div>
+    				</div>
+    			</div>
+
+    			<hr class="m-0">
+		        <div class="m-0 text-right"><p class="m-0 badge badge-square badge-info font-medium-3">Nabati Isublim: <strong>{% for tot in total %}P{{ tot.bal|floatformat:2|intcomma }}{% endfor %}</strong></p></div>
+    		</div>
+    	</div>
+    </section>
+
+
+{% endblock %}

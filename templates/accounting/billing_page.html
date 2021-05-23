@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load humanize %}
+{% load mathfilters %}
+
+{% load widget_tweaks %}
+
+{% block body_block %}
+
+<div class="row">
+    <div id="recent-transactions" class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Recent Billings</h4>
+                <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                <div class="heading-elements">
+                    <ul class="list-inline mb-0">
+                        <li><a class="btn btn-sm btn-danger box-shadow-2 round btn-min-width pull-right" href="{% url 'accounting:new_billing' %}" target="_blank">New Billing</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="table-responsive">
+                    <table id="recent-orders" class="table table-hover table-xl mb-0">
+                        <thead>
+                            <tr>
+                                <th class="border-top-0">Date</th>
+                                <th class="border-top-0">Project Site</th>
+                                <th class="border-top-0">Subcon</th>
+                                <th class="border-top-0">Operation</th>
+                                <th class="border-top-0">Accounting</th>
+                                <th class="border-top-0">Warehouse</th>
+                                <th class="border-top-0">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for bill in billing_list %}
+                            <tr>
+                                <td class="text-truncate"><i class="la la-dot-circle-o success font-medium-1 mr-1"></i> <a href="{% url 'accounting:update_billing' bill.id %}" target="_blank">{{ bill.trans_date }}</a></td>
+                                <td class="text-truncate">{{ bill.project_site }}</td>
+                                <td class="text-truncate">
+                                    <span class="avatar avatar-xs">
+                                        <img class="box-shadow-2" src="" alt="">
+                                    </span>
+                                    <span>{{ bill.subcon }}</span>
+                                </td>
+                                <td>
+                                    <a type="button" href="{% url 'accounting:status_ops' pk=bill.id %}" class="btn btn-sm {% if bill.status_ops == 'Open' %}btn-outline-danger{% elif bill.status_ops == 'Closed'%}btn-outline-success{% else %}btn-outline-warning{% endif %} round">
+                                        {{ bill.status_ops }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <a type="button" href="{% url 'accounting:status_acc' pk=bill.id %}" class="btn btn-sm {% if bill.status_acc == 'Open' %}btn-outline-danger{% elif bill.status_acc == 'Closed'%}btn-outline-success{% else %}btn-outline-warning{% endif %} round">
+                                        {{ bill.status_acc }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <a type="button" href="{% url 'accounting:status_wh' pk=bill.id %}" class="btn btn-sm {% if bill.status_wh == 'Open' %}btn-outline-danger{% elif bill.status_wh == 'Closed'%}btn-outline-success{% else %}btn-outline-warning{% endif %} round">
+                                        {{ bill.status_wh }}
+                                    </a>
+                                </td>
+                                <td class="text-truncate">{{ bill.amount|intcomma }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <div id="recent-transactions" class="col-md-4 col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Retention</h4>
+                <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                <div class="heading-elements">
+                    <ul class="list-inline mb-0">
+                        <li><a class="btn btn-sm btn-danger box-shadow-2 round btn-min-width pull-right" href="{% url 'accounting:new_billing' %}" target="_blank">New Billing</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="table-responsive">
+                    <table id="recent-orders" class="table table-hover table-xl mb-0">
+                        <thead>
+                            <tr>
+                                <th class="border-top-0">Subcon</th>
+                                <th class="border-top-0">Total Bill</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for trans in no_retention %}
+                            <tr>
+                                <td class="text-truncate"><i class="la la-dot-circle-o success font-medium-1 mr-1"></i> <a href="" target="_blank">{{ trans.group_name }}</a></td>
+                                <td class="text-truncate">{{ bill.total_bill }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+{% endblock %}
+
+{% block extra_js %}
+
+{% endblock extra_js %}

@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load humanize %}
+{% load widget_tweaks %}
+{% load extra_tags %}
+
+
+{% block body_block %}
+
+{% if request.user|has_group:"Fleet Monitoring" %}
+
+<div class="row">
+    <section class="col-md-12 col-12 p-1">
+        <div class="content-header row">
+          <div class="content-header-left col-md-6 col-12 mb-2">
+            <h3 class="content-header-title"></h3>
+          </div>
+          <div class="content-header-right col-md-6 col-12">
+            <div class="btn-group float-md-right" role="group" aria-label="Edit Options">
+              <button class="btn btn-info round dropdown-toggle dropdown-menu-right box-shadow-2 px-2" id="btnGroupDrop1" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <i class="ft-settings icon-left"></i> Actions
+              </button>
+              <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                  <a class="dropdown-item" href="{% url "fleet:new_travel" %}" target="_blank">New Travel</a>
+              </div>
+            </div>
+          </div>
+        </div>
+    </section>
+</div>
+
+<div class="row">
+    <section class="col-md-3 col-12 p-0">
+
+
+    	<div class="card border-warning mb-1">
+    		<div class="card-header pb-0">
+    			<h4 class="warning " id="basic-layout-tooltip">Advance Query - Travels</h4>
+    		</div>
+    		<div class="card-content collapse show">
+			    <div class="card-body">
+                    <form method="get">
+                        <div class="well">
+                            <div class="well">
+                              <div class="row">
+                                <div class="form-group col-6">
+                                    Unit: {% render_field all_travels.form.base_unit__body_no class="form-control" %}
+                                </div>
+                                <div class="form-group col-6">
+                                    Driver: {% render_field all_travels.form.driver class="form-control" %}
+                                </div>
+                              </div>
+                          </div>
+
+                          <div class="row">
+                            <div class="form-group col-12">
+                              Requested by: {% render_field all_travels.form.requested_by class="form-control" %}
+                            </div>
+                            <div class="form-group col-12">
+                              Trip: {% render_field all_travels.form.trip class="form-control" %}
+                            </div>
+                            <div class="form-group col-12">
+                              Status: {% render_field all_travels.form.status class="form-control" %}
+                            </div>
+                          </div>
+
+                          <div class="well">
+                              <div class="row">
+                                <div class="form-group col-6">
+                                    Source: {% render_field all_travels.form.source class="form-control" %}
+                                </div>
+                                <div class="form-group col-6">
+                                    Destination: {% render_field all_travels.form.destination class="form-control" %}
+                                </div>
+                              </div>
+                          </div>
+
+
+                          <div class="row">
+                              <div class="ml-1">
+                              Date Range: (yyyy-mm-dd):
+                              <div class="form-group form-inline">
+                                  {% render_field all_travels.form.date_start__date class="form-control" %}
+                              </div>
+                              </div>
+                          </div>
+                        </div>
+                        <div class="form-actions right">
+							<button type="submit" class="btn btn-primary">
+								<i class="la la-check-square-o"></i> Search
+							</button>
+						</div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="alert alert-primary mb-2" role="alert">
+			<h4 class="mb-2">Note!</h4>
+			<p>Use this if you want to do refined/specific queries, this is powerful if you know what you are doing. Initial value of table when no selection is done will be the latest 100 items.</p>
+		</div>
+
+
+	</section>
+
+    <section class="col-md-9 col-12 pr-0">
+        <div class="card">
+            <div class="card-header pb-0">
+                <h4 class="primary">Travel Search Results</h4>
+                <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                <div class="heading-elements">
+                    <ul class="list-inline mb-0">
+                        <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card-content collapse show">
+                <div class="card-body card-dashboard">
+                <div class="table-responsive">
+                <table class="table table-striped table-bordered table-middle multi-ordering dataex-html5-selectors" data-page-length='15'>
+                    <thead>
+                        <tr>
+                            <td>Unit</td>
+                            <td>Driver</td>
+                            <td>Requested by</td>
+                            <td>Date of Travel</td>
+                            <td>Travel Type</td>
+                            <td>Source</td>
+                            <td>Destination</td>
+                            <td>Status</td>
+                            <td>Details</td>
+                            <td>On its way</td>
+                            <td>Arrived at</td>
+                            <td>Returning at</td>
+                            <td>Returned at</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for travel in all_travels.qs %}
+                        <tr>
+                            <td class="text-truncate"><a href="{% url 'fleet:update_travel' travel.id %}">{{travel.base_unit}}</a></td>
+                            <td class="text-truncate">{{travel.driver}}</td>
+                            <td class="text-truncate">{{travel.requested_by}}</td>
+                            <td class="text-truncate">{{travel.date_start}}</td>
+                            <td class="text-truncate">{{travel.trip}}</td>
+                            <td class="text-truncate">{{travel.source}}</td>
+                            <td class="text-truncate">{{travel.destination}}</td>
+                            <td class="text-truncate">{{travel.status}}</td>
+                            <td class="text-truncate">{{travel.note}}</td>
+                            <td class="text-truncate">{{travel.started_at}}</td>
+                            <td class="text-truncate">{{travel.arrived_at}}</td>
+                            <td class="text-truncate">{{travel.returning_at}}</td>
+                            <td class="text-truncate">{{travel.returned_at}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                </div>
+                </div>
+            </div>
+        </div>
+
+	</section>
+</div>
+
+{% else %}
+
+<div class="col-sm-5 offset-sm-1 col-md-6 offset-md-3 col-lg-5 offset-lg-4 box-shadow-2">
+	<div class="card border-danger bg-danger border-lighten-3 px-2 my-0 row">
+		<div class="no-border pb-1">
+			<div class="card-body">
+				<h2 class="text-uppercase text-center mb-2 white display-4 text-bold-400">Forbidden</h2>
+				<h3 class="text-center">Access Level Clearance Insufficient </h3>
+			</div>
+			<div class="card-footer">
+			    <h4 class="text-center">For upgrade, contact your superior</h3>
+			</div>
+		</div>
+	</div>
+</div>
+
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+
+{% endblock extra_js %}

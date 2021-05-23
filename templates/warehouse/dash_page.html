@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load humanize %}
+
+{% block body_block %}
+    <div class="content-header row">
+      <div class="content-header-left col-md-6 col-12 mb-2">
+        <h3 class="content-header-title">Main Warehouse</h3>
+      </div>
+    </div>
+    <div class="content-body">
+        <div class="row">
+
+            {% for site in main_warehouse %}
+            <div class="col-lg-4 col-md-12 col-sm-12">
+                <div class="card pull-up">
+                    <div class="card-content">
+                        <div class="card-body bg-blue bg-lighten-4 rounded-top">
+                            <div class="animated-weather-icons text-center float-left">
+
+                            </div>
+                            <div class="weather-details text-center">
+                                <span class="display-4 block blue-grey darken-4">
+                                    {{ site }}
+                                </span>
+                                <ul class="list-inline clearfix">
+                                    <li class="border-right-blue-grey border-right-lighten-2 pr-2">
+                                        <h1 class="success text-bold-400"><i class="la la-clipboard"></i>
+                                        {% for count in pending %}
+                                        {% if count.or_project_site__project_site == site.id %}
+                                            {{ count.pending }}
+                                        {% endif %}
+                                        {% endfor %}
+                                        </h1>
+                                        <span class="danger darken-1"><i class="la la-caret-up"></i> Pending</span>
+
+                                    </li>
+                                    <li class="border-right-blue-grey border-right-lighten-2 pl-2 pr-2">
+                                        <h1 class="success text-bold-400"><i class="la la-clipboard"></i>
+                                        {% for count in active %}
+                                        {% if count.or_project_site__project_site == site.id %}
+                                            {{ count.on_process }}
+                                        {% endif %}
+                                        {% endfor %}
+                                        </h1>
+                                        <span class="blue-grey darken-1"><i class="la la-caret-up"></i> Active</span>
+
+                                    </li>
+                                    <li class="border-right-blue-grey border-right-lighten-2 pl-2 pr-2">
+                                        <h1 class="success text-bold-400"><i class="la la-clipboard"></i>
+                                        {% for count in daily_in %}
+                                        {% if count.in_project_site__project_site == site.id %}
+                                            {{ count.count_in }}
+                                        {% endif %}
+                                        {% endfor %}
+                                        </h1>
+                                        <span class="blue-grey darken-1"><i class="la la-caret-up"></i> Daily In</span>
+
+                                    </li>
+                                    <li class="pl-2">
+                                        <h1 class="success text-bold-400"><i class="la la-clipboard"></i>
+                                        {% for count in daily_out %}
+                                        {% if count.in_project_site__project_site == site.id %}
+                                            {{ count.count_out }}
+                                        {% endif %}
+                                        {% endfor %}
+                                        </h1>
+                                        <span class="danger darken-1"><i class="la la-caret-down"></i> Daily Out</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="card-footer py-2 border-0">
+                            <div class="row">
+                                <div class="col-4 text-center display-table-cell">
+                                    <a href="{% url 'warehouse:detail_main' pk=site.id %}">
+                                        <i class="blue-grey darken-1 la la-home font-large-1 lighten-3 align-middle"></i>
+                                    </a>
+                                </div>
+
+                                <div class="col-4 text-center display-table-cell">
+                                    <a href="{% url 'warehouse:daily_purchase_page' pk=site.id %}">
+                                        <i class="blue-grey darken-1 la la-cart-plus font-large-1 lighten-3 align-middle"></i>
+                                    </a>
+                                </div>
+
+                                <div class="col-4 text-center display-table-cell">
+                                    <a href="{% url 'warehouse:fuel_page' pk=site.id %}">
+                                        <i class="blue-grey darken-1 la la-tint font-large-1 lighten-3 align-middle"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+
+        <div class="content-header row">
+          <div class="content-header-left col-md-6 col-12 mb-2">
+            <h3 class="content-header-title">Project Warehouse</h3>
+          </div>
+        </div>
+
+        <div class="row">
+            {% for site in project_warehouse %}
+            <div class="col-xl-3 col-md-6 col-sm-12">
+                <div class="card pull-up">
+                    <div class="card-content">
+                        <div class="card-body bg-blue-grey bg-lighten-2 rounded-top">
+                            <div class="animated-weather-icons text-center float-left">
+
+                            </div>
+                            <div class="weather-details text-center">
+                                <span class="font-large-1 block blue-grey darken-4">{{ site.project_code }}</span>
+                                <ul class="list-inline clearfix">
+                                    <li class="border-right-blue-grey border-right-lighten-2 pr-2">
+                                        <h1 class="success text-bold-400"><i class="la la-clipboard"></i>
+                                        {% for count in pending %}
+                                        {% if count.or_project_site__project_site == site.id %}
+                                            {{ count.pending }}
+                                        {% endif %}
+                                        {% endfor %}
+                                        </h1>
+                                        <span class="danger darken-1"><i class="la la-caret-up"></i> Pending</span>
+
+                                    </li>
+                                    <li class="border-right-blue-grey border-right-lighten-2 pl-2 pr-2">
+                                        <h1 class="success text-bold-400"><i class="la la-clipboard"></i>
+                                        {% for count in active %}
+                                        {% if count.or_project_site__project_site == site.id %}
+                                            {{ count.on_process }}
+                                        {% endif %}
+                                        {% endfor %}
+                                        </h1>
+                                        <span class="blue-grey darken-1"><i class="la la-caret-up"></i> Active</span>
+
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card-footer py-2 border-0">
+                            <div class="row">
+                                <div class="col-4 text-center display-table-cell">
+                                    <a href="{% url 'warehouse:detail_project' pk=site.id %}">
+                                        <i class="blue-grey darken-1 la la-home font-large-1 lighten-3 align-middle"></i>
+                                    </a>
+                                </div>
+
+                                <div class="col-4 text-center display-table-cell">
+                                    <a href="{% url 'warehouse:daily_purchase_page' pk=site.id %}">
+                                        <i class="blue-grey darken-1 la la-cart-plus font-large-1 lighten-3 align-middle"></i>
+                                    </a>
+                                </div>
+
+                                <div class="col-4 text-center display-table-cell">
+                                    <a href="{% url 'warehouse:fuel_page' pk=site.id %}">
+                                        <i class="blue-grey darken-1 la la-tint font-large-1 lighten-3 align-middle"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+    </div>
+
+
+{% endblock %}

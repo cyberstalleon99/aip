@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load humanize %}
+{% load widget_tweaks %}
+{% load extra_tags %}
+{% load mathfilters %}
+
+{% block body_block %}
+
+    <div class="row">
+        <section class="col-md-3 col-12 p-0">
+        	<div class="card border-warning mb-1">
+        		<div class="card-header pb-0">
+        			<h4 class="warning " id="basic-layout-tooltip">Search Credit Purchases</h4>
+        		</div>
+        		<div class="card-content collapse show">
+    			    <div class="card-body">
+                        <form method="get">
+                            <div class="well">
+                              <div class="row">
+                                <div class="form-group col-12">
+                                  Project Site: {% render_field search_entry.form.project_site__project_code class="form-control" %}
+                                </div>
+                                <div class="form-group col-12">
+                                  Form No: {% render_field search_entry.form.form_no class="form-control" %}
+                                </div>
+                                <div class="form-group col-12">
+                                  Item: {% render_field search_entry.form.item__item_name class="form-control" %}
+                                </div>
+                                <div class="form-group col-12">
+                                  Created By: {% render_field search_entry.form.created_by__first_name class="form-control" %}
+                                </div>
+                                <div class="form-group col-12">
+                                  Transaction By: {% render_field search_entry.form.transaction_by__first_name class="form-control" %}
+                                </div>
+                                <div class="form-group col-12">
+                                  Remarks: {% render_field search_entry.form.remarks class="form-control" %}
+                                </div>
+                                <div class="form-group col-12">
+                                  Status: {% render_field search_entry.form.status class="form-control" %}
+                                </div>
+                                <div class="form-group col-12">
+                                  Subcon: {% render_field search_entry.form.subcon__group_name class="form-control" %}
+                                </div>
+                              </div>
+
+                              <div class="row">
+                                  <div class="ml-1">
+                                  Date Range: (yyyy-mm-dd):
+                                  <div class="form-group form-inline">
+                                      {% render_field search_entry.form.trans_date class="form-control" %}
+                                  </div>
+                                  </div>
+                              </div>
+                            </div>
+                            <div class="form-actions right">
+    							<button type="submit" class="btn btn-primary">
+    								<i class="la la-check-square-o"></i> Search
+    							</button>
+    						</div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert alert-primary mb-2" role="alert">
+    			<h4 class="mb-2">Note!</h4>
+    			<p>Use this if you want to do refined/specific queries, this is powerful if you know what you are doing. Initial value of table when no selection is done will be the latest 100 items.</p>
+    		</div>
+
+
+    	</section>
+
+        <section class="col-md-9 col-12 pr-0">
+            <div class="card">
+                <div class="card-header pb-0">
+                    <h4 class="primary">Credit Items</h4>
+                    <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                    <div class="heading-elements">
+                        <ul class="list-inline mb-0">
+                            <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-content collapse show">
+                    <div class="card-body card-dashboard">
+                    <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-middle multi-ordering dataex-html5-selectors" data-page-length='15'>
+                        <thead>
+                            <tr>
+                                <th class="border-top-0">Date</th>
+                                <th class="border-top-0">Track No.</th>
+                                <th class="border-top-0">Form No.</th>
+                                <th class="border-top-0">Transaction By</th>
+                                <th class="border-top-0">Project Site</th>
+                                <th class="border-top-0">Item</th>
+                                <th class="border-top-0">Quantity</th>
+                                <th class="border-top-0">U/M</th>
+                                <th class="border-top-0">Amount</th>
+                                <th class="border-top-0">...............Remarks/Particulars..............</th>
+                                <th class="border-top-0">Supplier</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for entry in search_entry.qs %}
+                                <tr class='bg-accent-1'>
+                                    <td class="text-truncate">
+                                        {% if request.user|has_group:"POR_Approver" %}
+                                        <a href="{% url 'accounting:update_entry' entry.id %}" target="_blank">
+                                            <span class="badge badge-secondary"><i class="la la-pencil font-medium-3"></i></span>
+                                        </a>
+                                        {% else %}
+                                            <span class="badge bg-blue-grey bg-lighten-3"><i class="la la-pencil font-medium-3"></i></span>
+                                        {% endif %}
+
+                                        {% if entry.base_por %}
+                                        <a href="{% if entry.base_por.id %}{% url 'accounting:purchase_detail_page' entry.base_por.id %}{% endif %}" target="_blank">
+                                            <span class="badge badge-success"><i class="la la-eye font-medium-3"></i></span>
+                                        </a>
+                                        {% else %}
+                                        <a href="{% if entry.base_por.id %}{% url 'accounting:purchase_detail_page' entry.base_por.id %}{% endif %}" target="_blank">
+                                            <span class="badge badge-danger"><i class="la la-warning font-medium-3"></i> No POR</span>
+                                        </a>
+                                        {% endif %}
+
+                                        {% if request.user|has_group:"POR_Approver" %}
+                                        <a href="{% url 'accounting:delete_entry' entry.id %}" target="_blank">
+                                            <span class="badge badge-danger"><i class="la la-close font-medium-3"></i></span>
+                                        </a>
+                                        {% else %}
+                                            <span class="badge bg-blue-grey bg-lighten-3"><i class="la la-close font-medium-3"></i></span>
+                                        {% endif %}
+                                         {{ entry.trans_date|date:"Y-m-d" }}
+                                    </td>
+                                    <td class="text-truncate">{{ entry.id }}</td>
+                                    <td class="text-truncate">{{ entry.form_no }}</td>
+                                    <td class="text-truncate">{{ entry.transaction_by }}</td>
+                                    <td class="text-truncate">{{ entry.project_site }}</td>
+                                    <td class="text-truncate">{{ entry.item }}</td>
+                                    <td class="text-truncate info">{{ entry.quantity|intcomma }}</td>
+                                    <td class="text-truncate info">{{ entry.item.item_unit|intcomma }}</td>
+                                    <td class="text-truncate danger">{{ entry.debit|intcomma }}</td>
+                                    <td class="">{{ entry.remarks }}</td>
+                                    <td class="text-truncate">{{ entry.supplier }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    </div>
+                    </div>
+                </div>
+            </div>
+
+    	</section>
+    </div>
+
+{% endblock %}
+
+{% block extra_js %}
+
+{% endblock extra_js %}

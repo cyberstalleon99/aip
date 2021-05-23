@@ -1,0 +1,358 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load humanize %}
+{% load widget_tweaks %}
+{% load extra_tags %}
+{% load mathfilters %}
+
+{% block body_block %}
+    <div class="content-body">
+        <section class="row">
+            <div class="col-12">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div
+                            {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %} class="alert alert-success alert-dismissible"
+                            {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %} class="alert alert-danger alert-dismissible"
+                            {% elif message.level == DEFAULT_MESSAGE_LEVELS.INFO %} class="alert alert-info alert-dismissible"
+                            {% endif %}>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                <div class="card">
+                  <div class="card-header pb-0">
+                    <h3 class="card-title">Scheduled Travels for Today</h4>
+                    <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                    <div class="heading-elements">
+                      <ul class="list-inline mb-0">
+                        <!--<li><a class="btn btn-sm btn-primary box-shadow-2 round btn-min-width pull-right" href="{% url "admin:fleet_travel_add" %}">New Travel</a></li>-->
+                        <li><a class="btn btn-sm btn-primary box-shadow-2 round btn-min-width pull-right" href="{% url "fleet:new_travel" %}">New Travel</a></li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="card-content mt-1">
+                    <div class="table-responsive">
+                      <table id="recent-orders" class="table table-hover table-xl mb-0">
+                        <thead>
+                          <tr>
+                            <th class="border-top-0">Driver</th>
+                            <th class="border-top-0"></th>
+                            <th class="border-top-0">Requested by</th>
+                            <th class="border-top-0">Unit</th>
+                            <th class="border-top-0">Travel</th>
+                            <th class="border-top-0">.................Details................</th>
+                            <th class="border-top-0">Status</th>
+                            <th class="border-top-0">DTTM</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                        {% for request in today %}
+                          <tr>
+                            <td>
+                                <span class="media-left">
+            						<img class="media-object rounded-circle" src="{{ request.driver.profile_pic.url }}" alt="Generic placeholder image" style="width: 40px;height: 40px;">
+            					</span>
+            				</td>
+                            <td class="text-truncate">
+                                <p class="mb-0"><strong>{{ request.driver }}</strong></p>
+                                {% if user|has_group:"Dispatch" %}
+                                <!--<p class="mb-0 badge badge-primary"><a href="{% url 'admin:fleet_travel_change' request.id %}">{{ request.date_start }}</a></p>-->
+                                <p class="mb-0 badge badge-primary"><a href="{% url 'fleet:update_travel' request.id %}">{{ request.date_start }}</a></p>
+                                {% elif user.id == request.requested_by.id %}
+                                <!--<p class="mb-0 badge badge-primary"><a href="{% url 'admin:fleet_travel_change' request.id %}">{{ request.date_start }}</a></p>-->
+                                <p class="mb-0 badge badge-primary"><a href="{% url 'fleet:update_travel' request.id %}">{{ request.date_start }}</a></p>
+                                {% else %}
+                                <p class="mb-0 badge badge-secondary"><a href="#">{{ request.date_start }}</a></p>
+                                {% endif %}
+                            </td>
+                            <td class="text-truncate">
+        						<p class="mb-0"><strong>{{ request.requested_by }}</strong></p>
+            				</td>
+                            <td class="text-truncate">
+            					<button type="button" class="btn btn-sm btn-danger round">{{ request.base_unit }}</button>
+            				</td>
+                            <td class="text-truncate">
+                                <p class="mb-0">From: {{ request.source }}</p>
+                                <p class="mb-0">To: {{ request.destination }}</p>
+                                <p class="mb-0"><strong>Trip: {{ request.trip }}</strong></p>
+                            </td>
+                            <td>{{ request.note }}</td>
+                            <td>
+                                {% if user|has_group:"Dispatch" %}
+                                <a href="{% url 'fleet:change_status' pk=request.pk %}">
+                                    <span class="badge {% if request.status == 'Travel Booked'%}badge-danger
+                                                       {% elif request.status == 'On its way'%}badge-info
+                                                       {% elif request.status == 'Arrived'%}badge-success
+                                                       {% elif request.status == 'Coming back'%}badge-primary
+                                                       {% elif request.status == 'Returned'%}badge-info
+                                                       {% elif request.status == 'Canceled'%}badge-secondary
+                                                       {% endif %}">
+                                        <i class="la la-map-signs font-medium-3"></i> {{ request.status }}
+                                    </span>
+                                </a>
+                                {% else %}
+                                <span class="badge {% if request.status == 'Travel Booked'%}badge-danger
+                                                   {% elif request.status == 'On its way'%}badge-info
+                                                   {% elif request.status == 'Arrived'%}badge-success
+                                                   {% elif request.status == 'Coming back'%}badge-primary
+                                                   {% elif request.status == 'Returned'%}badge-info
+                                                   {% elif request.status == 'Canceled'%}badge-secondary
+                                                   {% endif %}">
+                                    <i class="la la-map-signs font-medium-3"></i> {{ request.status }}
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if request.status == 'Travel Booked'%}{{request.date_start}}
+                                {% elif request.status == 'On its way'%}{{request.started_at}}
+                                {% elif request.status == 'Arrived'%}{{request.arrived_at}}
+                                {% elif request.status == 'Coming back'%}{{request.returning_at}}
+                                {% elif request.status == 'Returned'%}{{request.returned_at}}
+                                {% elif request.status == 'Canceled'%}
+                                {% endif %}
+                            </td>
+                          </tr>
+                        {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+
+            </div>
+
+            <div class="col-md-8 col-12">
+
+                <div class="card">
+                  <div class="card-header pb-0">
+                    <h3 class="card-title">Upcoming Travels</h4>
+                  </div>
+                  <div class="card-content mt-1">
+                    <div class="table-responsive">
+                      <table id="recent-orders" class="table table-hover table-xl mb-0">
+                        <thead>
+                          <tr>
+                            <th class="border-top-0">Driver</th>
+                            <th class="border-top-0"></th>
+                            <th class="border-top-0">Requested by</th>
+                            <th class="border-top-0">Unit</th>
+                            <th class="border-top-0">Travel</th>
+                            <th class="border-top-0">.................Details................</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                        {% for request in upcoming %}
+                          <tr>
+                            <td>
+                                <span class="media-left">
+                                    {% if request.driver.profile_pic.url %}
+            						<img class="media-object rounded-circle" src="{{ request.driver.profile_pic.url }}" alt="Generic placeholder image" style="width: 40px;height: 40px;">
+            					    {% else %}
+            					    <img class="media-object rounded-circle" src="{% static 'images/avatar/avatar-7.png' %}" alt="Generic placeholder image" style="width: 40px;height: 40px;">
+            					    {% endif %}
+            					</span>
+            				</td>
+                            <td class="text-truncate">
+                                {% if request.driver %}
+            						<p class="mb-0"><strong>{{ request.driver }}</strong></p>
+            					    {% else %}
+            					    <p class="mb-0"><strong>No driver assigned yet</strong></p>
+            					    {% endif %}
+                                {% if user|has_group:"Dispatch" %}
+                                <!--<p class="mb-0 badge badge-primary"><a href="{% url 'admin:fleet_travel_change' request.id %}">{{ request.date_start }}</a></p>-->
+                                <p class="mb-0 badge badge-primary"><a href="{% url 'fleet:update_travel' request.id %}">{{ request.date_start }}</a></p>
+                                {% elif user.id == request.requested_by.id %}
+                                <!--<p class="mb-0 badge badge-primary"><a href="{% url 'admin:fleet_travel_change' request.id %}">{{ request.date_start }}</a></p>-->
+                                <p class="mb-0 badge badge-primary"><a href="{% url 'fleet:update_travel' request.id %}">{{ request.date_start }}</a></p>
+                                {% else %}
+                                <p class="mb-0 badge badge-secondary"><a href="#">{{ request.date_start }}</a></p>
+                                {% endif %}
+                            </td>
+                            <td class="text-truncate">
+        						<p class="mb-0"><strong>{{ request.requested_by }}</strong></p>
+            				</td>
+                            <td class="text-truncate">
+            					<button type="button" class="btn btn-sm btn-danger round">{{ request.base_unit }}</button>
+            				</td>
+                            <td class="text-truncate">
+                                <p class="mb-0">From: {{ request.source }}</p>
+                                <p class="mb-0">To: {{ request.destination }}</p>
+                                <p class="mb-0"><strong>Trip: {{ request.trip }}</strong></p>
+                            </td>
+                            <td>{{ request.note }}</td>
+
+                          </tr>
+                        {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card">
+                  <div class="card-header pb-0">
+                    <h3 class="card-title">Travels for Approval</h4>
+                  </div>
+                  <div class="card-content mt-1">
+                    <div class="table-responsive">
+                      <table id="recent-orders" class="table table-hover table-xl mb-0">
+                        <thead>
+                          <tr>
+                            <th class="border-top-0">Requested by</th>
+                            <th class="border-top-0"></th>
+                            <th class="border-top-0">Travel</th>
+                            <th class="border-top-0">Date of Travel</th>
+                            <th class="border-top-0">.................Details................</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                        {% for request in for_approval %}
+                          <tr>
+                            <td>
+                                <span class="media-left">
+            						<img class="media-object rounded-circle" src="{{ request.requested_by.profile_pic.url }}" alt="Generic placeholder image" style="width: 40px;height: 40px;">
+            					</span>
+            				</td>
+                            <td class="text-truncate">
+                                <p class="mb-0"><strong>{{ request.requested_by }}</strong></p>
+                                {% if user|has_group:"Dispatch" %}
+                                <!--<p class="mb-0 badge badge-primary"><a href="{% url 'admin:fleet_travel_change' request.id %}">{{ request.date_start }}</a></p>-->
+                                <p class="mb-0 badge badge-primary"><a href="{% url 'fleet:update_travel' request.id %}">{{ request.date_start }}</a></p>
+                                {% elif user.id == request.requested_by.id %}
+                                <!--<p class="mb-0 badge badge-primary"><a href="{% url 'admin:fleet_travel_change' request.id %}">{{ request.date_start }}</a></p>-->
+                                <p class="mb-0 badge badge-primary"><a href="{% url 'fleet:update_travel' request.id %}">{{ request.date_start }}</a></p>
+                                {% else %}
+                                <p class="mb-0 badge badge-secondary"><a href="#">{{ request.date_start }}</a></p>
+                                {% endif %}
+                            </td>
+                            <td class="text-truncate">
+                                <p class="mb-0">From: {{ request.source }}</p>
+                                <p class="mb-0">To: {{ request.destination }}</p>
+                                <p class="mb-0"><strong>Trip: {{ request.trip }}</strong></p>
+                            </td>
+                            <td>{{ request.date_start }}</td>
+                            <td>{{ request.note }}</td>
+
+                          </tr>
+                        {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+
+                {% if user|has_group:"Dispatch" %}
+                <div class="card">
+                  <div class="card-header pb-0">
+                    <h3 class="card-title">Travels for Update</h4>
+                  </div>
+                  <div class="card-content mt-1">
+                    <div class="table-responsive">
+                      <table id="recent-orders" class="table table-hover table-xl mb-0">
+                        <thead>
+                          <tr>
+                            <th class="border-top-0">Driver</th>
+                            <th class="border-top-0"></th>
+                            <th class="border-top-0">Unit</th>
+                            <th class="border-top-0">Travel</th>
+                            <th class="border-top-0">.................Details................</th>
+                            <th class="border-top-0">Status</th>
+                            <th class="border-top-0">DTTM</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                        {% for request in pending %}
+                          <tr>
+                            <td>
+                                <span class="media-left">
+            						<img class="media-object rounded-circle" src="{{ request.driver.profile_pic.url }}" alt="Generic placeholder image" style="width: 40px;height: 40px;">
+            					</span>
+            				</td>
+                            <td class="text-truncate">
+                                <p class="mb-0"><strong>{{ request.driver }}</strong></p>
+                                <p class="mb-0 badge badge-primary"><a href="{% url 'fleet:update_travel' request.id %}">{{ request.date_start }}</a></p>
+                                <!--<p class="mb-0 badge badge-primary"><a href="{% url 'fleet:update_travel' request.id %}">{{ request.date_start }}</a></p>-->
+                            </td>
+                            <td class="text-truncate">
+            					<button type="button" class="btn btn-sm btn-danger round">{{ request.base_unit }}</button>
+            				</td>
+                            <td class="text-truncate">
+                                <p class="mb-0">From: {{ request.source }}</p>
+                                <p class="mb-0">To: {{ request.destination }}</p>
+                                <p class="mb-0"><strong>Trip: {{ request.trip }}</strong></p>
+                            </td>
+                            <td>{{ request.note }}</td>
+                            <td>
+                                <a href="{% url 'fleet:change_status' pk=request.pk %}">
+                                    <span class="badge {% if request.status == 'Travel Booked'%}badge-danger
+                                                       {% elif request.status == 'On its way'%}badge-info
+                                                       {% elif request.status == 'Arrived'%}badge-success
+                                                       {% elif request.status == 'Coming back'%}badge-primary
+                                                       {% elif request.status == 'Returned'%}badge-info
+                                                       {% elif request.status == 'Canceled'%}badge-secondary
+                                                       {% endif %}">
+                                        <i class="la la-map-signs font-medium-3"></i> {{ request.status }}
+                                    </span>
+                                </a>
+                            </td>
+                            <td>
+                                {% if request.status == 'Travel Booked'%}{{request.date_start}}
+                                {% elif request.status == 'On its way'%}{{request.started_at}}
+                                {% elif request.status == 'Arrived'%}{{request.arrived_at}}
+                                {% elif request.status == 'Coming back'%}{{request.returning_at}}
+                                {% elif request.status == 'Returned'%}{{request.returned_at}}
+                                {% elif request.status == 'Canceled'%}
+                                {% endif %}
+                            </td>
+                          </tr>
+                        {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+
+                {% endif %}
+
+            </div>
+
+            <div class="col-md-4 col-12">
+                <div id="accordionCrypto" role="tablist" aria-multiselectable="true">
+                    <div class="card collapse-icon accordion-icon-rotate">
+
+                        <div id="heading31" class="card-header bg-secondary p-1 bg-lighten-1">
+                            <a data-toggle="collapse" data-parent="#accordionCrypto" href="#accordionPOR" aria-expanded="true" aria-controls="accordionBTC" class="card-title lead white">Items for Pickup</a>
+                        </div>
+                        <div id="accordionPOR" role="tabpanel" aria-labelledby="heading31" class="card-collapse collapse show" aria-expanded="true">
+                            <div class="card-content">
+                                <div class="card-body p-0">
+                                    <div class="media-list list-group">
+                                        {% for request in padala %}
+                                        <div class="list-group-item list-group-item-action media p-1">
+                                            <div class="media-left">
+                                                <p class="text-bold-600 m-0">{{ request.request_by }}</p>
+                                                <p class="font-small-2 text-muted m-0 text-bold-600">Destination: <span class="badge badge-primary">{{ request.destination }}</span></p>
+                                            </div>
+                                            <div class="media-body text-right">
+                                                <img class="media-object rounded-circle" src="{{ request.request_by.profile_pic.url }}" alt="Generic placeholder image" style="width: 40px;height: 40px;">
+                                            </div>
+                                            <hr class="mb-0">
+                                            <div class="media-left m-0">
+                                                <p class="font-small-2 text-muted m-0">{{ request.remarks }}</p>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </div>
+{% endblock %}

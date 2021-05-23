@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load humanize %}
+{% load widget_tweaks %}
+{% load extra_tags %}
+{% load mathfilters %}
+
+{% block body_block %}
+
+    <section class="row">
+
+        <div class="col-lg-6 col-md-8 col-12">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+        		<div class="card">
+        			<div class="card-header pb-1 bg-dark">
+        				<h2 class="white" id="basic-layout-icons">
+        				    <a href="" class="white">
+        				        Add/Edit Incoming
+        				    </a>
+        				</h2>
+        			</div>
+        			<div class="card-content collapse show pink">
+        				<div class="card-body">
+
+                            <form class="form">
+                              <div class="form-body">
+                                <div class="row">
+                                    <div class="col-md-12 col-12">
+                                        {{ form.media }}
+                                        {{form.errors}}
+                                        <h4 class="mb-0">General Fields</h4>
+                                        <hr class="mt-0">
+
+                                        <div class="well">
+                                            <div class="row">
+                                                <div class="form-group col-md-6 col-12">
+                        							<label for="timesheetinput1">{{form.trans_date.label}}</label>
+                                                      <div class="position-relative has-icon-left">
+                                                        {{form.trans_date|add_class:"form-control"}}
+                                                        <div class="form-control-position">
+                                                          <i class="la la-calendar"></i>
+                                                        </div>
+                                                      </div>
+                        						</div>
+                        						<div class="form-group col-md-6 col-12">
+                        							<label for="timesheetinput1">{{form.form_no.label}}</label>
+                                                      <div class="position-relative has-icon-left">
+                                                        {{form.form_no|add_class:"form-control"}}
+                                                        <div class="form-control-position">
+                                                          <i class="la la-clipboard"></i>
+                                                        </div>
+                                                      </div>
+                        						</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                          <label for="timesheetinput1">{{form.trans_no.label}}</label>
+                                          <div class="position-relative">
+                                            {{form.trans_no|add_class:"form-control"}}
+                                          </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                          <label for="timesheetinput1">{{form.received_by.label}}</label>
+                                          <div class="position-relative">
+                                            {{form.received_by|add_class:"form-control"}}
+                                          </div>
+                                        </div>
+
+
+                                        <div class="form-group">
+                                          <label for="timesheetinput1">{{form.project_site.label}}</label>
+                                          <div class="position-relative">
+                                             {% if project_site %}
+                                             <input type="hidden" name="project_site" value={{project_site.id}}>
+                                             <input type="text" class="form-control"value={{project_site}} readonly>
+                                             {% else %}
+                                             {{form.project_site|add_class:"form-control"}}
+                                             {% endif %}
+                                          </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                          <label for="timesheetinput1">{{form.item.label}}</label>
+                                          <div class="position-relative">
+                                            {{form.item|add_class:"form-control"}}
+                                          </div>
+                                        </div>
+
+                                        <div class="well">
+                                            <div class="row">
+                                                <div class="form-group col-md-6 col-12">
+                        							<label for="timesheetinput1">Amount</label>
+                                                  <div class="position-relative has-icon-left">
+                                                    {% if request.user|has_group:"Warehouse Level 3" %}
+                                                        {{form.unit_price|add_class:"form-control"}}
+                                                    {% else %}
+                                                        <input type="text" name="unit_price" class="form-control" value=0 readonly>
+                                                    {% endif %}
+                                                    <div class="form-control-position">
+                                                      <i class="la la-money"></i>
+                                                    </div>
+                                                  </div>
+                        						</div>
+                        						<div class="form-group col-md-6 col-12">
+                        							<label for="timesheetinput1">{{form.quantity.label}}</label>
+                                                  <div class="position-relative has-icon-left">
+                                                    {{form.quantity|add_class:"form-control"}}
+                                                    <div class="form-control-position">
+                                                      <i class="la la-money"></i>
+                                                    </div>
+                                                  </div>
+                        						</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                          <label for="timesheetinput1">{{form.details.label}}</label>
+                                          <div class="position-relative">
+                                            {{form.details|add_class:"form-control"}}
+                                          </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                          <label for="timesheetinput1">{{form.attachment.label}}</label>
+                                          <div class="position-relative">
+                                            {{form.attachment|add_class:"form-control"}}
+                                          </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                          <label for="timesheetinput1">{{form.status.label}}</label>
+                                          <div class="position-relative">
+                                            {% if request.user|has_group:"Warehouse Level 3" %}
+                                                {{form.status|add_class:"form-control"}}
+                                            {% else %}
+                                                <input type="text" id="id_status" name="status" value="For Verification" class="form-control" readonly>
+                                            {% endif %}
+                                          </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            {{form.created_date|attr:"hidden"|add_class:"form-control"}}
+                                            {{form.updated_at|attr:"hidden"|add_class:"form-control"}}
+                                            {{form.created_by|attr:"hidden"|add_class:"form-control"}}
+                                            {{form.modified_by|attr:"hidden"|add_class:"form-control"}}
+                                        </div>
+
+                                    </div>
+        						</div>
+                              </div>
+
+                              <div class="form-actions right">
+                                <button type="submit" class="btn btn-pink"><i class="la la-check-square-o"></i> Submit</button>
+                              </div>
+
+                            </form>
+
+        				</div>
+        			</div>
+        		</div>
+    		</form>
+    	</div>
+
+    </section>
+
+{% endblock body_block %}

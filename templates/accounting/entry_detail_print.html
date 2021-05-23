@@ -1,0 +1,204 @@
+{% extends "base_print.html" %}
+{% load staticfiles %}
+{% load humanize %}
+{% load widget_tweaks %}
+{% load extra_tags %}
+{% load mathfilters %}
+
+{% block body_block %}
+    <div class="content-body">
+
+    <section class="row">
+
+    	<div class="col-12">
+            <div class="mb-0 badge badge-square badge-info font-medium-3"> Liquidation of Cash Advance</div>
+	        <hr class="m-0">
+
+    		<div id="invoice-items-details" class="pt-2">
+    		    <div class="media">
+            		<h4 class="media-body">
+            		    <a href="{% url 'accounting:update_entry' pk=entry_detail.id %}" target="_blank"><span class="badge badge-secondary">
+            		        <i class="la la-pencil font-medium-3"></i>
+            		    </a> Inted da nga budget
+            		</h4>
+            		<div class="media-right badge badge-square badge-warning font-medium-3">Total: {{ entry_detail.debit|intcomma }}</div>
+        	    </div>
+    			<div class="row">
+    				<div class="table-responsive col-sm-12">
+    					<table class="table">
+                            <thead class="bg-blue-grey bg-lighten-4">
+                                <tr>
+                                    <th class="border-top-0">Date</th>
+                                    <th class="border-top-0">Form No</th>
+                                    <th class="border-top-0">Transaction By</th>
+                                    <th class="border-top-0">Amount</th>
+                                    <th class="border-top-0">...........Detail.........</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class='bg-success bg-accent-1'>
+                                    <td class="text-truncate">{{ entry_detail.trans_date }}</td>
+                                    <td class="info text-truncate">{{ entry_detail.form_no }}</td>
+                                    <td class="text-truncate">{{ entry_detail.transaction_by }}</td>
+                                    <td class="text-truncate danger">P{{ entry_detail.debit|intcomma }}</td>
+                                    <td class="">{{ entry_detail.remarks }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+    		</div>
+
+
+    		<div id="invoice-items-details" class="pt-2">
+    		    <div class="media">
+            		<h4 class="media-body">
+            		    <a href="{% url 'accounting:new_entry'%}" target="_blank><span class="badge badge-warning">
+            		        <i class="la la-plus font-medium-3"></i>
+            		    </a> Ayna nang gastusam?
+            		</h4>
+            		<div class="media-right badge badge-square badge-warning font-medium-3">Total: {% if liquidations %}P{{ consumed.liq|floatformat:2|intcomma }}{% else %}None{% endif %}</div>
+        	    </div>
+    			<div class="row">
+    				<div class="table-responsive col-sm-12">
+    					<table class="table">
+                            <thead class="bg-blue-grey bg-lighten-4">
+                                <tr>
+                                    <th class="border-top-0">Date</th>
+                                    <th class="border-top-0">Project Site</th>
+                                    <th class="border-top-0">........Item.......</th>
+                                    <th class="border-top-0">Quantity</th>
+                                    <th class="border-top-0">Amount</th>
+                                    <th class="border-top-0">........Remarks........</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for transactions in liquidations.all %}
+                                <tr>
+                                    <td class="text-truncate">
+                                        <a href="{% url 'accounting:update_entry' pk=transactions.id %}" target="_blank">
+                                            <span class="badge badge-secondary"><i class="la la-pencil font-medium-1"></i></span> {{ transactions.trans_date }}
+                                        </a></td>
+                                    <td class="text-truncate">{{ transactions.project_site }}</td>
+                                    <td class="">{{ transactions.item }}</td>
+                                    <td class="text-truncate danger">{{ transactions.quantity|intcomma }}</td>
+                                    <td class="text-truncate danger">P{{ transactions.debit|intcomma }}</td>
+                                    <td class="">{{ transactions.remarks }}</td>
+                                </tr>
+                                {% endfor %}
+
+                            </tbody>
+    					</table>
+    				</div>
+    			</div>
+
+    			<hr class="m-0">
+		        <div class="m-0 text-right"><p class="m-0 badge badge-square badge-info font-medium-3">Nabati Isublim:
+		            <strong>{% if liquidations %}{{ given|subtract:consumed.liq|floatformat:2|intcomma }}{% else %}{{ given|floatformat:2|intcomma }}{% endif %}</strong>
+		        </p></div>
+    		</div>
+
+    		<div id="invoice-items-details" class="pt-2">
+    		    <div class="media">
+            		<h4 class="media-body">
+            		    <a href="{% url 'accounting:new_entry' %}" target="_blank"><span class="badge badge-warning">
+            		        <i class="la la-plus font-medium-3"></i>
+            		    </a> CDV
+            		</h4>
+        	    </div>
+    			<div class="row">
+    				<div class="table-responsive col-sm-12">
+    					<table class="table">
+                            <thead class="bg-blue-grey bg-lighten-4">
+                                <tr>
+                                    <th class="border-top-0">Account Name</th>
+                                    <th class="border-top-0">Debit</th>
+                                    <th class="border-top-0">Credit</th>
+                                    <th class="border-top-0">Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if cluster %}
+                                {% for transactions in cluster.all %}
+                                <tr>
+                                    <td class="text-truncate">
+                                        <span class="badge bg-blue-grey bg-lighten-3"><i class="la la-pencil font-medium-1"></i></span>
+                                         {{ transactions.account_code__item_code }} - {{ transactions.desc }}
+                                    </td>
+                                    <td class="text-truncate info">{{ transactions.total|intcomma }}</td>
+                                    <td class="text-truncate danger"></td>
+                                    <td class="text-truncate">{{ transactions.remarks }}</td>
+                                </tr>
+                                {% endfor %}
+                                {% else %}
+                				<tr>
+                				    <td class="text-center warning" colspan=7>..........No liquidations yet..........</td>
+                				</tr>
+                				{% endif %}
+
+                                {% if cash_return %}
+                				{% for transactions in cash_return.all %}
+                                <tr>
+                                    <td class="text-truncate">
+                                        <a href="{% url 'accounting:update_entry' pk=transactions.id %}" target="_blank">
+                                            <span class="badge badge-secondary"><i class="la la-pencil font-medium-1"></i></span> {{ transactions.account_code }}
+                                        </a>
+                                    </td>
+                                    <td class="text-truncate info">{% if transactions.entry_debit %}{{ transactions.debit|intcomma }}{% endif %}</td>
+                                    <td class="text-truncate danger">{% if transactions.entry_credit %}{{ transactions.debit|intcomma }}{% endif %}</td>
+                                    <td class="text-truncate">{{ transactions.remarks }}</td>
+                                </tr>
+                                {% endfor %}
+                				{% endif %}
+
+                                {% if reimbursement %}
+                				{% for transactions in reimbursement.all %}
+                                <tr>
+                                    <td class="text-truncate">
+                                        <a href="{% url 'accounting:update_entry' pk=transactions.id %}" target="_blank">
+                                            <span class="badge badge-info"><i class="la la-pencil font-medium-1"></i></span> {{ transactions.account_code }}
+                                        </a>
+                                    </td>
+                                    <td class="text-truncate info">{% if transactions.entry_debit %}{{ transactions.debit|intcomma }}{% endif %}</td>
+                                    <td class="text-truncate danger">{% if transactions.entry_credit %}{{ transactions.debit|intcomma }}{% endif %}</td>
+                                    <td class="text-truncate">{{ transactions.remarks }}</td>
+                                </tr>
+                                {% endfor %}
+                				{% endif %}
+
+
+                				{% if cdv %}
+                                {% for transactions in cdv.all %}
+                                <tr>
+                                    <td class="text-truncate">
+                                        <a href="{% url 'accounting:update_entry' pk=transactions.id %}" target="_blank">
+                                            <span class="badge badge-info"><i class="la la-pencil font-medium-1"></i></span> {{ transactions.account_code }}
+                                        </a>
+                                    </td>
+                                    <td class="text-truncate info">{% if transactions.entry_debit %}{{ transactions.debit|intcomma }}{% endif %}</td>
+                                    <td class="text-truncate danger">{% if transactions.entry_credit %}{{ transactions.debit|intcomma }}{% endif %}</td>
+                                    <td class="text-truncate">{{ transactions.remarks }}</td>
+                                </tr>
+                                {% endfor %}
+                                {% else %}
+                				<tr>
+                				    <td class="text-center warning" colspan=7>..........No CDV Details yet..........</td>
+                				</tr>
+                				{% endif %}
+
+
+                            </tbody>
+    					</table>
+    				</div>
+    			</div>
+
+    		</div>
+
+
+    	</div>
+    </section>
+
+    </div>
+
+
+{% endblock %}

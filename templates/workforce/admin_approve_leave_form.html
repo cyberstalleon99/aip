@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load humanize %}
+{% load widget_tweaks %}
+{% load extra_tags %}
+{% load mathfilters %}
+
+{% block body_block %}
+    <section class="row">
+
+        <div class="col-lg-6 col-md-8 col-12">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+        		<div class="card">
+        			<div class="card-header pb-1 bg-dark">
+        				<h2 class="white" id="basic-layout-icons">
+        				    <a href="" class="white">
+        				        Add/Edit Leave
+        				    </a>
+        				</h2>
+        			</div>
+        			<div class="card-content collapse show pink">
+        				<div class="card-body">
+
+                            <form class="form">
+                              <div class="form-body">
+                                <div class="row">
+                                    <div class="col-md-12 col-12">
+                                        {{ form.media }}
+                                        {{ form.errors }}
+                                        <h4 class="mb-0">General Fields</h4>
+                                        <hr class="mt-0">
+
+                                        <div class="form-group">
+                                          <label for="timesheetinput1">Requested by</label>
+                                          <div class="position-relative">
+                                                <input type="text" class="form-control" value="{{object.base_profile}}" disabled>
+                                          </div>
+                                        </div>
+
+                                        <div class="well">
+                                            <div class="row">
+                                                <div class="form-group col-md-6 col-12">
+                        							<label for="timesheetinput1">From</label>
+                                                      <div class="position-relative has-icon-left">
+                                                            <input type="text" class="form-control" value="{{object.date_from}}" disabled>
+                                                        <div class="form-control-position">
+                                                          <i class="la la-calendar"></i>
+                                                        </div>
+                                                      </div>
+                        						</div>
+                        						<div class="form-group col-md-6 col-12">
+                        							<label for="timesheetinput1">To</label>
+                                                      <div class="position-relative has-icon-left">
+                                                          <input type="text" class="form-control" value="{{object.date_to}}" disabled>
+                                                        <div class="form-control-position">
+                                                          <i class="la la-calendar"></i>
+                                                        </div>
+                                                      </div>
+                        						</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                              <label for="timesheetinput1">Leave Type</label>
+                                              <div class="position-relative">
+                                                    <input type="text" class="form-control" value="{{object.leave_type}}" disabled>
+                                              </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                          <label for="timesheetinput1">Reason</label>
+                                          <div class="position-relative">
+                                                <textarea type="text" class="form-control" disabled>{{object.reason}}</textarea>
+                                          </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                          <label for="timesheetinput1">Attachment</label>
+                                          <div class="position-relative">
+                                                <input type="file" class="form-control" value="{{object.attachment}}" disabled>
+                                          </div>
+                                        </div>
+
+                                        <h4 class="mb-0">Approval by Supervisor</h4>
+                                        <hr class="mt-0">
+
+                                        <div class="well">
+                                            <div class="row">
+                                                <div class="form-group col-md-6 col-12">
+                        							<label for="timesheetinput1">For approval of</label>
+                                                      <div class="position-relative has-icon-left">
+                                                            <input type="text" class="form-control" value="{{object.approved_by_super}}" disabled>
+                                                        <div class="form-control-position">
+                                                          <i class="la la-calendar"></i>
+                                                        </div>
+                                                      </div>
+                        						</div>
+                        						<div class="form-group col-md-6 col-12">
+                        							<label for="timesheetinput1">Date</label>
+                                                      <div class="position-relative has-icon-left">
+                                                        <input type="text" class="form-control" value="{{object.date_approved_super}}" disabled>
+                                                        <div class="form-control-position">
+                                                          <i class="la la-calendar"></i>
+                                                        </div>
+                                                      </div>
+                        						</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                          <label for="timesheetinput1">Status</label>
+                                          <div class="position-relative">
+                                                <input type="text" class="form-control" value="{{object.approval_super}}" disabled>
+                                          </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                          <label for="timesheetinput1">Status</label>
+                                          <div class="position-relative">
+                                                <textarea type="text" class="form-control" disabled>{{object.remarks_super}}</textarea>
+                                          </div>
+                                        </div>
+
+                                        <h4 class="mb-0">Approval by Admin</h4>
+                                        <hr class="mt-0">
+
+                                        <div class="well">
+                                            <div class="row">
+                                                <div class="form-group col-md-6 col-12">
+                        							<label for="timesheetinput1">For approval of</label>
+                                                      <div class="position-relative has-icon-left">
+                                                            <input type="text" class="form-control" value="{{object.approved_by}}" disabled>
+                                                        <div class="form-control-position">
+                                                            <i class="la la-calendar"></i>
+                                                        </div>
+                                                      </div>
+                        						</div>
+                        						<div class="form-group col-md-6 col-12">
+                        							<label for="timesheetinput1">Date Approved</label>
+                                                      <div class="position-relative has-icon-left">
+                                                        {{form.date_approved|add_class:"form-control"|attr:"readonly"}}
+                                                        <div class="form-control-position">
+                                                          <i class="la la-calendar"></i>
+                                                        </div>
+                                                      </div>
+                        						</div>
+                                        </div>
+
+                                        <div class="form-group">
+                                          <label for="timesheetinput1">Status</label>
+                                          <div class="position-relative">
+                                                {% if object_branch_admin.id == user.basicprofile.id and object.approval == "For Approval" and object.approval_super != "For Approval" %}
+                                                    {{form.approval|add_class:"form-control"}}
+                                                {% else %}
+                                                    {{form.approval|add_class:"form-control"|attr:"hidden"}}
+                                                    {{form.approval|add_class:"form-control"|attr:"disabled"}}
+                                                {% endif %}
+                                          </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                          <label for="timesheetinput1">Remarks</label>
+                                          <div class="position-relative">
+                                                {% if object_branch_admin.id == user.basicprofile.id and object.approval == "For Approval" and object.approval_super != "For Approval" %}
+                                                    {{form.remarks|add_class:"form-control"}}
+                                                {% else %}
+                                                    {{form.remarks|add_class:"form-control"|attr:"hidden"}}
+                                                    {{form.remarks|add_class:"form-control"|attr:"disabled"}}
+                                                {% endif %}
+                                          </div>
+                                        </div>
+                                    </div>
+        						</div>
+                              </div>
+
+                              <div class="form-actions right">
+                                {% if object_branch_admin.id == user.basicprofile.id and object.approval == "For Approval" %}
+                                    <button type="submit" class="btn btn-pink"><i class="la la-check-square-o"></i> Submit</button>
+                                {% else %}
+                                    <button type="button" class="btn btn-secondary"><i class="la la-check-square-o"></i>Submit</button>
+                                {% endif %}
+                              </div>
+
+                            </form>
+
+        				</div>
+        			</div>
+        		</div>
+    		</form>
+    	</div>
+
+    </section>
+
+
+{% endblock body_block %}

@@ -1,0 +1,44 @@
+{% extends "tutorials/tutorial_page_base.html" %}
+{% load staticfiles %}
+
+{% block tutorial_body %}
+<div id="search-results" class="card-body">
+	{% for department in departments %}
+	<div class="card-deck-wrapper">
+		<div class="card-header">
+			<h4 class="card-title">{{department.name}}</h4>
+			<a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+			<div class="heading-elements">
+				<ul class="list-inline mb-0">
+					<li><a data-action="collapse"><i class="ft-minus"></i></a></li>
+					<li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>
+					<li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+					<li><a data-action="close"><i class="ft-x"></i></a></li>
+				</ul>
+			</div>
+		</div>
+		<div class="card-deck">
+			{% for tutorial in department.tutorials.all|slice:":3" %}
+			<div class="card border-grey border-lighten-2">
+				<div class="card-img-top embed-responsive embed-responsive-item embed-responsive-16by9">
+					<iframe class="gallery-thumbnail" src={{tutorial.video_link}}></iframe>
+				</div>
+				<div class="card-body px-0">
+					<h4 class="card-title">{{tutorial.title}}
+						<a href="{% url 'tutorials:update_tutorial' tutorial.slug %}"><i class="la la-pencil"></i></a>
+					</h4>
+					<p class="card-text">
+						{% for tag in tutorial.tags.all %}
+						<a href="{% url 'tutorials:tagged' tag.slug tutorial.slug %}" class=" badge badge-info">#{{tag}}</a>
+						{% endfor %}
+					</p>
+					<p class="card-text">{{tutorial.desc}}</p>
+					<p class="card-text"><small class="text-muted">{{tutorial.create_date}}</small></p>
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+	</div>
+	{% endfor %}
+</div>
+{% endblock %}

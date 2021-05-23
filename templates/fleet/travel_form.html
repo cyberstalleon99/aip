@@ -1,0 +1,242 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load humanize %}
+{% load widget_tweaks %}
+{% load extra_tags %}
+{% load mathfilters %}
+
+{% block extra_head %}
+<!--<link rel="stylesheet" type="text/css" href="{% static "app-assets/vendors/css/pickers/pickadate/pickadate.css" %}">-->
+
+{% endblock extra_head %}
+
+{% block body_block %}
+
+    <section class="row">
+
+        <div class="col-lg-6 col-md-8 col-12">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+        		<div class="card">
+        			<div class="card-header pb-1 bg-dark">
+        				<h2 class="white" id="basic-layout-icons">
+        				    <a href="" class="white">
+        				        Add/Edit Travel
+        				    </a>
+        				</h2>
+        			</div>
+        			<div class="card-content collapse show pink">
+        				<div class="card-body">
+
+                            <form class="form">
+                              <div class="form-body">
+                                <div class="row">
+                                    <div class="col-md-12 col-12">
+                                        {{ form.media }}
+                                        {{ form.errors }}
+
+                                        <h4 class="mb-0">Book a Travel</h4>
+                                        <hr class="mt-0">
+
+                                        <input type="hidden" value={{user.basicprofile.id}} name="requested_by">
+                                        <div class="well">
+                                            <div class="row">
+                                                <div class="form-group col-md-6 col-12">
+                        							<label for="timesheetinput1">Trip</label>
+                                                      <div class="position-relative">
+                                                        {{form.trip|add_class:"form-control"}}
+                                                      </div>
+                        						</div>
+                        						<div class="form-group col-md-6 col-12">
+                        							<label for="timesheetinput1">Travel Date</label>
+                                                      <div class="position-relative has-icon-left">
+                                                        {{form.date_start|add_class:"form-control"}}
+                                                        <div class="form-control-position">
+                                                            <i class="la la-calendar"></i>
+                                                        </div>
+                                                      </div>
+                        						</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="well">
+                                            <div class="row">
+                                                <div class="form-group col-md-6 col-12">
+                        							<label for="timesheetinput1">From</label>
+                                                      <div class="position-relative">
+                                                        {{form.source|add_class:"form-control"}}
+                                                      </div>
+                        						</div>
+                        						<div class="form-group col-md-6 col-12">
+                        							<label for="timesheetinput1">To</label>
+                                                      <div class="position-relative">
+                                                        {{form.destination|add_class:"form-control"}}
+                                                      </div>
+                        						</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                          <label for="timesheetinput1">Remarks (include purpose and time of travel)</label>
+                                          <div class="position-relative">
+                                            {{form.note|add_class:"form-control"}}
+                                          </div>
+                                        </div>
+
+                                        {% if user|has_group:"Dispatch" %}
+                                        <h4 class="mb-0">Assigned Driver (by Dispatch)</h4>
+                                        <hr class="mt-0">
+
+                                        <div class="well">
+                                            <div class="row">
+                                                <div class="form-group col-md-6 col-12">
+                        							<label for="timesheetinput1">Unit</label>
+                                                      <div class="position-relative">
+                                                        {{form.base_unit|add_class:"form-control"}}
+                                                      </div>
+                        						</div>
+                        						<div class="form-group col-md-6 col-12">
+                        							<label for="timesheetinput1">Driver</label>
+                                                      <div class="position-relative">
+                                                        {{form.driver|add_class:"form-control"}}
+                                                      </div>
+                        						</div>
+                                            </div>
+                                        </div>
+
+                                        <h4 class="mb-0">Trip Update</h4>
+                                        <hr class="mt-0">
+
+                                        <div class="form-group">
+                                          <label for="timesheetinput1">Status</label>
+                                          <div class="position-relative">
+                                            {{form.status|add_class:"form-control"}}
+                                          </div>
+                                        </div>
+
+                                        <div class="well">
+                                            <div class="row">
+                                                <div class="form-group col-md-6 col-12">
+                        							<label for="timesheetinput1">On its way at <strong>(e.g 2021-03-29 13:46:00)</strong></label>
+                                                      <div class="position-relative has-icon-left">
+                                                        {{form.started_at|add_class:"form-control"}}
+                                                        <div class="form-control-position">
+                                                            <i class="la la-calendar"></i>
+                                                        </div>
+                                                      </div>
+                        						</div>
+                        						<div class="form-group col-md-6 col-12">
+                        						</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="well">
+                                            <div class="row">
+                                                <div class="form-group col-md-6 col-12">
+                        							<label for="timesheetinput1">Arrived at <strong>(e.g 2021-03-29 13:46:00)</strong></label>
+                                                      <div class="position-relative has-icon-left">
+                                                        {{form.arrived_at|add_class:"form-control"}}
+                                                        <div class="form-control-position">
+                                                            <i class="la la-calendar"></i>
+                                                        </div>
+                                                      </div>
+                        						</div>
+                        						<div class="form-group col-md-6 col-12">
+                        						</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="well">
+                                            <div class="row">
+                                                <div class="form-group col-md-6 col-12">
+                        							<label for="timesheetinput1">Returning at <strong>(e.g 2021-03-29 13:46:00)</strong></label>
+                                                      <div class="position-relative has-icon-left">
+                                                        {{form.returning_at|add_class:"form-control"}}
+                                                        <div class="form-control-position">
+                                                            <i class="la la-calendar"></i>
+                                                        </div>
+                                                      </div>
+                        						</div>
+                        						<div class="form-group col-md-6 col-12">
+                        						</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="well">
+                                            <div class="row">
+                                                <div class="form-group col-md-6 col-12">
+                        							<label for="timesheetinput1">Returned at <strong>(e.g 2021-03-29 13:46:00)</strong></label>
+                                                      <div class="position-relative has-icon-left">
+                                                        {{form.returned_at|add_class:"form-control"}}
+                                                        <div class="form-control-position">
+                                                            <i class="la la-calendar"></i>
+                                                        </div>
+                                                      </div>
+                        						</div>
+                        						<div class="form-group col-md-6 col-12">
+                        						</div>
+                                            </div>
+                                        </div>
+
+                                        {% endif %}
+
+                                    </div>
+        						</div>
+                              </div>
+
+                              <div class="form-actions right">
+                                <button type="submit" class="btn btn-pink"><i class="la la-check-square-o"></i> Submit</button>
+                              </div>
+
+                            </form>
+
+        				</div>
+        			</div>
+        		</div>
+    		</form>
+    	</div>
+
+    </section>
+
+{% endblock body_block %}
+
+{% block extra_js %}
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <!-- XDSoft DateTimePicker -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css" integrity="sha256-DOS9W6NR+NFe1fUhEE0PGKY/fubbUCnOfTje2JMDw3Y=" crossorigin="anonymous" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js" integrity="sha256-FEqEelWI3WouFOo2VWP/uJfs1y8KJ++FLh2Lbqc8SJk=" crossorigin="anonymous"></script>
+
+<!--<script src="{% static "app-assets/vendors/js/pickers/pickadate/picker.js" %}"></script>-->
+<script>
+//     $( ".pickadate" ).datepicker({
+//       dateFormat: "yy-mm-dd"
+//     });
+</script>
+
+<script>
+    $(function () {
+        $("#id_date_start").datetimepicker({
+            format: 'Y-m-d',
+        });
+
+        $("#id_started_at").datetimepicker({
+            format: 'Y-m-d H:i',
+        });
+
+        $("#id_arrived_at").datetimepicker({
+            format: 'Y-m-d H:i',
+        });
+
+        $("#id_returning_at").datetimepicker({
+            format: 'Y-m-d H:i',
+        });
+
+        $("#id_returned_at").datetimepicker({
+            format: 'Y-m-d H:i',
+        });
+    });
+</script>
+
+{% endblock extra_js %}

@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load mathfilters %}
+
+{% block body_block %}
+    <div class="content-header row">
+      <div class="content-header-left col-md-6 col-12 mb-2">
+        <h3 class="content-header-title">Dispatch</h3>
+      </div>
+    </div>
+
+    <div class="content-body">
+
+        <section class="row match-height">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">For Renewal</h4>
+                        <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                        <div class="heading-elements">
+                            <ul class="list-inline mb-0">
+                                <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card-content collapse show">
+                        <div class="card-body card-dashboard table-responsive">
+        					<table class="table table-striped table-bordered dataex-html5-selectors" data-page-length='15'>
+                                <thead>
+                                    <tr>
+                                        <th class="border-top-0">Unit</th>
+                                        <th class="border-top-0">Type</th>
+                                        <th class="border-top-0">Expiry Date</th>
+                                        <th class="border-top-0 text-center">Requirements</th>
+                                        <th class="border-top-0 text-center">Processing</th>
+                                        <th class="border-top-0 text-center">Renewed</th>
+                                        <th class="border-top-0">Remarks</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in for_renewal %}
+                                    <tr>
+                                        <td class="text-truncate"><a href="{% url 'admin:fleet_unitprofile_change' item.base_profile.id %}" target="_blank">{{ item.base_profile.body_no }}</a></td>
+                                        <td class="text-truncate">{{ item.document_type }}</td>
+                                        <td class="text-truncate">{{ item.expiry_date }}</td>
+
+                                        {% if item.status == "Documents" %}
+                                            <td class='text-center'><div class='badge badge-warning round'><i class="la la-rotate-right white font-medium-1 text-bold-600"></i></div></td>
+                                            <td></td>
+                                            <td></td>
+                                        {% elif item.status == "Processing" %}
+                                            <td class='text-center'><div class='badge badge-success round'><i class="la la-check white font-medium-1 text-bold-600"></i></div></td>
+                                            <td class='text-center'><div class='badge badge-warning round'><i class="la la-rotate-right white font-medium-1 text-bold-600"></i></div></td>
+                                            <td></td>
+                                        {% elif item.status == "Renewed" %}
+                                            <td class='text-center'><div class='badge badge-success round'><i class="la la-check white font-medium-1 text-bold-600"></i></div></td>
+                                            <td class='text-center'><div class='badge badge-success round'><i class="la la-check white font-medium-1 text-bold-600"></i></div></td>
+                                            <td class='text-center'><div class='badge badge-success round'><i class="la la-check white font-medium-1 text-bold-600"></i></div></td>
+                                        {% else %}
+                                            <td class='text-center'><div class='badge badge-danger round'><i class="la la-remove white font-medium-1 text-bold-600"></i></div></td>
+                                            <td></td>
+                                            <td></td>
+                                        {% endif %}
+                                        <td class="text-truncate">{{ item.remarks }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <section class="row match-height">
+    		<div class="col-12">
+    			<div class="card">
+    				<div class="card-content">
+    					<div class="card-body p-0">
+<iframe src="https://calendar.google.com/calendar/b/3/embed?height=600&amp;wkst=1&amp;bgcolor=%23ffffff&amp;ctz=Asia%2FManila&amp;src=YWlwOTExZGlzcGF0Y2hAZ21haWwuY29t&amp;src=YWRkcmVzc2Jvb2sjY29udGFjdHNAZ3JvdXAudi5jYWxlbmRhci5nb29nbGUuY29t&amp;src=ZmlsLnBoaWxpcHBpbmVzI2hvbGlkYXlAZ3JvdXAudi5jYWxlbmRhci5nb29nbGUuY29t&amp;color=%23039BE5&amp;color=%2333B679&amp;color=%230B8043&amp;showTitle=0" style="border-width:0" width="100%" height="1000" frameborder="0" scrolling="no"></iframe>                        </div>
+    				</div>
+    			</div>
+    		</div>
+        </section>
+
+    </div>
+
+
+
+{% endblock %}

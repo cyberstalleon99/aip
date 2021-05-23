@@ -1,0 +1,57 @@
+{% extends 'base_form.html' %}
+
+{% block extrahead %}
+{{ form.media }}
+{% endblock %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+<form method="post">
+  {% csrf_token %}
+  <h1 class="mt-2">New Transaction</h1>
+  <hr class="mt-0 mb-4">
+
+  {{ form.unit|as_crispy_field }}
+
+  <div class="form-row">
+    <div class="form-group col-md-6 mb-0">
+      {{ form.trans_date|as_crispy_field }}
+    </div>
+    <div class="form-group col-md-6 mb-0">
+      {{ form.trans_type|as_crispy_field }}
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-6 mb-0">
+      {{ form.fwf|as_crispy_field }}
+    </div>
+    <div class="form-group col-md-6 mb-0">
+      {{ form.processed_by|as_crispy_field }}
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-6 mb-0">
+      {{ form.tank_site|as_crispy_field }}
+    </div>
+    <div class="form-group col-md-4 mb-0">
+      {{ form.project_site|as_crispy_field }}
+    </div>
+  </div>
+    <div class="form-row">
+    <div class="form-group col-md-4 mb-0">
+      {{ form.amount|as_crispy_field }}
+    </div>
+    <div class="form-group col-md-4 mb-0">
+      {{ form.price|as_crispy_field }}
+    </div>
+    <div class="form-group col-md-4 mb-0">
+      {{ form.attachment|as_crispy_field }}
+    </div>
+  </div>
+  {{ form.remarks|as_crispy_field }}
+  <hr class="mt-0 mb-4">
+  <button type="submit" class="btn btn-primary">Save Transaction</button>
+  <p> </p>
+</form>
+{% endblock %}

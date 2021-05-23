@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+
+<html class="loading" lang="en" data-textdirection="ltr">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+    <meta name="description" content="AIP, Construction">
+    <meta name="keywords" content="AIP, Aip Construction">
+    <meta name="author" content="Eric Kiser">
+
+    <title>AIP</title>
+
+    <link rel="apple-touch-icon" href="{% static "app-assets/images/ico/aip-32x32.png" %}">
+    <link rel="shortcut icon" type="image/x-icon" href="{% static "app-assets/images/ico/aip-32x32.png" %}">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i%7CQuicksand:300,400,500,700" rel="stylesheet">
+
+    <!-- BEGIN VENDOR CSS-->
+    <link rel="stylesheet" type="text/css" href="{% static "app-assets/css/vendors.css" %}">
+
+    <link rel="stylesheet" type="text/css" href="{% static "app-assets/vendors/js/gallery/photo-swipe/photoswipe.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "app-assets/vendors/js/gallery/photo-swipe/default-skin/default-skin.css" %}">
+
+    <link rel="stylesheet" type="text/css" href="{% static "app-assets/vendors/css/tables/datatable/datatables.min.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "app-assets/vendors/css/tables/datatable/dataTables.bootstrap4.min.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "app-assets/vendors/css/tables/extensions/rowReorder.dataTables.min.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "app-assets/vendors/css/tables/extensions/responsive.dataTables.min.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "app-assets/vendors/css/tables/extensions/buttons.dataTables.min.css" %}">
+
+    <link rel="stylesheet" type="text/css" href="{% static "app-assets/vendors/css/forms/icheck/icheck.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "app-assets/vendors/css/forms/icheck/custom.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "app-assets/vendors/css/ui/jquery-ui.min.css" %}">
+
+    <link rel="stylesheet" type="text/css" href="{% static "app-assets/vendors/css/weather-icons/climacons.min.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "app-assets/css/core/colors/palette-climacon.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "app-assets/fonts/meteocons/style.min.css" %}">
+
+
+    <!-- END VENDOR CSS-->
+
+    <!-- BEGIN MODERN CSS-->
+    <link rel="stylesheet" type="text/css" href="{% static "app-assets/css/app.css" %}">
+    <!-- END MODERN CSS-->
+
+    <!-- BEGIN Page Level CSS-->
+    <link rel="stylesheet" type="text/css" href="{% static "app-assets/css/core/menu/menu-types/vertical-menu-modern.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "app-assets/css/core/colors/palette-gradient.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "app-assets/css/pages/search.css" %}">
+
+    <link rel="stylesheet" type="text/css" href="{% static "app-assets/css/core/colors/palette-callout.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "app-assets/css/pages/users.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "app-assets/css/pages/project.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "app-assets/css/pages/gallery.css" %}">
+    <!-- END Page Level CSS-->
+
+    <!-- BEGIN Custom CSS-->
+    <link rel="stylesheet" type="text/css" href="{% static "assets/css/style.css" %}">
+
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <!--<script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>-->
+
+    {% block extra_head %} {% endblock extra_head %}
+    <!-- END Custom CSS-->
+
+  </head>
+
+  <body class="vertical-layout vertical-menu-modern 2-columns   menu-collapsed fixed-navbar" data-open="click" data-menu="vertical-menu-modern" data-col="2-columns">
+
+    <!-- fixed-top-->
+    <nav class="header-navbar navbar-expand-md navbar navbar-with-menu navbar-without-dd-arrow fixed-top navbar-semi-dark navbar-shadow">
+      <div class="navbar-wrapper">
+        <div class="navbar-header">
+          <ul class="nav navbar-nav flex-row position-relative">
+            <li class="nav-item mobile-menu d-md-none mr-auto"><a class="nav-link nav-menu-main menu-toggle hidden-xs" href="#"><i class="ft-menu font-large-1"></i></a></li>
+            <li class="nav-item"><a class="navbar-brand" href="home"><img class="brand-logo" alt="modern admin logo" src="{% static "app-assets/images/logo/aip-70x70.png" %}">
+                <h3 class="brand-text">AIP Construction</h3></a></li>
+            <li class="nav-item d-none d-md-block nav-toggle"><a class="nav-link modern-nav-toggle pr-0" data-toggle="collapse"><i class="toggle-icon ft-toggle-right font-medium-3 white" data-ticon="ft-toggle-right"></i></a></li>
+            <li class="nav-item d-md-none"><a class="nav-link open-navbar-container" data-toggle="collapse" data-target="#navbar-mobile"><i class="la la-ellipsis-v"></i></a></li>
+          </ul>
+        </div>
+        <div class="navbar-container content">
+          <div class="collapse navbar-collapse" id="navbar-mobile">
+            <ul class="nav navbar-nav mr-auto float-left">
+              <li class="nav-item d-none d-md-block"><a class="nav-link nav-menu-main menu-toggle hidden-xs" href="#"><i class="ft-menu"></i></a></li>
+            </ul>
+            <ul class="nav navbar-nav float-right">
+              <li class="dropdown dropdown-user nav-item">
+                  <span class="mr-1">Hello, <span class="user-name text-bold-700">{{ user.get_username }}! {{ user.id }}</span></span>
+                  <span><a href="{% url 'logout' %}">Logout</a></span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ////////////////////////////////////////////////////////////////////////////-->
+
+
+    <div class="main-menu menu-fixed menu-dark menu-accordion menu-shadow" data-scroll-to-active="true">
+      <div class="main-menu-content">
+        <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
+          <li class=" nav-item">
+            <a href="/"><i class="la la-tasks"></i><span class="menu-title">Dashboard</span></a>
+          </li>
+          <li class=" nav-item">
+            <a href="{% url 'fleet:delivery_page' %}"><i class="la la-archive pink"></i><span class="menu-title">AIP Padala</span></a>
+          </li>
+          <li class=" nav-item">
+            <a href="{% url 'fleet:travel_page' %}"><i class="la la-truck pink"></i><span class="menu-title">Travel Monitoring</span></a>
+          </li>
+          <li class=" nav-item">
+            <a href=""><i class="la la-users"></i><span class="menu-title" data-i18n="nav.dash.main">Human Resources</span></a>
+            <ul class="menu-content">
+              <li><a class="active" href="{% url 'workforce:profile_list' %}">Profiles</a></li>
+              <li><a class="menu-item" href="{% url 'workforce:leave_list' %}">Leaves & Absences</a></li>
+              <li><a class="menu-item red" href="{% url 'workforce:subcon_list' %}">Subcon List</a></li>
+              <li><a class="menu-item" href="{% url 'workforce:file_index' %}">Permits & Licenses</a></li>
+              <li><a class="menu-item" href="{% url 'workforce:face_list' %}">Faces</a></li>
+            </ul>
+          </li>
+          <li class=" nav-item">
+            <a><i class="la la-money"></i><span class="menu-title">Accounting & Finance</span></a>
+            <ul class="menu-content">
+              <li><a class="menu-item" href="{% url 'accounting:your_entry' %}">Your Cash Advances</a></li>
+              <li><a class="menu-item" href="{% url 'accounting:cashiers_daily' %}">Daily Transactions</a></li>
+              <li><a class="menu-item" href="{% url 'accounting:for_verification' %}">Transactions for Verification</a></li>
+              <li><a class="menu-item" href="{% url 'accounting:journal_entry' %}">Journal Entries</a></li>
+            </ul>
+          </li>
+
+          <li class=" nav-item">
+            <a><i class="la la-cart-plus"></i><span class="menu-title">Purchase & Delivery</span></a>
+            <ul class="menu-content">
+              <li><a class="menu-item" href="{% url 'accounting:pending_page' %}">Pending Request</a></li>
+              <li><a class="menu-item" href="{% url 'accounting:purchased_entry' %}">Purchased Items</a></li>
+              <li><a class="menu-item" href="{% url 'accounting:purchased_page' %}">Purchased Items (Old Database)</a></li>
+              <li><a class="menu-item" href="{% url 'accounting:utang_page' %}">Credit</a></li>
+              <li><a class="menu-item" href="{% url 'accounting:cancelled_page' %}">Canceled</a></li>
+              <li><a class="menu-item" href="{% url 'accounting:item_page' %}">Item List</a></li>
+              <li><a class="menu-item" href="{% url 'accounting:price_list' %}">Supplier</a></li>
+              <li><a class="menu-item warning" href="{% url 'accounting:purchased_audit' %}">Purchase Monitoring</a></li>
+            </ul>
+          </li>
+
+          <li class=" nav-item">
+            <a><i class="la la-home"></i><span class="menu-title">Budiga</span></a>
+            <ul class="menu-content">
+              <li><a class="menu-item" href="{% url 'warehouse:dash_page' %}">Dash</a></li>
+              <li><a class="menu-item" href="{% url 'warehouse:stats_page' %}">Stats</a></li>
+              <li><a class="menu-item" href="{% url 'warehouse:sinumrek' %}">Incoming</a></li>
+              <li><a class="menu-item" href="{% url 'warehouse:linumwar' %}">Outgoing</a></li>
+            </ul>
+          </li>
+          <li class=" nav-item">
+            <a><i class="la la-truck"></i><span class="menu-title">Fleet</span></a>
+            <ul class="menu-content">
+              <li><a class="menu-item" href="{% url 'fleet:dash_page' %}">Dashboard</a></li>
+              <li><a class="menu-item" href="{% url 'fleet:wo_page' %}">JO/PMS</a></li>
+              <li><a class="menu-item" href="{% url 'fleet:fleet_stat' %}">Stats</a></li>
+              <li><a class="menu-item" href="{% url 'fleet:calendar_page' %}">Tracking</a></li>
+              <li><a class="menu-item" href="{% url 'fleet:fleet_gallery' %}">Unit Gallery</a></li>
+              <li><a class="menu-item" href="{% url 'fleet:ur_page' %}">UR</a></li>
+
+              <li><a class="menu-item warning" href="{% url 'fleet:all_wo' %}">JO/PMS History</a></li>
+              <li><a class="menu-item warning" href="{% url 'fleet:all_travel' %}">Travel History</a></li>
+            </ul>
+          </li>
+          <li class=" nav-item">
+            <a><i class="la la-tint"></i><span class="menu-title">Fuel</span></a>
+            <ul class="menu-content">
+              <li><a class="menu-item" href="{% url 'fuel:dash_index' %}">Fuel History</a></li>
+            </ul>
+          </li>
+
+          <li class=" nav-item">
+            <a><i class="la la-gear"></i><span class="menu-title">Operations</span></a>
+            <ul class="menu-content">
+              <li><a class="active" href="{% url 'operation:project_index' %}">Projects</a></li>
+              <li><a class="menu-item" href="{% url 'operation:stat_page' %}">Current Status</a></li>
+              <li><a class="menu-item" href="https://eakdev.pythonanywhere.com/gallery/" target="_blank">Gallery</a></li>
+            </ul>
+          </li>
+          <li class=" nav-item">
+            <a href="{% url 'tutorials:latest' %}"><i class="la la-chalkboard"></i><span class="menu-title">Tutorials</span></a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="app-content content">
+      <div class="content-wrapper">
+      {% block body_block %}
+
+      {% endblock %}
+      </div>
+    </div>
+    <!-- ////////////////////////////////////////////////////////////////////////////-->
+
+    <script type="text/javascript">
+    // Popup window code for DAL
+    function newPopup(url) {
+    	popupWindow = window.open(url,'popUpWindow','height=700,width=1450,left=50,top=50,resizable=yes,scrollbars=yes,toolbar=no,menubar=no,location=yes,directories=no,status=yes')
+    }
+    </script>
+
+
+
+    <footer class="footer footer-static footer-light navbar-border navbar-shadow">
+      <p class="clearfix blue-grey lighten-2 text-sm-center mb-0 px-2"><span class="float-md-left d-block d-md-inline-block">Copyright  &copy; 2019 <a class="text-bold-800 grey darken-2" href="" target="_blank">AIP Construction </a>, All rights reserved. </span><span class="float-md-right d-block d-md-inline-blockd-none d-lg-block">Hand-crafted by Eric Kiser & Made with <i class="ft-heart pink"></i></span></p>
+    </footer>
+
+
+
+    <!-- BEGIN VENDOR JS-->
+    <script src="{% static "app-assets/vendors/js/vendors.min.js" %}"></script>
+    <!-- BEGIN VENDOR JS-->
+
+    <!-- BEGIN PAGE VENDOR JS-->
+    <script src="{% static "app-assets/vendors/js/tables/datatable/datatables.min.js" %}"></script>
+    <script src="{% static "app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js" %}"></script>
+    <script src="{% static "app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js" %}"></script>
+    <script src="{% static "app-assets/vendors/js/tables/datatable/dataTables.rowReorder.min.js" %}"></script>
+    <script src="{% static "app-assets/vendors/js/tables/datatable/dataTables.buttons.min.js" %}"></script>
+
+    <script src="{% static "app-assets/vendors/js/charts/chart.min.js" %}"></script>
+    <script src="{% static "app-assets/vendors/js/gallery/masonry/masonry.pkgd.min.js" %}"></script>
+    <script src="{% static "app-assets/vendors/js/gallery/photo-swipe/photoswipe.min.js" %}"></script>
+    <script src="{% static "app-assets/vendors/js/gallery/photo-swipe/photoswipe-ui-default.min.js" %}"></script>
+
+    <script src="{% static "app-assets/js/core/libraries/jquery_ui/jquery-ui.min.js" %}"></script>
+    <script src="{% static "app-assets/vendors/js/forms/select/select2.min.js" %}"></script>
+    <script src="{% static "app-assets/vendors/js/forms/icheck/icheck.min.js" %}"></script>
+    <!-- END PAGE VENDOR JS-->
+
+    <!-- BEGIN MODERN JS-->
+    <script src="{% static "app-assets/js/core/app-menu.js" %}"></script>
+    <script src="{% static "app-assets/js/core/app.js" %}"></script>
+    <!-- END MODERN JS-->
+
+    <!-- BEGIN PAGE LEVEL JS -->
+
+    <script src="{% static "app-assets/js/scripts/pages/project-summary-task.js" %}"></script>
+    <script src="{% static "app-assets/js/scripts/pages/project-summary-bug.js" %}"></script>
+    <script src="{% static "app-assets/js/scripts/gallery/photo-swipe/photoswipe-script.js" %}"></script>
+    <script src="{% static "app-assets/js/scripts/cards/card-social.js" %}"></script>
+    <script src="{% static "app-assets/js/scripts/ui/scrollable.js" %}"></script>
+
+    <script src="{% static "app-assets/js/my_own.js" %}"></script>
+
+    <script src="{% static "app-assets/js/scripts/tables/datatables-extensions/datatable-button/datatable-html5.js" %}"></script>
+
+
+    {% block extra_js %}{% endblock extra_js %}
+    <!-- END PAGE LEVEL JS-->
+  </body>
+</html>

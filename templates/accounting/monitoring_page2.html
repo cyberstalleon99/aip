@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load humanize %}
+{% load widget_tweaks %}
+{% load extra_tags %}
+{% load mathfilters %}
+
+{% block body_block %}
+
+    <div class="row">
+        <section class="col-md-3 col-12 p-0">
+        	<div class="card border-warning mb-1">
+        		<div class="card-header pb-0">
+        			<h4 class="warning " id="basic-layout-tooltip">Search POR's</h4>
+        		</div>
+        		<div class="card-content collapse show">
+    			    <div class="card-body">
+                        <form method="get">
+                            <div class="well">
+                              <div class="row">
+                                <div class="form-group col-12">
+                                  Project Site: {% render_field search_entry.form.project_site__project_code class="form-control" %}
+                                </div>
+                                <div class="form-group col-12">
+                                  Item: {% render_field search_entry.form.item__item_name class="form-control" %}
+                                </div>
+                                <div class="form-group col-12">
+                                  Details: {% render_field search_entry.form.details class="form-control" %}
+                                </div>
+                                <div class="form-group col-12">
+                                  Status: {% render_field search_entry.form.status class="form-control" %}
+                                </div>
+                              </div>
+
+                              <div class="row">
+                                  <div class="ml-1">
+                                  Date Range: (yyyy-mm-dd):
+                                  <div class="form-group form-inline">
+                                      {% render_field search_entry.form.request_date class="form-control" %}
+                                  </div>
+                                  </div>
+                              </div>
+                            </div>
+                            <div class="form-actions right">
+    							<button type="submit" class="btn btn-primary">
+    								<i class="la la-check-square-o"></i> Search
+    							</button>
+    						</div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert alert-primary mb-2" role="alert">
+    			<h4 class="mb-2">Note!</h4>
+    			<p>Use this if you want to do refined/specific queries, this is powerful if you know what you are doing. Initial value of table when no selection is done will be the latest 100 items.</p>
+    		</div>
+
+    	</section>
+
+        <section class="col-md-9 col-12 pr-0">
+            <div class="card">
+                <div class="card-header pb-0">
+                    <h4 class="primary">Purchase Order Request</h4>
+                    <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                    <div class="heading-elements">
+                        <ul class="list-inline mb-0">
+                            <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-content collapse show">
+                    <div class="card-body card-dashboard">
+                    <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-middle multi-ordering dataex-html5-selectors" data-page-length='15'>
+                        <thead>
+                            <tr>
+                                <th class="border-top-0">ID</th>
+                                <th class="border-top-0">Form?</th>
+                                <th class="border-top-0">JO?</th>
+                                <th class="border-top-0">Request Date</th>
+                                <th class="border-top-0">Time Diff</th>
+                                <th class="border-top-0">Create Date</th>
+                                <th class="border-top-0">Time Diff</th>
+                                <th class="border-top-0">Approval Date</th>
+                                <th class="border-top-0">Time Diff</th>
+                                <th class="border-top-0">Purchase Date</th>
+                                <th class="border-top-0">Item</th>
+                                <th class="border-top-0">Project Site</th>
+                                <th class="border-top-0">Quantity</th>
+                                <th class="border-top-0">Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for entry in search_entry.qs %}
+                                <tr class='bg-accent-1'>
+                                    <td class="text-truncate text-center">
+                                        {% if entry.status == "For Approval" %}
+                                            <span class="badge badge-warning">{{ entry.id }}</span>
+                                        {% elif entry.status == "On-Process" %}
+                                            <span class="badge badge-success">{{ entry.id }}</span>
+                                        {% elif entry.status == "Invalid" %}
+                                            <span class="badge badge-danger">{{ entry.id }}</span>
+                                        {% elif entry.status == "Canceled" %}
+                                            <span class="badge badge-secondary">{{ entry.id }}</span>
+                                        {% else %}
+                                            <span>{{ entry.id }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-truncate text-center">
+					                    {% if entry.form_attach == "None" or entry.form_attach == "" %}
+                                            <i class="la la-times-circle-o warning text-bold-600"></i>
+                                        {% else %}
+                                            <i class="la la-check-circle-o success text-bold-600"></i>
+                                        {% endif %}
+					                </td>
+					                <td class="text-truncate text-center">
+					                    {% if entry.item.item_category == "Spare Parts" %}
+					                        {% if entry.jo_no == None or entry.jo_no == "" %}
+                                                <i class="la la-times-circle-o warning text-bold-600"></i>
+                                            {% else %}
+                                                <i class="la la-check-circle-o success text-bold-600"></i>
+                                            {% endif %}
+                                        {% else %}
+                                            <span>N/A</span>
+                                        {% endif %}
+					                </td>
+                                    <td class="text-truncate">{{ entry.request_date|date:"Y-m-d, P" }}</td>
+                                    <td class="text-truncate">
+                                        {% if entry.create_date|time_diff:entry.request_date > 0 %}
+                                            <span class="badge badge-pill badge-glow badge-default badge-danger">{{ entry.create_date|timeuntil:entry.request_date }}</span>
+                                        {% else %}
+                                            <span class="">{{ entry.create_date|timeuntil:entry.request_date }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-truncate">{{ entry.create_date|date:"Y-m-d, P" }}</td>
+                                    <td class="text-truncate">
+                                        {% if entry.approved_at|time_diff:entry.create_date > 0 %}
+                                            <span class="badge badge-pill badge-glow badge-default badge-warning">{{ entry.approved_at|timeuntil:entry.create_date }}</span>
+                                        {% else %}
+                                            <span class="">{{ entry.approved_at|timeuntil:entry.create_date }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-truncate">{{ entry.approved_at|date:"Y-m-d, P" }}</td>
+                                    <td class="text-truncate">
+                                        {% if entry.purchased_at|time_diff:entry.approved_at > 2 %}
+                                            <span class="badge badge-pill badge-glow badge-default badge-warning">{{ entry.purchased_at|timeuntil:entry.approved_at }}</span>
+                                        {% elif entry.purchased_at|time_diff:entry.approved_at > 5 %}
+                                            <span class="badge badge-pill badge-glow badge-default badge-danger">{{ entry.purchased_at|timeuntil:entry.approved_at }}</span>
+                                        {% else %}
+                                            <span class="">{{ entry.purchased_at|timeuntil:entry.approved_at }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-truncate">{{ entry.purchased_at|date:"Y-m-d, P" }}</td>
+                                    <td class="text-truncate">{{ entry.item }}</td>
+                                    <td class="text-truncate">{{ entry.project_site }}</td>
+                                    <td class="text-truncate">{{ entry.quantity|intcomma }}</td>
+                                    <td class="text-truncate">{{ entry.details }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    </div>
+                    </div>
+                </div>
+            </div>
+
+    	</section>
+    </div>
+
+{% endblock %}
+
+{% block extra_js %}
+
+{% endblock extra_js %}

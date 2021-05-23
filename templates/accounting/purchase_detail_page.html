@@ -1,0 +1,431 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load humanize %}
+{% load extra_tags %}
+{% load mathfilters %}
+
+
+{% block body_block %}
+    <div>
+        <h4><strong>Purchased Item History: <span class="badge badge-secondary font-medium-3">{{ purchase_detail.item }}</span></strong></h4>
+        <hr>
+        <section class="row">
+            <div class="col-12 col-xl-4">
+                <h3>Purchase Details</h3>
+
+                <div id="accordionCrypto" role="tablist" aria-multiselectable="true">
+                    <div class="card collapse-icon accordion-icon-rotate">
+
+                        <div id="heading31" class="card-header bg-warning p-1 bg-lighten-1">
+                            <a data-toggle="collapse" data-parent="#accordionCrypto" href="#accordionPOR" aria-expanded="true" aria-controls="accordionBTC" class="card-title lead white">Purchase Order Request</a>
+                        </div>
+                        <div id="accordionPOR" role="tabpanel" aria-labelledby="heading31" class="card-collapse collapse show" aria-expanded="true">
+                            <div class="card-content">
+                                <div class="card-body p-0">
+                                    <div class="media-list list-group">
+                                        <div class="list-group-item list-group-item-action media p-1">
+                                            <div class="media-left">
+                                                <p class="text-bold-600 m-0">{{ purchase_detail.item }}</p>
+                                                <p class="font-small-2 text-muted m-0">{{ purchase_detail.request_date }}</p>
+                                                <p class="font-small-2 text-muted m-0">Form #: {{ purchase_detail.request_form }}</p>
+                                                <p class="font-small-2 text-muted m-0">Request by: {{ purchase_detail.request_by }}</p>
+                                                <p class="font-small-2 text-muted m-0">Purchaser: {{ purchase_detail.purchaser }}</p>
+                                            </div>
+                                            <div class="media-body text-right">
+                                                <p class="text-bold-600 m-0">{{ purchase_detail.quantity }}</p>
+                                                <p class="font-small-2 text-muted m-0 success">{{ purchase_detail.project_site }}</p>
+                                                <p class="font-small-2 text-muted m-0 text-bold-600">Trans No: {{ purchase_detail.id }}</p>
+                                                <p class="font-small-2 text-muted m-0 text-bold-600">JO No: {{ purchase_detail.jo_no }}</p>
+                                                <p class="font-small-2 text-muted m-0">Input by: {{ purchase_detail.created_by }}</p>
+                                            </div>
+                                            <hr>
+                                            <div class="media-left m-0">
+                                                <p class="font-small-2 text-muted m-0">{{ purchase_detail.details }}</p>
+                                            </div>
+                                            <div class="media-body text-right">
+                                                <a href="{% url 'accounting:update_por' pk=purchase_detail.id %}">
+                                                    <span class="badge badge-secondary"><i class="la la-pencil font-medium-3"></i></span>
+                                                </a>
+                                                {% if request.user|has_group:"POR_Approver2" %}
+                                                <a href="{% url 'accounting:por_approve' pk=purchase_detail.pk %}">
+                                                    <span class="badge badge-info">
+                                                        <i class="la la-bolt font-medium-3"></i> {{ purchase_detail.status }}
+                                                    </span>
+                                                </a>
+                                                <a href="{% url 'accounting:por_invalid' pk=purchase_detail.id %}">
+                                                    <span class="badge bg-danger bg-lighten-1"><i class="la la-exclamation-triangle font-medium-3"></i></span>
+                                                </a>
+                                                <a href="{% url 'accounting:por_cancel' pk=purchase_detail.id %}">
+                                                    <span class="badge bg-amber bg-accent-4"><i class="la la-thumbs-down font-medium-3"></i></span>
+                                                </a>
+                                                {% else %}
+                                                    <span class="badge bg-blue-grey bg-lighten-3"><i class="la la-bolt font-medium-3"></i> {{ purchase_detail.status }}</span>
+                                                    <span class="badge bg-blue-grey bg-lighten-3"><i class="la la-exclamation-triangle font-medium-3"></i></span>
+                                                    <span class="badge bg-blue-grey bg-lighten-3"><i class="la la-thumbs-down font-medium-3"></i></span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div id="accordionCrypto" role="tablist" aria-multiselectable="true">
+                    <div class="card collapse-icon accordion-icon-rotate">
+
+                        <div id="heading31" class="card-header bg-warning p-1 bg-lighten-1">
+                            <a data-toggle="collapse" data-parent="#accordionCrypto" href="#accordionPO" aria-expanded="true" aria-controls="accordionBTC" class="card-title lead white">Actual Purchase Records</a>
+                        </div>
+                        <div id="accordionPO" role="tabpanel" aria-labelledby="heading31" class="card-collapse collapse show" aria-expanded="true">
+                            <div class="card-content">
+                                <div class="card-body p-0">
+                                    <div class="media-list list-group">
+                                        {% for trans in liquidation_debit.all %}
+                                        <div class="list-group-item list-group-item-action media p-1">
+                                            <div class="media-left">
+                                                <p class="text-bold-600 m-0">{{ trans.item }} (from old database)</p>
+                                                <p class="font-small-2 text-muted m-0">{{ trans.trans_date }}</p>
+                                                <p class="font-small-2 text-muted m-0">Tracking No: {{ trans.id }}</p>
+                                                <p class="font-small-2 text-muted m-0">{{ trans.issued_by }}</p>
+                                            </div>
+                                            <div class="media-body text-right">
+                                                <p class="text-bold-600 m-0">{{ trans.quantity }}</p>
+                                                <p class="font-small-2 text-muted m-0 success">{{ trans.project_site }}</p>
+                                                <p class="font-small-2 text-muted m-0 text-bold-600">Price: {{ trans.amount|intcomma }}</p>
+                                                <p class="font-small-2 text-muted m-0 text-bold-600">{{ trans.supplier }}</p>
+                                            </div>
+
+                                            <hr class=mt-0>
+
+                                            <div class="media-left m-0">
+                                                <p class="font-small-2 text-muted m-0">{{ trans.remarks }}</p>
+                                            </div>
+                                            <div class="media-body text-right">
+                                                <span class="badge bg-blue-grey bg-lighten-3"><i class="la la-pencil font-medium-1"></i></span>
+                                                <span class="badge bg-blue-grey bg-lighten-3"><i class="la la-close font-medium-1"></i></span>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+
+                                        {% for trans in liquidation_entry.all %}
+                                        <div class="list-group-item list-group-item-action media p-1">
+                                            <div class="media-left">
+                                                <p class="text-bold-600 m-0">{{ trans.item }}</p>
+                                                <p class="font-small-2 text-muted m-0">{{ trans.trans_date }}</p>
+                                                <p class="font-small-2 text-muted m-0">Tracking No: {{ trans.id }}</p>
+                                                <p class="font-small-2 text-muted m-0">{{ trans.transaction_by }}</p>
+                                            </div>
+                                            <div class="media-body text-right">
+                                                <p class="text-bold-600 m-0">{{ trans.quantity }}</p>
+                                                <p class="font-small-2 text-muted m-0 success">{{ trans.project_site }}</p>
+                                                <p class="font-small-2 text-muted m-0 text-bold-600">Price: {{ trans.debit|intcomma }}</p>
+                                                <p class="font-small-2 text-muted m-0 text-bold-600">{{ trans.supplier }}</p>
+                                            </div>
+
+                                            <hr class=mt-0>
+
+                                            <div class="media-left m-0">
+                                                <p class="font-small-2 text-muted m-0">{{ trans.remarks }}</p>
+                                            </div>
+                                            <div class="media-body text-right">
+                                                <a href="{% url 'accounting:update_entry' trans.id %}">
+                                                    <span class="badge badge-secondary"><i class="la la-pencil font-medium-1"></i></span>
+                                                </a>
+                                                {% if request.user|has_group:"POR_Approver2" %}
+                                                <a href="{% url 'accounting:delete_entry' trans.id %}">
+                                                    <span class="badge badge-danger"><i class="la la-close font-medium-1"></i></span>
+                                                </a>
+                                                {% else %}
+                                                    <span class="badge bg-blue-grey bg-lighten-3"><i class="la la-close font-medium-1"></i></span>
+                                                {% endif %}
+
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div id="accordionCrypto" role="tablist" aria-multiselectable="true">
+                    <div class="card collapse-icon accordion-icon-rotate">
+
+                        <div id="heading31" class="card-header bg-secondary p-1 bg-lighten-1">
+                            <a data-toggle="collapse" data-parent="#accordionCrypto" href="#accordionPOR" aria-expanded="true" aria-controls="accordionBTC" class="card-title lead white">Recent purchases of the same item</a>
+                        </div>
+                        <div id="accordionPOR" role="tabpanel" aria-labelledby="heading31" class="card-collapse collapse show" aria-expanded="true">
+                            <div class="card-content">
+                                <div class="card-body p-0">
+                                    <div class="media-list list-group">
+                                        {% for trans in recent_new.all %}
+                                        <div class="list-group-item list-group-item-action media p-1">
+                                                <div class="media-left">
+                                                    <p class="text-bold-600 m-0">{{ trans.item }}</p>
+                                                    <p class="font-small-2 text-muted m-0 text-bold-600">{{ trans.supplier }}</p>
+                                                    <p class="font-small-2 text-muted m-0 text-bold-600">{{ trans.trans_date }}</p>
+                                                </div>
+                                                <div class="media-body text-right">
+                                                    <p class="text-bold-600 m-0">{{ trans.quantity|intcomma }}</p>
+                                                    <p class="font-small-2 text-muted m-0 text-bold-600">{{ trans.debit|intcomma }}</p>
+                                                    <p class="font-small-2 text-bold-600 m-0 danger">Unit Price: {% if trans.quantity > 0 %}{{ trans.debit|div:trans.quantity|floatformat:2|intcomma }}{% endif %}</p>
+                                                </div>
+                                        </div>
+                                        {% endfor %}
+                                        {% for trans in recent.all %}
+                                        <div class="list-group-item list-group-item-action media p-1">
+                                                <div class="media-left">
+                                                    <p class="text-bold-600 m-0">{{ trans.item }}</p>
+                                                    <p class="font-small-2 text-muted m-0 text-bold-600">{{ trans.supplier }}</p>
+                                                    <p class="font-small-2 text-muted m-0 text-bold-600">{{ trans.trans_date }}</p>
+                                                </div>
+                                                <div class="media-body text-right">
+                                                    <p class="text-bold-600 m-0">{{ trans.quantity|intcomma }}</p>
+                                                    <p class="font-small-2 text-muted m-0 text-bold-600">{{ trans.amount|intcomma }}</p>
+                                                    <p class="font-small-2 text-bold-600 m-0 danger">Unit Price: {% if trans.quantity > 0 %}{{ trans.amount|div:trans.quantity|floatformat:2|intcomma }}{% endif %}</p>
+                                                </div>
+                                        </div>
+                                        {% endfor %}
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-4">
+                <h3>Warehouse Details</h3>
+
+                <div id="accordionCrypto" role="tablist" aria-multiselectable="true">
+                    <div class="card collapse-icon accordion-icon-rotate">
+
+                        <div id="heading31" class="card-header bg-info p-1 bg-lighten-1">
+                            <a data-toggle="collapse" data-parent="#accordionCrypto" href="#accordionPOR" aria-expanded="true" aria-controls="accordionBTC" class="card-title lead white">Incoming</a>
+                        </div>
+                        <div id="accordionPOR" role="tabpanel" aria-labelledby="heading31" class="card-collapse collapse show" aria-expanded="true">
+                            <div class="card-content">
+                                <div class="card-body p-0">
+                                    <div class="media-list list-group">
+                                        {% for trans in sinumrek.all %}
+                                        <div class="list-group-item list-group-item-action media p-1">
+                                            <a class="media-link" href="{% url 'accounting:update_entry' trans.id %}" target="_blank">
+                                                <div class="media-left">
+                                                    <p class="text-bold-600 m-0">{{ trans.item }}</p>
+                                                    <p class="font-small-2 text-muted m-0">{{ trans.trans_date|date:'Y-m-d' }}</p>
+                                                    <p class="font-small-2 text-muted m-0">Form #: {{ purchase_detail.request_form }}</p>
+                                                    <p class="font-small-2 text-muted m-0">{{ purchase_detail.request_by }}</p>
+                                                </div>
+                                                <div class="media-body text-right">
+                                                    <p class="text-bold-600 m-0">{{ trans.quantity }}</p>
+                                                    <p class="font-small-2 text-muted m-0 success">{{ trans.project_site }}</p>
+                                                    <p class="font-small-2 text-muted m-0 text-bold-600">Track. No: {{ trans.trans_no }}</p>
+                                                    <p class="font-small-2 text-muted m-0 text-bold-600">{{ trans.received_by }}</p>
+                                                </div>
+                                                <hr>
+                                                <div>
+                                                    <p class="font-small-2 text-muted m-0">{{ trans.details }}</p>
+                                                </div>
+                                            </a>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div id="accordionCrypto" role="tablist" aria-multiselectable="true">
+                    <div class="card collapse-icon accordion-icon-rotate">
+
+                        <div id="heading31" class="card-header bg-info p-1 bg-lighten-1">
+                            <a data-toggle="collapse" data-parent="#accordionCrypto" href="#accordionPOR" aria-expanded="true" aria-controls="accordionBTC" class="card-title lead white">Outgoing</a>
+                        </div>
+                        <div id="accordionPOR" role="tabpanel" aria-labelledby="heading31" class="card-collapse collapse show" aria-expanded="true">
+                            <div class="card-content">
+                                <div class="card-body p-0">
+                                    <div class="media-list list-group">
+                                        {% for trans in outgoings2.all %}
+                                        <div class="list-group-item list-group-item-action media p-1">
+                                            <a class="media-link" href="{% url 'accounting:update_entry' trans.id %}" target="_blank">
+                                                <div class="media-left">
+                                                    <p class="text-bold-600 m-0">{{ trans.base_in.item }}</p>
+                                                    <p class="font-small-2 text-muted m-0">{{ trans.trans_date|date:'Y-m-d' }}</p>
+                                                    <p class="font-small-2 text-muted m-0">Form #: {{ trans.form_no }}</p>
+                                                    <p class="font-small-2 text-muted m-0">Unit: {{ trans.unit }}</p>
+                                                </div>
+                                                <div class="media-body text-right">
+                                                    <p class="text-bold-600 m-0">{{ trans.quantity }}</p>
+                                                    <p class="font-small-2 text-muted m-0 success">{{ trans.project_site }}</p>
+                                                    <p class="font-small-2 text-muted m-0 text-bold-600">Released to: {{ trans.released_to }}</p>
+                                                    <p class="font-small-2 text-muted m-0 text-bold-600">Released Out: {{ trans.released_out }}</p>
+                                                </div>
+                                                <hr>
+                                                <div>
+                                                    <p class="font-small-2 text-muted m-0">{{ trans.details }}</p>
+                                                </div>
+                                            </a>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div id="accordionCrypto" role="tablist" aria-multiselectable="true">
+                    <div class="card collapse-icon accordion-icon-rotate">
+
+                        <div id="heading31" class="card-header bg-info p-1 bg-lighten-1">
+                            <a data-toggle="collapse" data-parent="#accordionCrypto" href="#accordionPOR" aria-expanded="true" aria-controls="accordionBTC" class="card-title lead white">Transfers - Given to other Sites</a>
+                        </div>
+                        <div id="accordionPOR" role="tabpanel" aria-labelledby="heading31" class="card-collapse collapse show" aria-expanded="true">
+                            <div class="card-content">
+                                <div class="card-body p-0">
+                                    <div class="media-list list-group">
+                                        {% for trans in transfers2.all %}
+                                        <div class="list-group-item list-group-item-action media p-1">
+                                            <a class="media-link" href="{% url 'accounting:update_entry' trans.id %}" target="_blank">
+                                                <div class="media-left">
+                                                    <p class="text-bold-600 m-0">{{ trans.base_in.item }}</p>
+                                                    <p class="font-small-2 text-muted m-0">{{ trans.trans_date|date:'Y-m-d' }}</p>
+                                                    <p class="font-small-2 text-muted m-0">Form #: {{ trans.form_no }}</p>
+                                                    <p class="font-small-2 text-muted m-0">Unit: {{ trans.unit }}</p>
+                                                </div>
+                                                <div class="media-body text-right">
+                                                    <p class="text-bold-600 m-0">{{ trans.quantity }}</p>
+                                                    <p class="font-small-2 text-muted m-0 success">{{ trans.project_site }}</p>
+                                                    <p class="font-small-2 text-muted m-0 text-bold-600">Released to: {{ trans.released_to }}</p>
+                                                    <p class="font-small-2 text-muted m-0 text-bold-600">Released Out: {{ trans.released_out }}</p>
+                                                </div>
+                                                <hr>
+                                                <div>
+                                                    <p class="font-small-2 text-muted m-0">{{ trans.details }}</p>
+                                                </div>
+                                            </a>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div id="accordionCrypto" role="tablist" aria-multiselectable="true">
+                    <div class="card collapse-icon accordion-icon-rotate">
+
+                        <div id="heading31" class="card-header bg-info p-1 bg-lighten-1">
+                            <a data-toggle="collapse" data-parent="#accordionCrypto" href="#accordionPOR" aria-expanded="true" aria-controls="accordionBTC" class="card-title lead white">Direct Transfers to Sites w/o Warehouse</a>
+                        </div>
+                        <div id="accordionPOR" role="tabpanel" aria-labelledby="heading31" class="card-collapse collapse show" aria-expanded="true">
+                            <div class="card-content">
+                                <div class="card-body p-0">
+                                    <div class="media-list list-group">
+                                        {% for trans in direct2.all %}
+                                        <div class="list-group-item list-group-item-action media p-1">
+                                            <a class="media-link" href="{% url 'accounting:update_entry' trans.id %}" target="_blank">
+                                                <div class="media-left">
+                                                    <p class="text-bold-600 m-0">{{ trans.base_in.item }}</p>
+                                                    <p class="font-small-2 text-muted m-0">{{ trans.trans_date|date:'Y-m-d' }}</p>
+                                                    <p class="font-small-2 text-muted m-0">Form #: {{ trans.form_no }}</p>
+                                                    <p class="font-small-2 text-muted m-0">Unit: {{ trans.unit }}</p>
+                                                </div>
+                                                <div class="media-body text-right">
+                                                    <p class="text-bold-600 m-0">{{ trans.quantity }}</p>
+                                                    <p class="font-small-2 text-muted m-0 success">{{ trans.project_site }}</p>
+                                                    <p class="font-small-2 text-muted m-0 text-bold-600">Released to: {{ trans.released_to }}</p>
+                                                    <p class="font-small-2 text-muted m-0 text-bold-600">Released Out: {{ trans.released_out }}</p>
+                                                </div>
+                                                <hr>
+                                                <div>
+                                                    <p class="font-small-2 text-muted m-0">{{ trans.details }}</p>
+                                                </div>
+                                            </a>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="col-12 col-lg-4">
+                <h3>Remarks/Analysis/Findings</h3>
+
+                {% for jo in needs_jo %}{% if jo == "Yes" %}
+                <div class="alert bg-amber bg-ligthen-1 alert-icon-left" role="alert">
+            		<span class="alert-icon"><i class="la la-warning"></i></span>
+            		<p class="mb-0">Invalid: The item being requested is categorized as <strong>{{ purchase_detail.item.item_category }}</strong> but does not have a JO. DO NOT BUY!</p>
+            	</div>
+                {% endif %}{% endfor %}
+
+                {% if purchase_detail.status == "Purchased" and incoming < 1 %}
+                <div class="alert bg-danger bg-ligthen-1 alert-icon-left" role="alert">
+            		<span class="alert-icon"><i class="la la-warning"></i></span>
+            		<p class="mb-0">Warning: This transaction has been purchased already but has not been recorded in any warehouse.</p>
+            	</div>
+                {% endif %}
+
+                {% if sources %}
+                <div id="accordionCrypto" role="tablist" aria-multiselectable="true">
+                    <div class="card collapse-icon accordion-icon-rotate">
+
+                        <div id="heading31" class="card-header bg-secondary p-1 bg-lighten-1">
+                            <a data-toggle="collapse" data-parent="#accordionCrypto" href="#accordionPOR" aria-expanded="true" aria-controls="accordionBTC" class="card-title lead white">I found the same item at the ff warehouses</a>
+                        </div>
+                        <div id="accordionPOR" role="tabpanel" aria-labelledby="heading31" class="card-collapse collapse show" aria-expanded="true">
+                            <div class="card-content">
+                                <div class="card-body p-0">
+                                    <div class="media-list list-group">
+                                        {% for trans in sources %}
+                                        <div class="list-group-item list-group-item-action media p-1">
+                                                <div class="media-left">
+                                                    <p class="text-bold-600 m-0">{{ trans.item }}</p>
+                                                    <p class="font-small-2 text-muted m-0 text-bold-600">{{ trans.project_site }}</p>
+                                                </div>
+                                                <div class="media-body text-right">
+                                                    <p class="text-bold-600 m-0">{% if trans.tot_out > 0 %}{{ trans.current_count|intcomma }}{% endif %}</p>
+                                                    <p class="font-small-2 text-muted m-0 text-bold-600">Received by: {{ trans.received_by }}</p>
+                                                </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                {% else %}
+                <div class="alert bg-teal bg-ligthen-1 alert-icon-left" role="alert">
+            		<span class="alert-icon"><i class="la la-warning"></i></span>
+            		<p class="mb-0">NOTE: Item not available from any of the other warehouses, ask the site checkers just to be sure.</p>
+            	</div>
+                {% endif %}
+
+            </div>
+        </section>
+
+    </div>
+
+{% endblock %}

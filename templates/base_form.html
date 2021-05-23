@@ -1,0 +1,30 @@
+<!doctype html>
+{% load bootstrap4 %}
+{% bootstrap_css %}
+{% bootstrap_javascript jquery='full' %}
+
+{% block extrahead %}
+{% endblock %}
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+    <title>AIP Forms</title>
+  </head>
+  <body style="background-color: #81c784">
+        <div class="container h-100">
+          <div class="row align-items-center h-100">
+            <div class="col-12 mx-auto">
+                <br>
+                <div class="jumbotron bg-light">
+                {% block content %}
+                {% endblock %}
+                </div>
+            </div>
+          </div>
+        </div>
+  </body>
+</html>

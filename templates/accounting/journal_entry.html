@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load humanize %}
+{% load widget_tweaks %}
+{% load extra_tags %}
+{% load mathfilters %}
+
+{% block body_block %}
+    {% if request.user|has_group:"Cashier" %}
+
+    <div class="row">
+        <section class="col-md-3 col-12 p-0">
+        	<div class="card border-warning mb-1">
+        		<div class="card-header pb-0">
+        			<h4 class="warning " id="basic-layout-tooltip">Search Journal Entry</h4>
+        		</div>
+        		<div class="card-content collapse show">
+    			    <div class="card-body">
+                        <form method="get">
+                            <div class="well">
+                              <div class="row">
+                                <div class="form-group col-12">
+                                  Project Site: {% render_field je.form.project_site__project_code class="form-control" %}
+                                </div>
+                                <div class="form-group col-12">
+                                  Form No: {% render_field je.form.form_no class="form-control" %}
+                                </div>
+                                <div class="form-group col-12">
+                                  Account Code: {% render_field je.form.account_code__sc1 class="form-control" %}
+                                </div>
+                                <div class="form-group col-12">
+                                  Created By: {% render_field je.form.created_by__first_name class="form-control" %}
+                                </div>
+                                <div class="form-group col-12">
+                                  Transaction By: {% render_field je.form.transaction_by__first_name class="form-control" %}
+                                </div>
+                                <div class="form-group col-12">
+                                  Remarks: {% render_field je.form.remarks class="form-control" %}
+                                </div>
+                                <div class="form-group col-12">
+                                  Status: {% render_field je.form.status class="form-control" %}
+                                </div>
+                                <div class="form-group col-12">
+                                  Subcon: {% render_field je.form.subcon__group_name class="form-control" %}
+                                </div>
+                              </div>
+
+                              <div class="row">
+                                  <div class="ml-1">
+                                  Date Range: (yyyy-mm-dd):
+                                  <div class="form-group form-inline">
+                                      {% render_field je.form.trans_date class="form-control" %}
+                                  </div>
+                                  </div>
+                              </div>
+                            </div>
+                            <div class="form-actions right">
+    							<button type="submit" class="btn btn-primary">
+    								<i class="la la-check-square-o"></i> Search
+    							</button>
+    						</div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert alert-primary mb-2" role="alert">
+    			<h4 class="mb-2">Note!</h4>
+    			<p>Use this if you want to do refined/specific queries, this is powerful if you know what you are doing. Initial value of table when no selection is done will be the latest 100 items.</p>
+    		</div>
+
+
+    	</section>
+
+        <section class="col-md-9 col-12 pr-0">
+            <div class="card">
+                <div class="card-header pb-0">
+                    <h4 class="primary">Journal Entries</h4>
+                    <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                    <div class="heading-elements">
+                        <ul class="list-inline mb-0">
+                            <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-content collapse show">
+                    <div class="card-body card-dashboard">
+                    <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-middle multi-ordering dataex-html5-selectors" data-page-length='15'>
+                        <thead>
+                            <tr>
+                                <th class="border-top-0">No.</th>
+                                <th class="border-top-0">Date</th>
+                                <th class="border-top-0">Form No.</th>
+                                <th class="border-top-0">Transaction By</th>
+                                <th class="border-top-0">Project Site</th>
+                                <th class="border-top-0">Account Code</th>
+                                <th class="border-top-0">Debit</th>
+                                <th class="border-top-0">Credit</th>
+                                <th class="border-top-0">Vat</th>
+                                <th class="border-top-0">Vatable Amount</th>
+                                <th class="border-top-0">Item</th>
+                                <th class="border-top-0">...............Remarks/Particulars..............</th>
+                                <th class="border-top-0">Type</th>
+                                <th class="border-top-0">Supplier</th>
+                                <th class="border-top-0">TIN</th>
+                                <th class="border-top-0">Address</th>
+                                <th class="border-top-0">Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for entry in je.qs %}
+                                <tr class='bg-accent-1'>
+                                    <td class="text-truncate">{{ entry.id }}</td>
+                                    <td class="text-truncate">
+                                        <a href="{% url 'accounting:update_entry' entry.id %}"  target="_blank">
+                                            <span class="badge badge-primary"><i class="la la-pencil font-medium-3"></i></span>
+                                        </a>
+                                        {% if entry.entry_type == 'Non-Cash' %}
+                                        <a class="disabled" href="#" target="_blank">
+                                            <span class="badge badge-secondary"><i class="la la-eye font-medium-3"></i></span>
+                                        </a>
+                                        <a class="disabled" href="#" target="_blank">
+                                            <span class="badge badge-secondary"><i class="la la-print font-medium-3"></i></span>
+                                        </a>
+                                        {% else %}
+                                        <a href="{% url 'accounting:detail_entry' entry.id %}"  target="_blank">
+                                            <span class="badge badge-success"><i class="la la-eye font-medium-3"></i></span>
+                                        </a>
+                                        <a href="{% url 'accounting:detail_entry_print' entry.id %}"  target="_blank">
+                                            <span class="badge badge-warning"><i class="la la-print font-medium-3"></i></span>
+                                        </a>
+                                        {% endif %}
+                                        {{ entry.trans_date }}
+                                    </td>
+                                    <td class="text-truncate">{{ entry.form_no }}</td>
+                                    <td class="text-truncate">{{ entry.transaction_by }}</td>
+                                    <td class="text-truncate">{{ entry.project_site }}</td>
+                                    <td class="text-truncate">
+                                        {% if entry.account_code == None %}
+                                            <span class="badge badge-danger"><i class="la la-warning font-medium-3"></i> Unverified Transaction</span>
+                                        {% else %}
+                                            {{ entry.account_code }}
+                                        {% endif %}
+                                    </td>
+
+                                    <td class="text-truncate info">{% if entry.entry_debit %}{{ entry.debit|intcomma }}{% endif %}</td>
+                                    <td class="text-truncate danger">{% if entry.entry_credit %}{{ entry.debit|intcomma }}{% endif %}</td>
+                                    <td class="text-truncate">{{ entry.incoming_vat|intcomma }}</td>
+                                    <td class="text-truncate">{{ entry.vatable_sales|intcomma }}</td>
+                                    <td class="text-truncate">{{ entry.item }}</td>
+                                    <td class="">{{ entry.remarks }}</td>
+                                    <td class="text-truncate">{{ entry.entry_type }}</td>
+                                    <td class="text-truncate">{{ entry.supplier }}</td>
+                                    <td class="text-truncate"></td>
+                                    <td class="text-truncate">{{ entry.supplier.address }}</td>
+                                    <td class="text-truncate">
+                                        <a href="{% url 'accounting:delete_entry' entry.id %}"><span class="badge badge-danger"><i class="la la-close font-medium-3"></i></span></a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    </div>
+                    </div>
+                </div>
+            </div>
+
+    	</section>
+    </div>
+
+    {% else %}
+
+    <div class="col-sm-5 offset-sm-1 col-md-6 offset-md-3 col-lg-5 offset-lg-4 box-shadow-2">
+    	<div class="card border-danger bg-danger border-lighten-3 px-2 my-0 row">
+    		<div class="no-border pb-1">
+    			<div class="card-body">
+    				<h2 class="text-uppercase text-center mb-2 white display-4 text-bold-400">Forbidden</h2>
+    				<h3 class="text-center">Access Level Clearance Insufficient </h3>
+    			</div>
+    			<div class="card-footer">
+    			    <h4 class="text-center">For upgrade, contact your superior</h3>
+    			</div>
+    		</div>
+    	</div>
+    </div>
+
+    {% endif %}
+
+
+{% endblock %}
+
+{% block extra_js %}
+
+{% endblock extra_js %}

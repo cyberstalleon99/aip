@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load mathfilters %}
+
+{% block body_block %}
+    <div class="content-header row">
+      <div class="content-header-left col-md-6 col-12 mb-2">
+        <h3 class="content-header-title">Documents</h3>
+      </div>
+      <div class="content-header-right col-md-6 col-12">
+        <div class="btn-group float-md-right" role="group" aria-label="Edit Options">
+          <button class="btn btn-info round dropdown-toggle dropdown-menu-right box-shadow-2 px-2" id="btnGroupDrop1" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <i class="ft-settings icon-left"></i> Actions
+          </button>
+          <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+              <a class="dropdown-item" href="{% url "admin:workforce_filedocument_add" %}">Upload Document</a>
+              <a class="dropdown-item" href="{% url "workforce:new_filedocument" %}">Upload Document (For Testing)</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-body">
+
+        <section class="row match-height">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">For Renewal</h4>
+                        <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                        <div class="heading-elements">
+                            <ul class="list-inline mb-0">
+                                <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card-content collapse show">
+                        <div class="card-body card-dashboard">
+        					<table class="table">
+                                <thead>
+                                    <tr>
+                                        <th class="border-top-0">Title</th>
+                                        <th class="border-top-0">Type</th>
+                                        <th class="border-top-0">Expiry Date</th>
+                                        <th class="border-top-0 text-center">Requirements</th>
+                                        <th class="border-top-0 text-center">Processing</th>
+                                        <th class="border-top-0 text-center">Renewed</th>
+                                        <th class="border-top-0">Remarks</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in for_renewal %}
+                                    <tr>
+                                        <td class="text-truncate">
+                                            <a href="{% url 'admin:workforce_filedocument_change' item.id %}" target="_blank">{{ item.document_title }}</a> <br>
+                                            <a href="{% url 'workforce:update_filedocument' item.id %}" target="_blank">{{ item.document_title }} (For Testing)</a>
+                                        </td>
+                                        <td class="text-truncate">{{ item.document_type }}</td>
+                                        <td class="text-truncate">{{ item.expiry_date }}</td>
+
+                                        {% if item.status == "Documents" %}
+                                            <td class='text-center'><div class='badge badge-warning round'><i class="la la-rotate-right white font-medium-1 text-bold-600"></i></div></td>
+                                            <td></td>
+                                            <td></td>
+                                        {% elif item.status == "Processing" %}
+                                            <td class='text-center'><div class='badge badge-success round'><i class="la la-check white font-medium-1 text-bold-600"></i></div></td>
+                                            <td class='text-center'><div class='badge badge-warning round'><i class="la la-rotate-right white font-medium-1 text-bold-600"></i></div></td>
+                                            <td></td>
+                                        {% elif item.status == "Renewed" %}
+                                            <td class='text-center'><div class='badge badge-success round'><i class="la la-check white font-medium-1 text-bold-600"></i></div></td>
+                                            <td class='text-center'><div class='badge badge-success round'><i class="la la-check white font-medium-1 text-bold-600"></i></div></td>
+                                            <td class='text-center'><div class='badge badge-success round'><i class="la la-check white font-medium-1 text-bold-600"></i></div></td>
+                                        {% else %}
+                                            <td class='text-center'><div class='badge badge-danger round'><i class="la la-remove white font-medium-1 text-bold-600"></i></div></td>
+                                            <td></td>
+                                            <td></td>
+                                        {% endif %}
+                                        <td class="text-truncate">{{ item.remarks }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+        	<div class="row match-height">
+        		<div class="col-12">
+        			<div class="card">
+        				<div class="card-header bg-info">
+        					<h4 class="card-title">Permits & Licenses</h4>
+                            <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                            <div class="heading-elements">
+                                <ul class="list-inline mb-0">
+                                    <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
+                                    <li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>
+                                    <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                                    <li><a data-action="close"><i class="ft-x"></i></a></li>
+                                </ul>
+                            </div>
+        				</div>
+        				<div class="card-content">
+        					<div class="card-body">
+        					    <div class="row">
+                                {% for doc in document_index %}
+                                {% if doc.document_type == 'Permit' or doc.document_type == 'License' %}
+                                    <div class="col-lg-3 col-12">
+                                        <a href="{{ doc.doc_image.url }}">
+                                            <img class="height-300" src="{{ doc.doc_image.url }}"/>
+                                        </a>
+                                        <div class="card-body px-0">
+                                          <a href="{% url 'admin:workforce_filedocument_change' doc.id %}"><h4 class="card-title">{{ doc.document_title }}</h4></a>
+                                          <p class="card-text">{{ doc.issued_date }} | {{ doc.expiry_date }}</p>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                {% endfor %}
+                                </div>
+        					</div>
+        				</div>
+        			</div>
+        		</div>
+        	</div>
+        </section>
+
+        <section>
+        	<div class="row match-height">
+        		<div class="col-12">
+        			<div class="card">
+        				<div class="card-header bg-info">
+        					<h4 class="card-title">Certificates</h4>
+                            <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                            <div class="heading-elements">
+                                <ul class="list-inline mb-0">
+                                    <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
+                                    <li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>
+                                    <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                                    <li><a data-action="close"><i class="ft-x"></i></a></li>
+                                </ul>
+                            </div>
+        				</div>
+        				<div class="card-content">
+        					<div class="card-body">
+        					    <div class="row">
+                                {% for doc in document_index %}
+                                {% if doc.document_type == 'Certificate' %}
+                                    <div class="col-lg-3 col-12">
+                                        <a href="{{ doc.doc_image.url }}">
+                                            <img class="height-300" src="{{ doc.doc_image.url }}"/>
+                                        </a>
+                                        <div class="card-body px-0">
+                                          <a href="{% url 'admin:workforce_filedocument_change' doc.id %}"><h4 class="card-title">{{ doc.document_title }}</h4></a>
+                                          <p class="card-text">{{ doc.issued_date }} | {{ doc.expiry_date }}</p>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                {% endfor %}
+                                </div>
+        					</div>
+        				</div>
+        			</div>
+        		</div>
+        	</div>
+        </section>
+
+
+
+
+    </div>
+
+{% endblock %}

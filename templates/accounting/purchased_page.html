@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load humanize %}
+{% load mathfilters %}
+
+{% load widget_tweaks %}
+
+{% block body_block %}
+
+<div class="row">
+    <section class="col-md-3 col-12 p-0">
+    	<div class="card border-warning mb-1">
+    		<div class="card-header pb-0">
+    			<h4 class="warning " id="basic-layout-tooltip">Search Actual Purchases</h4>
+    		</div>
+    		<div class="card-content collapse show">
+			    <div class="card-body">
+                    <form method="get">
+                        <div class="well">
+                          <div class="row">
+                            <div class="form-group col-12">
+                              Item: {% render_field search_liquidation.form.item__item_name class="form-control" %}
+                            </div>
+                          </div>
+
+                          <div class="well">
+                              <div class="row">
+                                <div class="form-group col-6">
+                                    POR Form No: {% render_field search_liquidation.form.base_por__request_form class="form-control" %}
+                                </div>
+                                <div class="form-group col-6">
+                                    Trans No: {% render_field search_liquidation.form.id class="form-control" %}
+                                </div>
+                              </div>
+                          </div>
+
+                          <div class="well">
+                              <div class="row">
+                                <div class="form-group col-6">
+                                    Supplier: {% render_field search_liquidation.form.supplier class="form-control" %}
+                                </div>
+                                <div class="form-group col-6">
+                                    Category: {% render_field search_liquidation.form.category class="form-control" %}
+                                </div>
+                              </div>
+                          </div>
+
+                          <div class="row">
+                            <div class="form-group col-12">
+                              Project Site: {% render_field search_liquidation.form.project_site class="form-control" %}
+                            </div>
+                            <div class="form-group col-12">
+                              Issued By: {% render_field search_liquidation.form.issued_by class="form-control" %}
+                            </div>
+                          </div>
+
+                          <div class="row">
+                              <div class="ml-1">
+                              Date Range (yyyy-mm-dd):
+                              <div class="form-group form-inline">
+                                  {% render_field search_liquidation.form.trans_date class="form-control" %}
+                              </div>
+                              </div>
+                          </div>
+
+
+                        </div>
+                        <div class="form-actions right">
+							<button type="submit" class="btn btn-primary">
+								<i class="la la-check-square-o"></i> Search
+							</button>
+						</div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="alert alert-primary mb-2" role="alert">
+			<h4 class="mb-2">Note!</h4>
+			<p>Make sure you input the CORRECT/Full name of the ITEM. Best approach is to copy and paste the item name on search</p>
+		</div>
+
+
+	</section>
+
+	<section class="col-md-9 col-12">
+	    <h4>Purchased Items History</h4>
+        <hr>
+       <div class="card">
+            <div class="card-content collapse show">
+                <div class="card-body card-dashboard">
+                <div class="table-responsive">
+                <table class="table table-striped table-bordered table-middle multi-ordering dataex-html5-selectors" data-page-length='10'>
+                    <thead>
+                        <tr>
+                            <th>Request Date </th>
+                            <th>Trans No. </th>
+                            <th>Project Site</th>
+                            <th>Item</th>
+                            <th>Quantity</th>
+                            <th>Amount</th>
+                            <th>Details</th>
+                            <th>Request By</th>
+                            <th>Edit/View</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for trans in search_liquidation.qs %}
+                        <tr>
+			                <td class="text-bold-600 primary text-truncate">
+			                    {{ trans.trans_date|date:"Y-m-d" }}
+			                </td>
+    		                <td class="text-bold-600 primary text-truncate">{{ trans.id }}</td>
+    		                <td>{{ trans.project_site }}</td>
+    		                <td class="text-bold-600 info text-truncate">{{ trans.item }}</td>
+    	                    <td class="text-center"><span class="badge badge-pill badge-glow badge-default badge-success">{{ trans.quantity }}</span></td>
+    	                    <td class="text-center"><span class="badge badge-pill badge-glow badge-default badge-success">{{ trans.amount }}</span></td>
+                            <td class="text-truncate">{{ trans.detail }}</td>
+                            <td class="text-truncate">{{ trans.issued_by }}</td>
+                            <td>
+                                <a href="{% if trans.base_por.id %}{% url 'admin:accounting_orderrequest_change' trans.base_por.id %}{% endif %}" target="_blank">
+                                    <i class="la la-pencil font-medium-3"></i>
+                                </a>
+                                <a href="{% if trans.base_por.id %}{% url 'accounting:purchase_detail_page' pk=trans.base_por.id %}{% endif %}" target="_blank">
+                                   <i class="la la-eye font-medium-3"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                </div>
+                </div>
+            </div>
+       </div>
+	</section>
+</div>
+
+
+
+
+{% endblock %}
+
+{% block extra_js %}
+
+{% endblock extra_js %}

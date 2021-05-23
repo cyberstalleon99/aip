@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load humanize %}
+
+{% block body_block %}
+    <div class="content-body">
+
+        <section class="card">
+        	<div id="invoice-template" class="card-body">
+        		<!-- Invoice Company Details -->
+        		<div id="invoice-company-details" class="row">
+        			<div class="col-md-8 col-sm-12 text-center text-md-left">
+        				<div class="media">
+        					<img src="{% static "app-assets/images/ico/AIP-Logo-(128x128).png" %}" alt="company logo" class=""/>
+        					<div class="media-body">
+        						<ul class="ml-2 px-0 list-unstyled">
+        							<li class="text-bold-800">AIP Construction</li>
+        							<li>Unit 111-B, EGI Albergo Hotel</li>
+        							<li>#1 Villamor Drive, Barangay Lualhati</li>
+        							<li>Baguio City, Philippines 2600</li>
+        							<li>TeleFax: (074) 424-6179, (074) 483-0373</li>
+        						</ul>
+        					</div>
+        				</div>
+        			</div>
+        			<div class="col-md-4 col-sm-12 text-center text-md-right">
+        				<h2>Cash Received</h2>
+        				<p class="pb-3">Form #:__________</p>
+        			</div>
+        		</div>
+        		<!--/ Invoice Company Details -->
+
+        		<!-- Invoice Customer Details -->
+        		<div id="invoice-items-details" class="pt-2">
+        		    <p class="lead">Cash Fund</p>
+        			<div class="row">
+        				<div class="table-responsive col-sm-12">
+        					<table class="table">
+                                <thead>
+                                    <tr>
+                                        <th class="border-top-0">Date</th>
+                                        <th class="border-top-0">Form No</th>
+                                        <th class="border-top-0">Issued By</th>
+                                        <th class="border-top-0">Issued To</th>
+                                        <th class="border-top-0">Amount</th>
+                                        <th class="border-top-0">Detail</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class='bg-success bg-accent-1'>
+                                        <td class="text-truncate">{{ cash_received_detail.trans_date }}</td>
+                                        <td class="info">{{ cash_received_detail.form_no }}</td>
+                                        <td>{{ cash_received_detail.issued_by }}</td>
+                                        <td class="text-truncate">{{ cash_received_detail.issued_to }}</td>
+                                        <td class="text-truncate danger">P{{ cash_received_detail.amount|intcomma }}</td>
+                                        <td class="text-truncate">{{ cash_received_detail.detail }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+        		</div>
+        		<!--/ Invoice Customer Details -->
+
+        		<!-- Invoice Items Details -->
+        		<div id="invoice-items-details" class="pt-2">
+        		    <p class="lead">Cash Released</p>
+        			<div class="row">
+        				<div class="table-responsive col-sm-12">
+        					<table class="table">
+                                <thead>
+                                    <tr>
+                                        <th class="border-top-0">Date</th>
+                                        <th class="border-top-0">Project Site</th>
+                                        <th class="border-top-0">Issued By</th>
+                                        <th class="border-top-0">Issued To</th>
+                                        <th class="border-top-0">Amount</th>
+                                        <th class="border-top-0">Detail</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for liquidation in expenses.all %}
+                                    <tr>
+                                        <td class="text-truncate">{{ liquidation.trans_date }}</td>
+                                        <td class="info">{{ liquidation.form_no }}</td>
+                                        <td>{{ liquidation.issued_by }}</td>
+                                        <td>{{ liquidation.issued_to }}</td>
+                                        <td class="text-truncate danger">P{{ liquidation.amount|intcomma }}</td>
+                                        <td class="text-truncate">{{ liquidation.detail }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+        					</table>
+        				</div>
+        			</div>
+        		</div>
+        		<div id="invoice-items-details" class="pt-2">
+        			<p class="lead">Cash Returned</p>
+        			<div class="row">
+        				<div class="table-responsive col-sm-12">
+        					<table class="table">
+                                <thead>
+                                    <tr>
+                                        <th class="border-top-0">Date</th>
+                                        <th class="border-top-0">Project Site</th>
+                                        <th class="border-top-0">Issued By</th>
+                                        <th class="border-top-0">Issued To</th>
+                                        <th class="border-top-0">Amount</th>
+                                        <th class="border-top-0">Detail</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for liquidation in returns.all %}
+                                    <tr>
+                                        <td class="text-truncate">{{ liquidation.trans_date }}</td>
+                                        <td class="info">{{ liquidation.form_no }}</td>
+                                        <td>{{ liquidation.issued_by }}</td>
+                                        <td>{{ liquidation.issued_to }}</td>
+                                        <td class="text-truncate danger">P{{ liquidation.amount|intcomma }}</td>
+                                        <td class="text-truncate">{{ liquidation.detail }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+        					</table>
+        				</div>
+        			</div>
+        			<div class="row">
+        			    <div class="col-md-6 col-sm-12">
+        			    </div>
+        				<div class="col-md-6 col-sm-12">
+        					<p class="lead">Total</p>
+        					<div class="table-responsive">
+        						<table class="table">
+        						  <tbody>
+        						  	<tr>
+        						  		<td>Sub Total</td>
+        						  		<td class="h4 card-title text-right">{% for tot in totals %}P{{ tot.total_expense|floatformat:2|intcomma }}{% endfor %}</td>
+        						  	</tr>
+        						  	<tr>
+        						  		<td class="text-bold-800">Balance</td>
+        						  		<td class="h4 card-title text-right"> {% for tot in totals %}P{{ tot.balance|floatformat:2|intcomma }}{% endfor %}</td>
+        						  	</tr>
+        						  </tbody>
+        						</table>
+        					</div>
+        				</div>
+        			</div>
+        		</div>
+
+        	</div>
+        </section>
+
+    </div>
+
+
+{% endblock %}

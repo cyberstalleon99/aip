@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load humanize %}
+{% load widget_tweaks %}
+{% load extra_tags %}
+{% load mathfilters %}
+
+{% block body_block %}
+
+    <section class="row">
+
+        <div class="col-md-4 col-12">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+        		<div class="card">
+        			<div class="card-header pb-1 bg-dark">
+        				<h2 class="white" id="basic-layout-icons">
+        				    <a href="" class="white">
+        				        Add/Edit Fund Request
+        				    </a>
+        				</h2>
+        			</div>
+        			<div class="card-content collapse show pink">
+        				<div class="card-body">
+
+                            <form class="form">
+                              <div class="form-body">
+                                <div class="row">
+                                    <div class="col-12">
+                                        {{ form.media }}
+
+                                        <div class="form-group">
+                                          <label for="timesheetinput1">Date kelan mo gusto kunin yung pera</label>
+                                          <div class="position-relative  has-icon-left">
+                                            {{form.trans_date|add_class:"form-control"}}
+                                            <div class="form-control-position">
+                                              <i class="la la-calendar"></i>
+                                            </div>
+                                          </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                          <label for="timesheetinput1">Request To (Cashier)</label>
+                                          <div class="position-relative">
+                                            {{form.request_to|add_class:"form-control"}}
+                                          </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                          <label for="timesheetinput1">Project Site</label>
+                                          <div class="position-relative">
+                                            {{form.project_site|add_class:"form-control"}}
+                                          </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                          <label for="timesheetinput1">Amount</label>
+                                          <div class="position-relative  has-icon-left">
+                                            {{form.amount|add_class:"form-control"}}
+                                            <div class="form-control-position">
+                                              <i class="la la-money"></i>
+                                            </div>
+                                          </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                          <label for="timesheetinput1">Remarks</label>
+                                          <div class="position-relative has-icon-left">
+                                            {{form.remarks|add_class:"form-control"}}
+                                            <div class="form-control-position">
+                                              <i class="la la-file"></i>
+                                            </div>
+                                          </div>
+                                        </div>
+
+                                        {% if request.user|has_group:"Cashier" %}
+                                            <p class="text-right">{{form.done}} Done?</p>
+                                        {% else %}
+                                        {{form.done|attr:"hidden"|add_class:"form-control"}}
+                                        {% endif %}
+
+                                        <div class="form-group">
+                                            {{form.created_at|attr:"hidden"|add_class:"form-control"}}
+                                            {{form.updated_at|attr:"hidden"|add_class:"form-control"}}
+                                            {{form.created_by|attr:"hidden"|add_class:"form-control"}}
+                                            {{form.modified_by|attr:"hidden"|add_class:"form-control"}}
+                                        </div>
+
+
+                                    </div>
+
+        						</div>
+                              </div>
+
+                              <div class="form-actions right">
+                                <button type="submit" class="btn btn-pink"><i class="la la-check-square-o"></i> Submit</button>
+                              </div>
+
+                            </form>
+
+        				</div>
+        			</div>
+        		</div>
+    		</form>
+    	</div>
+
+    </section>
+
+{% endblock body_block %}

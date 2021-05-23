@@ -1,0 +1,281 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load humanize %}
+{% load widget_tweaks %}
+{% load extra_tags %}
+{% load mathfilters %}
+
+{% block body_block %}
+    {% if request.user|has_group:"Cashier" %}
+
+    <section class="row">
+
+        <div class="col-md-3 col-12">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+        		<div class="card">
+        			<div class="card-header pb-1 bg-dark">
+        				<h2 class="white" id="basic-layout-icons">
+        				    <a href="" class="white">
+        				        Add/Edit Cash Budget
+        				    </a>
+        				</h2>
+        			</div>
+        			<div class="card-content collapse show pink">
+        				<div class="card-body">
+
+                            <form class="form">
+                              <div class="form-body">
+                                <div class="row">
+                                    <div class="col-12">
+
+                                        <h4>Basic Details</h4>
+                                        <hr class="mt-0">
+
+                                        <div class="form-group">
+                                          <label for="timesheetinput1">Trans Type</label>
+                                          <div class="position-relative has-icon-left">
+                                            {{form.trans_type|add_class:"form-control"}}
+                                            <div class="form-control-position">
+                                              <i class="la la-flash"></i>
+                                            </div>
+                                          </div>
+                                        </div>
+
+                                        <div class="well">
+                                            <div class="row">
+                                                <div class="form-group col-md-6 col-12">
+                        							<label for="timesheetinput1">Transaction Date</label>
+                                                      <div class="position-relative has-icon-left">
+                                                        {{form.trans_date|add_class:"form-control"}}
+                                                        <div class="form-control-position">
+                                                          <i class="la la-calendar"></i>
+                                                        </div>
+                                                      </div>
+                        						</div>
+                        						<div class="form-group col-md-6 col-12">
+                        							<label for="projectinput1">Form No.</label>
+                        							<div class="position-relative has-icon-left">
+                                                        {{form.form_no|add_class:"form-control"}}
+                                                        <div class="form-control-position">
+                                                          <i class="la la-plus"></i>
+                                                        </div>
+                                                      </div>
+                        						</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                          <label for="timesheetinput1">Issued By</label>
+                                          <div class="position-relative">
+                                            {{ form.media }}
+                                            {{form.issued_by|add_class:"form-control"}}
+                                          </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                          <label for="timesheetinput1">Issued To</label>
+                                          <div class="position-relative">
+                                            {{form.issued_to|add_class:"form-control"}}
+                                          </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                          <label for="timesheetinput1">Amount</label>
+                                          <div class="position-relative has-icon-left">
+                                            {{form.amount|add_class:"form-control"}}
+                                            <div class="form-control-position">
+                                              <i class="la la-money"></i>
+                                            </div>
+                                          </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                          <label for="timesheetinput1">Remarks</label>
+                                          <div class="position-relative has-icon-left">
+                                            {{form.detail|add_class:"form-control"}}
+                                            <div class="form-control-position">
+                                              <i class="la la-file"></i>
+                                            </div>
+                                          </div>
+                                        </div>
+
+                                        <div class="form-group">
+                							<label>Attachment: </label>
+                							<label id="projectinput7" class="file center-block">
+                								{{form.doc_file}}
+                								<span class="file-custom"></span>
+                							</label>
+                						</div>
+
+                                        {% if request.user|has_group:"Accounting Level 2" %}
+                                        <div class="well">
+                                            <div class="row">
+                                                <div class="form-group col-md-6 col-12">
+                        							<label for="timesheetinput1">CDV Date</label>
+                                                      <div class="position-relative has-icon-left">
+                                                        {{form.cdv_date|add_class:"form-control"}}
+                                                        <div class="form-control-position">
+                                                          <i class="la la-calendar"></i>
+                                                        </div>
+                                                      </div>
+                        						</div>
+                        						<div class="form-group col-md-6 col-12">
+                        							<label for="projectinput1">CDV No</label>
+                        							<div class="position-relative has-icon-left">
+                                                        {{form.cdv_no|add_class:"form-control"}}
+                                                        <div class="form-control-position">
+                                                          <i class="la la-plus"></i>
+                                                        </div>
+                                                      </div>
+                        						</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                          <label for="timesheetinput1">Status (for branch cashier)</label>
+                                          <div class="position-relative has-icon-left">
+                                            {{form.status|add_class:"form-control"}}
+                                            <div class="form-control-position">
+                                              <i class="la la-clipboard"></i>
+                                            </div>
+                                          </div>
+                                        </div>
+                                        {% else %}
+                                        <div class="form-group">
+                                            {{form.cdv_date|attr:"hidden"|add_class:"form-control"}}
+                                            {{form.cdv_no|attr:"hidden"|add_class:"form-control"}}
+                                            {{form.status1|attr:"hidden"|add_class:"form-control"}}
+                                        </div>
+                                        {% endif %}
+
+                                        {% if request.user|has_group:"Accounting Level 1" %}
+                                        <div class="form-group">
+                                          <label for="timesheetinput1">Status (for head bookkeeper)</label>
+                                          <div class="position-relative has-icon-left">
+                                            {{form.status2|add_class:"form-control"}}
+                                            <div class="form-control-position">
+                                              <i class="la la-calendar"></i>
+                                            </div>
+                                          </div>
+                                        </div>
+                                        {% else %}
+                                        <div class="form-group">
+                                            {{form.status2|attr:"hidden"|add_class:"form-control"}}
+                                        </div>
+                                        {% endif %}
+
+
+                                    </div>
+        						</div>
+                              </div>
+
+                              <div class="form-actions right">
+                                <button type="submit" class="btn btn-pink"><i class="la la-check-square-o"></i> Submit</button>
+                              </div>
+
+                            </form>
+
+        				</div>
+        			</div>
+        		</div>
+    		</form>
+    	</div>
+
+    	<div class="col-md-9 col-12">
+    	    <div class="mb-0 badge badge-square badge-info font-medium-3">Daily Cash Flow for <strong>{{ user.get_username }}</strong></div>
+    	    <hr class="m-0">
+    		<div id="invoice-items-details" class="pt-2">
+    		    <div class="media">
+            		<h4 class="media-body">Naresib ko nga kwarta tatta nga aldaw </h4>
+            		<div class="media-right badge badge-square badge-warning font-medium-3">Total: {{ cash_in_total.tots|intcomma }}</div>
+        	    </div>
+    			<div class="row">
+    				<div class="table-responsive col-sm-12">
+    					<table class="table">
+                            <thead class="bg-blue-grey bg-lighten-4">
+                                <tr>
+                                    <th class="border-top-0">Form No</th>
+                                    <th class="border-top-0">Issued By</th>
+                                    <th class="border-top-0">Issued To</th>
+                                    <th class="border-top-0">Amount</th>
+                                    <th class="border-top-0">Detail</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for trans in cash_in_today %}
+                                <tr class='bg-accent-1'>
+                                    <td class="text-truncate"><a href="{% url 'accounting:update_cashbudget' trans.id %}">{{ trans.form_no }}</a></td>
+                                    <td class="text-truncate">{{ trans.issued_by }}</td>
+                                    <td class="text-truncate">{{ trans.issued_to }}</td>
+                                    <td class="text-truncate danger">P{{ trans.amount|intcomma }}</td>
+                                    <td class="text-truncate">{{ trans.detail }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+    		</div>
+
+    		<div id="invoice-items-details" class="pt-2">
+    		    <div class="media">
+            		<h4 class="media-body">Inted ko nga kwarta tatta nga aldaw </h4>
+            		<div class="media-right badge badge-square badge-warning font-medium-3">Total: {{ cash_out_total.tots|intcomma }}</div>
+        	    </div>
+    			<div class="row">
+    				<div class="table-responsive col-sm-12">
+    					<table class="table">
+                            <thead class="bg-blue-grey bg-lighten-4">
+                                <tr>
+                                    <th class="border-top-0">Form No</th>
+                                    <th class="border-top-0">Issued By</th>
+                                    <th class="border-top-0">Issued To</th>
+                                    <th class="border-top-0">Amount</th>
+                                    <th class="border-top-0">Detail</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for trans in cash_out_today %}
+                                <tr class='bg-accent-1'>
+                                    <td class="text-truncate"><a href="{% url 'accounting:update_cashbudget' trans.id %}">{{ trans.form_no }}</a></td>
+                                    <td class="text-truncate">{{ trans.issued_by }}</td>
+                                    <td class="text-truncate">{{ trans.issued_to }}</td>
+                                    <td class="text-truncate danger">P{{ trans.amount|intcomma }}</td>
+                                    <td class="text-truncate">{{ trans.detail }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+    		</div>
+
+            <hr class="m-0">
+    		<div class="m-0 text-right"><p class="m-0 badge badge-square badge-info font-medium-3">Nabati: <strong>{{ cash_in_total.tots|sub:cash_out_total.tots|intcomma }}</strong></p></div>
+
+
+
+    	</div>
+    </section>
+
+    {% else %}
+
+    <div class="col-sm-5 offset-sm-1 col-md-6 offset-md-3 col-lg-5 offset-lg-4 box-shadow-2">
+    	<div class="card border-danger bg-danger border-lighten-3 px-2 my-0 row">
+    		<div class="no-border pb-1">
+    			<div class="card-body">
+    				<h2 class="text-uppercase text-center mb-2 white display-4 text-bold-400">Forbidden</h2>
+    				<h3 class="text-center">Access Level Clearance Insufficient </h3>
+    			</div>
+    			<div class="card-footer">
+    			    <h4 class="text-center">For upgrade, contact your superior</h3>
+    			</div>
+    		</div>
+    	</div>
+    </div>
+
+    {% endif %}
+
+
+{% endblock body_block %}

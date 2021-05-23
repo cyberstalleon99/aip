@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load humanize %}
+{% load mathfilters %}
+
+{% block body_block %}
+    <div class="content-header row">
+      <div class="content-header-left col-md-6 col-12 mb-2">
+        <h3 class="content-header-title">Transactions with Issues & Concerns</h3>
+      </div>
+      <div class="content-header-right col-md-6 col-12">
+        <div class="btn-group float-md-right" role="group" aria-label="Edit Options">
+          <button class="btn btn-info round dropdown-toggle dropdown-menu-right box-shadow-2 px-2" id="btnGroupDrop1" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <i class="ft-settings icon-left"></i> Actions
+          </button>
+          <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+              <a class="dropdown-item" href="{% url "admin:warehouse_incoming_add" %}" target="_blank">New Incoming</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="content-body">
+    <div class="row">
+        <section class="col-lg-3 col-12 ">
+            <div class="card border-danger" style="">
+                <div class="card-content">
+                    <div class="card-body pb-1">
+                        <div class="table-responsive">
+    					<table class="table">
+                            <thead class="">
+                                <tr>
+                                    <th class="h3 danger border-top-0 colspan="2" ">Incoming</th>
+                                    <th class="border-top-0"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-truncate">Unverified Transactions</td>
+                                    <td class="warning h3 text-bold-700"><span class="badge badge-pill badge-default badge-danger"><strong>{{ unverified_count_in|intcomma }}</strong></span></td>
+                                </tr>
+
+                            </tbody>
+    					</table>
+			            </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card border-danger" style="">
+                <div class="card-content">
+                    <div class="card-body pb-1">
+                        <div class="table-responsive">
+    					<table class="table">
+                            <thead class="">
+                                <tr>
+                                    <th class="h3 danger border-top-0 colspan="2" ">Outgoing</th>
+                                    <th class="border-top-0"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-truncate">Unverified Transactions</td>
+                                    <td class="warning h3 text-bold-700"><span class="badge badge-pill badge-default badge-danger"><strong>{{ unverified_count_out|intcomma }}</strong></span></td>
+                                </tr>
+
+                            </tbody>
+    					</table>
+			            </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <section class="col-lg-9 col-sm-12">
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Incoming Transactions For Verification</h3>
+                    <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                    <div class="heading-elements">
+                        <ul class="list-inline mb-0">
+                            <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-content collapse show">
+                    <div class="card-body card-dashboard">
+                    <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-middle dataex-html5-selectors" data-page-length='10'>
+                        <thead>
+                            <tr>
+                                <td>Date</td>
+                                <td>ID</td>
+                                <td>Form No</td>
+                                <td>Item</td>
+                                <td>Category</td>
+                                <td>Quantity</td>
+                                <td>Edit/View</td>
+                                <td>Details</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for incoming in unverified_in %}
+                            <tr>
+                                <td class="text-truncate"><a href="{% url 'admin:warehouse_incoming_change' incoming.id %}" target="_blank">{{ incoming.trans_date|date:'Y-m-d' }}</a></td>
+                                <td class="text-truncate">{{ incoming.id }}</td>
+                                <td class="text-truncate">{{ incoming.form_no }}</td>
+                                <td class="text-truncate">{{ incoming.item }}</td>
+                                <td class="text-truncate">{{ incoming.item.item_category }}</td>
+                                <td class="text-truncate danger">{{ incoming.quantity|intcomma }}</td>
+                                <td class="text-truncate">
+                                    <a href="{% url 'admin:warehouse_incoming_change' incoming.id %}" target="_blank"><i class="la la-pencil font-medium-3"></i></a>
+                                    <a href="{% url 'warehouse:checker_page' pk=incoming.id %}" target="_blank"><i class="la la-eye font-medium-3"></i></a>
+                                    <a href="{% if incoming.attachment %}{{ incoming.attachment.url }}{% endif %}" target="_blank">
+                                        {% if incoming.attachment == "None" or incoming.attachment == "" %}
+                                            <i class="la la-exclamation-triangle warning"></i>
+                                        {% else %}
+                                            <i class="la la la-sticky-note"></i>
+                                        {% endif %}
+                                    </a>
+                                </td>
+                                <td class="text-truncate">{{ incoming.details }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Outgoing Transactions For Verification</h3>
+                    <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                    <div class="heading-elements">
+                        <ul class="list-inline mb-0">
+                            <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-content collapse show">
+                    <div class="card-body card-dashboard">
+                    <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-middle dataex-html5-selectors" data-page-length='10'>
+                        <thead>
+                            <tr>
+                                <td>Date</td>
+                                <td>ID</td>
+                                <td>Form No</td>
+                                <td>Item</td>
+                                <td>Category</td>
+                                <td>Quantity</td>
+                                <td>Edit/View</td>
+                                <td>Details</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for outgoing in unverified_out %}
+                            <tr>
+                                <td class="text-truncate"><a href="{% url 'admin:warehouse_incoming_change' outgoing.id %}" target="_blank">{{ outgoing.trans_date|date:'Y-m-d' }}</a></td>
+                                <td class="text-truncate">{{ outgoing.id }}</td>
+                                <td class="text-truncate">{{ outgoing.form_no }}</td>
+                                <td class="text-truncate">{{ outgoing.base_in.item }}</td>
+                                <td class="text-truncate">{{ outgoing.base_in.item.item_category }}</td>
+                                <td class="text-truncate danger">{{ outgoing.quantity|intcomma }}</td>
+                                <td class="text-truncate">
+                                    <a href="{% url 'admin:warehouse_incoming_change' outgoing.id %}" target="_blank"><i class="la la-pencil font-medium-3"></i></a>
+                                    <a href="{% url 'warehouse:checker_page' pk=outgoing.id %}" target="_blank"><i class="la la-eye font-medium-3"></i></a>
+                                    <a href="{% if outgoing.attachment %}{{ outgoing.attachment.url }}{% endif %}" target="_blank">
+                                        {% if outgoing.attachment == "None" or outgoing.attachment == "" %}
+                                            <i class="la la-exclamation-triangle warning"></i>
+                                        {% else %}
+                                            <i class="la la la-sticky-note"></i>
+                                        {% endif %}
+                                    </a>
+                                </td>
+                                <td class="text-truncate">{{ outgoing.details }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    </div>
+
+    </div>
+{% endblock %}

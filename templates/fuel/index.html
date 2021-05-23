@@ -1,0 +1,104 @@
+{% extends "workforce/base.html" %}
+{% load staticfiles %}
+{% load mathfilters %}
+
+{% block body_block %}
+
+<div class="fixed-action-btn">
+  <a class="btn-floating btn-large red">+
+    <i class="large mdi-editor-mode-edit"></i>
+  </a>
+  <ul>
+    <li><a href="{% url "fuel:new_reading" %}" class="btn-floating red">NR<i class="large mdi-editor-insert-chart"></i></a>
+    </li>
+    <li><a href="{% url "fuel:new_transaction" %}" class="btn-floating yellow darken-1">NT<i class="large mdi-editor-format-quote"></i></a>
+    </li>
+  </ul>
+</div>
+
+
+<div id="table-datatables" class="container">
+  <div class="row">
+
+    <div id="tank_container" class="col s12 m3"></div>
+    <script src="https://code.highcharts.com/highcharts.src.js"></script>
+    <script>
+      Highcharts.chart('tank_container', {
+        chart: {
+            type: 'column'
+        },
+        title: {
+            text: 'Fuel Tank Monitoring'
+        },
+        xAxis: {
+            categories: ['Readings','Transactions']
+        },
+        yAxis: {
+            title: {
+                text: 'Fuel Level in Liters'
+            }
+        },
+        plotOptions: {
+            series: {
+                borderWidth: 0,
+                dataLabels: {
+                    enabled: true,
+                    format: '{point.y:.2f}'
+                }
+            }
+        },
+        series: [
+        {
+            name: 'Baguio',
+            data: [{{ baguio_tank.reading }},{{ baguio_current }}]
+        }, {
+            name: 'Bontoc',
+            data: [{{ bontoc_tank.reading }},{{ bontoc_current }}]
+        }
+        ]
+      });
+    </script>
+
+
+    <div class="col s12 m9">
+        {% for i in tots %}
+            <p>{{ i.name }}{{ i.tots_in }} {{ i.tots_out }} {{ i.current }}</p>
+        {% endfor %}
+
+      <table id="data-table-simple" class="display" cellspacing="0" width="100%">
+        <thead>
+          <tr>
+            <th>Unit</th>
+            <th class="hide-on-small-only">Date</th>
+            <th>Type</th>
+            <th>Amount</th>
+            <th class="hide-on-small-only">Project Site</th>
+          </tr>
+        </thead>
+        <tfoot>
+          <tr>
+            <th>Unit</th>
+            <th class="hide-on-small-only">Date</th>
+            <th>Type</th>
+            <th>Amount</th>
+            <th class="hide-on-small-only">Project Site</th>
+          </tr>
+        </tfoot>
+        <tbody>
+          {% for trans in transaction_list %}
+          <tr>
+            <td><a href="{% url 'fuel:update_transaction' pk=trans.id %}">{{ trans.unit }}</a></td>
+            <td class="hide-on-small-only">{{ trans.trans_date }}</td>
+            <td><span class="new badge {% if trans.trans_type == 'Incoming' %}green{% else %}blue{% endif %}" data-badge-caption="">{{ trans.trans_type }}</span></td>
+            <td>{{ trans.amount }}</td>
+            <td class="hide-on-small-only">{{ trans.project_site }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}

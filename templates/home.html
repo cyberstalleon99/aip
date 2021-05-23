@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+
+<html class="loading" lang="en" data-textdirection="ltr">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+    <meta name="description" content="AIP, Construction">
+    <meta name="keywords" content="AIP, Aip Construction">
+    <meta name="author" content="Eric Kiser">
+    <title>AIP</title>
+    <link rel="apple-touch-icon" href="{% static "app-assets/images/ico/aip-32x32.png" %}">
+    <link rel="shortcut icon" type="image/x-icon" href="{% static "app-assets/images/ico/aip-32x32.png" %}">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i%7CQuicksand:300,400,500,700" rel="stylesheet">
+    <!-- BEGIN VENDOR CSS-->
+    <link rel="stylesheet" type="text/css" href="{% static "app-assets/css/vendors.css" %}">
+    <!-- END VENDOR CSS-->
+    <!-- BEGIN MODERN CSS-->
+    <link rel="stylesheet" type="text/css" href="{% static "app-assets/css/app.css" %}">
+    <!-- END MODERN CSS-->
+    <!-- BEGIN Page Level CSS-->
+    <link rel="stylesheet" type="text/css" href="{% static "app-assets/css/core/menu/menu-types/vertical-menu.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "app-assets/css/core/colors/palette-gradient.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "app-assets/css/pages/login-register.css" %}">
+    <!-- END Page Level CSS-->
+    <!-- BEGIN Custom CSS-->
+    <link rel="stylesheet" type="text/css" href="{% static "assets/css/style.css" %}">
+    <!-- END Custom CSS-->
+  </head>
+  <body class="vertical-layout vertical-menu 1-column bg-success menu-expanded blank-page blank-page" data-open="click" data-menu="vertical-menu" data-col="1-column">
+    <!-- ////////////////////////////////////////////////////////////////////////////-->
+    <div class="app-content content">
+      <div class="content-wrapper">
+        <div class="content-header row">
+        </div>
+        <div class="content-body">
+            <section class="flexbox-container">
+                <div class="col-12 d-flex align-items-center justify-content-center">
+                    <div class="col-xl-4 col-lg-6 col-10 box-shadow-2 p-0">
+                        <div class="card border-grey border-lighten-3 px-1 py-1 m-0">
+                            <div class="card-header border-0 pb-0">
+                                <div class="card-title text-center">
+                                    <img src="{% static "app-assets/images/ico/AIP-Logo-(128x128).png" %}" alt="company logo" class="">
+                                </div>
+                                <h6 class="card-subtitle line-on-side text-muted text-center font-small-3 pt-2"><span>Welcome</span></h6>
+                            </div>
+                            <div class="card-content">
+                                <div class="card-body text-center">
+                                    <a href="{% url 'workforce:profile_list' %}" class="btn btn-social-icon btn-lg mb-1 mr-1 btn-outline-primary"><span class="la la-users"></span></a>
+                                    <a href="{% url 'accounting:your_entry' %}" class="btn btn-social-icon btn-lg mb-1 mr-1 btn-outline-warning"><span class="la la-money font-medium-4"></span></a>
+                                    <a href="{% url 'accounting:pending_page' %}" class="btn btn-social-icon btn-lg mb-1 mr-1 btn-outline-cyan"><span class="la la-cart-plus font-medium-4"></span></a>
+                                    <a href="{% url 'warehouse:dash_page' %}" class="btn btn-social-icon btn-lg mb-1 mr-1 btn-outline-blue"><span class="la la-home font-medium-4"></span></a>
+                                    <a href="{% url 'fleet:dash_page' %}" class="btn btn-social-icon btn-lg mb-1 mr-1 btn-outline-secondary"><span class="la la-truck font-medium-4"></span></a>
+                                    <a href="{% url 'fuel:dash_index' %}" class="btn btn-social-icon btn-lg mb-1 mr-1 btn-outline-pink"><span class="la la-tint font-medium-4"></span></a>
+                                    <a href="{% url 'operation:project_index' %}" class="btn btn-social-icon btn-lg mb-1 mr-1 btn-outline-success"><span class="la la-gear font-medium-4"></span></a>
+                                </div>
+                                <p class="card-subtitle line-on-side text-muted text-center font-small-3 mx-2 my-1"><span>Notifications</span></p>
+                                <div class="card-body pt-0">
+                                    <a href="{% url 'logout' %}" class="btn btn-outline-secondary btn-block"><i class="ft-unlock"></i> Logout</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+      </div>
+    </div>
+    <!-- ////////////////////////////////////////////////////////////////////////////-->
+
+    <!-- BEGIN VENDOR JS-->
+    <script src="{% static "app-assets/vendors/js/vendors.min.js" %}"></script>
+    <!-- BEGIN VENDOR JS-->
+    <!-- BEGIN MODERN JS-->
+    <script src="{% static "app-assets/js/core/app-menu.js" %}"></script>
+    <script src="{% static "app-assets/js/core/app.js" %}"></script>
+    <!-- END MODERN JS-->
+    <!-- BEGIN PAGE LEVEL JS-->
+    <script src="{% static "app-assets/js/scripts/forms/form-login-register.js" %}"></script>
+    <!-- END PAGE LEVEL JS-->
+  </body>
+</html>

@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load mathfilters %}
+{% load humanize %}
+
+{% block body_block %}
+    <div class="content-header row">
+      <div class="content-header-left col-md-6 col-12 mb-2">
+        <h3 class="content-header-title">Purchase & Delivery</h3>
+      </div>
+      <div class="content-header-right col-md-6 col-12">
+        <div class="btn-group float-md-right" role="group" aria-label="Edit Options">
+          <button class="btn btn-info round dropdown-toggle dropdown-menu-right box-shadow-2 px-2" id="btnGroupDrop1" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <i class="ft-settings icon-left"></i> Actions
+          </button>
+          <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+              <a class="dropdown-item" href="{% url "admin:accounting_orderrequest_add" %}" target="_blank">Purchase Order Request</a>
+              <a class="dropdown-item" href="{% url "admin:accounting_liquidation_add" %}" target="_blank">New Liquidation</a>
+              <a class="dropdown-item" href="{% url "admin:accounting_item_add" %}" target="_blank">Add Item</a>
+              <a class="dropdown-item" href="{% url "accounting:new_item" %}" target="_blank">Add Item (For Testing)</a>
+              <a class="dropdown-item" href="{% url "admin:accounting_supplier_add" %}" target="_blank">Add Supplier</a>
+              <a class="dropdown-item" href="{% url "accounting:new_supplier" %}" target="_blank">Add Supplier (For Testing)</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section class="row">
+    	<div class="match-height col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Item List</h4>
+                    <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                    <div class="heading-elements">
+                        <ul class="list-inline mb-0">
+                            <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
+                            <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-content collapse show">
+                    <div class="card-body card-dashboard">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered table-middle dataex-html5-selectors">
+                                <thead>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th>General Name</th>
+                                        <th>Category</th>
+                                        <th>Unit</th>
+                                        <th>Detail</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in item_list %}
+                                    <tr>
+                                        <td class="text-truncate">
+                                            <a href="{% url 'admin:accounting_item_change' item.id %}" target="_blank">{{ item.item_name }}</a><br>
+                                            <a href="{% url 'accounting:update_item' item.id %}" target="_blank">{{ item.item_name }} (For Testing)</a>
+                                        </td>
+                                        <td class="text-truncate">{{ item.general_name }}</td>
+                                        <td class="text-truncate">{{ item.item_category }}</td>
+                                        <td class="text-truncate">{{ item.item_unit }}</td>
+                                        <td class="text-truncate">{{ item.item_detail }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    	</div>
+    </section>
+
+
+{% endblock %}

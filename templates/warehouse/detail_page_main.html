@@ -1,0 +1,418 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load humanize %}
+{% load mathfilters %}
+{% load extra_tags %}
+
+{% block body_block %}
+    <div class="content-header row">
+      <div class="content-header-left col-md-6 col-12 mb-2">
+        <h3 class="content-header-title">Warehouse Inventory - {{ site_purchase.project_code }}</h3>
+      </div>
+      <div class="content-header-right col-md-6 col-12">
+        <div class="btn-group float-md-right" role="group" aria-label="Edit Options">
+          <button class="btn btn-info round dropdown-toggle dropdown-menu-right box-shadow-2 px-2" id="btnGroupDrop1" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <i class="ft-settings icon-left"></i> Actions
+          </button>
+          <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+              <!--<a class="dropdown-item" href="{% url "admin:warehouse_incoming_add" %}" target="_blank">New Incoming (Old)</a>-->
+              <!--<a class="dropdown-item" href="{% url "warehouse:new_incoming_site" site_purchase.id %}" target="_blank">New Incoming (New - Do not use this link yet)</a>-->
+              <a class="dropdown-item" href="{% url "warehouse:new_incoming_site" site_purchase.id %}" target="_blank">New Incoming</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="content-body">
+    <div class="row">
+        {% if cement %}
+        <section class="col-lg-4 col=sm-12 ">
+            <div class="card border-warning" style="">
+                <div class="card-content">
+                    <div class="card-body pb-1">
+                        <div class="table-responsive">
+    					<table class="table">
+                            <thead class="">
+                                <tr>
+                                    <th class="h3 warning text-bold-700 border-top-0">Cement</th>
+                                    <th class="border-top-0">In</th>
+                                    <th class="border-top-0">Out</th>
+                                    <th class="border-top-0">Stock</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in cement %}
+                                <tr>
+                                    <td class="text-truncate">{{ item.item__general_name }}</td>
+                                    <td class="warning text-bold-700">{{ item.tot_in }}</td>
+                                    <td class="warning text-bold-700">{{ item.tot_out|default:0 }}</td>
+                                    <td class="warning text-bold-700">{% if item.tot_out is None %}{{ item.tot_in }}{% else %}{{ item.tot_in|sub:item.tot_out }}{% endif %}</td>
+                                </tr>
+                                {% endfor %}
+
+                            </tbody>
+    					</table>
+			            </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if rsb %}
+            <div class="card border-warning" style="">
+                <div class="card-content">
+                    <div class="card-body pb-1">
+                        <div class="table-responsive">
+    					<table class="table">
+                            <thead class="">
+                                <tr>
+                                    <th class="h3 warning text-bold-700 border-top-0">RSB</th>
+                                    <th class="border-top-0">In</th>
+                                    <th class="border-top-0">Out</th>
+                                    <th class="border-top-0">Stock</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in rsb %}
+                                <tr>
+                                    <td class="text-truncate">{{ item.item__item_name }}</td>
+                                    <td class="warning text-bold-700">{{ item.tot_in }}</td>
+                                    <td class="warning text-bold-700">{{ item.tot_out|default:0 }}</td>
+                                    <td class="warning text-bold-700">{% if item.tot_out is None %}{{ item.tot_in }}{% else %}{{ item.tot_in|sub:item.tot_out }}{% endif %}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+    					</table>
+			            </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if lumber %}
+            <div class="card border-warning" style="">
+                <div class="card-content">
+                    <div class="card-body pb-1">
+                        <div class="table-responsive">
+    					<table class="table">
+                            <thead class="">
+                                <tr>
+                                    <th class="h3 warning text-bold-700 border-top-0">Lumber</th>
+                                    <th class="border-top-0">In</th>
+                                    <th class="border-top-0">Out</th>
+                                    <th class="border-top-0">Stock</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in lumber %}
+                                <tr>
+                                    <td class="text-truncate">{{ item.item__item_name }}</td>
+                                    <td class="warning text-bold-700">{{ item.tot_in }}</td>
+                                    <td class="warning text-bold-700">{{ item.tot_out|default:0 }}</td>
+                                    <td class="warning text-bold-700">{% if item.tot_out is None %}{{ item.tot_in }}{% else %}{{ item.tot_in|sub:item.tot_out }}{% endif %}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+    					</table>
+			            </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if aggregates %}
+            <div class="card border-warning" style="">
+                <div class="card-content">
+                    <div class="card-body pb-1">
+                        <div class="table-responsive">
+    					<table class="table">
+                            <thead class="">
+                                <tr>
+                                    <th class="h3 warning text-bold-700 border-top-0">Aggregates</th>
+                                    <th class="border-top-0">In</th>
+                                    <th class="border-top-0">Out</th>
+                                    <th class="border-top-0">Stock</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in aggregates %}
+                                <tr>
+                                    <td class="text-truncate">{{ item.item__item_name }}</td>
+                                    <td class="warning text-bold-700">{{ item.tot_in }}</td>
+                                    <td class="warning text-bold-700">{{ item.tot_out|default:0 }}</td>
+                                    <td class="warning text-bold-700">{% if item.tot_out is None %}{{ item.tot_in }}{% else %}{{ item.tot_in|sub:item.tot_out }}{% endif %}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+    					</table>
+			            </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if negatives > 0 %}
+            <div class="col-12 alert bg-danger mb-1" role="alert">
+				<span class="alert-icon"><i class="la la-warning"></i></span>
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+					<span aria-hidden="true">×</span>
+				</button>
+				<strong>Warning!</strong> You have a total of
+				<span class="badge badge-pill badge-default badge-primary"><strong>{{ negatives }}</strong></span> NEGATIVE Stock Values
+				this means there are errors in your data. Check your INCOMING, haan nga mabalin kastuy.
+			</div>
+			{% endif %}
+
+            <div class="col-12 alert bg-info mb-1" role="alert">
+				<span class="alert-icon"><i class="la la-info-circle"></i></span>
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+					<span aria-hidden="true">×</span>
+				</button>
+				<strong>Update!</strong> You can now easily check below your current stock.
+			</div>
+
+            <div class="card border-success">
+                <div class="card-header">
+                    <h4 class="card-title">Current Stocks</h4>
+                    <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                    <div class="heading-elements">
+                        <ul class="list-inline mb-0">
+                            <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-content collapse show">
+                    <div class="card-body card-dashboard">
+                    <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-middle multi-ordering dataex-html5-selectors" data-page-length='10'>
+                        <thead>
+                            <tr>
+                                <td>Item</td>
+                                <td>In</td>
+                                <td>Out</td>
+                                <td>Stock</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in current %}
+                            <tr>
+                                <td>{{ item.item__item_name }}</td>
+                                <td>{{ item.tot_in }}</td>
+                                <td>{{ item.tot_out|default:0 }}</td>
+                                <td>{% if item.tot_out is None %}{{ item.tot_in }}{% else %}{{ item.tot_in|sub:item.tot_out }}{% endif %}</td>
+                            </tr>
+                            {% endfor %}
+
+                        </tbody>
+                    </table>
+                    </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </section>
+
+        <section class="col-lg-8 col-sm-12">
+
+            <div class="row">
+                {% if no_price > 0 %}
+                <div class="col-12 alert bg-danger mb-1" role="alert">
+    				<span class="alert-icon"><i class="la la-warning"></i></span>
+    				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    					<span aria-hidden="true">×</span>
+    				</button>
+    				<strong>Warning!</strong> You have a total of <span class="badge badge-pill badge-default badge-primary"><strong>{{ no_price }}</strong></span>
+    				INCOMING transactions with no PRICE. This has a big effect on the analysis of data, please update them.
+    			</div>
+    			{% endif %}
+
+    			{% if x_form_in > 0 or x_form_out > 0 %}
+                <div class="col-12 alert bg-danger mb-1" role="alert">
+    				<span class="alert-icon"><i class="la la-warning"></i></span>
+    				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    					<span aria-hidden="true">×</span>
+    				</button>
+    				<strong>Warning Latta!</strong> You have a total of
+    				<span class="badge badge-pill badge-default badge-primary"><strong>{{ x_form_in }}</strong></span> INCOMING and
+    				<span class="badge badge-pill badge-default badge-primary"><strong>{{ x_form_out }}</strong></span> OUTGOING
+    				with INCORRECT "Form No" FORMAT. Urnusem kadi.
+    			</div>
+    			{% endif %}
+
+    			<div class="col-12 alert bg-info mb-1" role="alert">
+    				<span class="alert-icon"><i class="la la-info-circle"></i></span>
+    				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    					<span aria-hidden="true">×</span>
+    				</button>
+    				<strong>Update!</strong> The data shown here are the latest 300 INCOMING and OUTGOING Transactions. If you need to do refined queries use the advance search.
+    			</div>
+			</div>
+
+            <div class="row">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Incoming</h3>
+                            <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                            <div class="heading-elements">
+                                <ul class="list-inline mb-0">
+                                    <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card-content collapse show">
+                            <div class="card-body card-dashboard">
+                            <div class="table-responsive">
+                            <table class="table table-striped table-bordered table-middle dataex-html5-selectors" data-page-length='15'>
+                                <thead>
+                                    <tr>
+                                        <td>Date</td>
+                                        <td>ID</td>
+                                        <td>Trans No</td>
+                                        <td>Form No</td>
+                                        <td>Item</td>
+                                        <td>Category</td>
+                                        <td>Quantity</td>
+                                        <td>Unit</td>
+                                        <td>Unit Price</td>
+                                        <td>Current Count</td>
+                                        <td>Details</td>
+                                        <td>Edit/View</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for incoming in main_in %}
+                                    <tr>
+                                        <td class="text-truncate">{{ incoming.trans_date|date:'Y-m-d' }}</td>
+                                        <td class="text-truncate">{{ incoming.id }}</td>
+                                        <td class="text-truncate">{{ incoming.trans_no }}</td>
+                                        <td class="text-truncate">{{ incoming.form_no }}</td>
+                                        <td class="text-truncate">{{ incoming.item }}</td>
+                                        <td class="text-truncate">{{ incoming.item.item_category }}</td>
+                                        <td class="text-truncate danger">{{ incoming.quantity|intcomma }}</td>
+                                        <td class="text-truncate">{{ incoming.item.item_unit }}</td>
+                                        <td class="text-truncate warning">{{ incoming.unit_price|intcomma }}</td>
+                                        <td class="text-truncate">{% if incoming.tot_out == None %}{{ incoming.quantity|intcomma }}{% else %}{{ incoming.current_count }}{% endif %}</td>
+                                        <td class="text-truncate">{{ incoming.details }}</td>
+                                        <td class="text-truncate">
+                                            <!--<a href="{% url 'warehouse:detail_incoming' incoming.id %}" target="_blank">New (Do not use me yet)</a>-->
+                                            <!--<a href="{% url 'admin:warehouse_incoming_change' incoming.id %}" target="_blank"><i class="la la-pencil font-medium-3"></i></a>-->
+                                            <a href="{% url 'warehouse:detail_incoming' incoming.id %}" target="_blank"><i class="la la-eye font-medium-3"></i></a>
+                                            <a href="{% url 'warehouse:checker_page' pk=incoming.id %}" target="_blank"><i class="la la-print font-medium-3"></i></a>
+                                            <a href="{% if incoming.attachment %}{{ incoming.attachment.url }}{% endif %}" target="_blank">
+                                                {% if incoming.attachment == "None" or incoming.attachment == "" %}
+                                                    <i class="la la-exclamation-triangle warning"></i>
+                                                {% else %}
+                                                    <i class="la la la-sticky-note"></i>
+                                                {% endif %}
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+
+            <div class="row">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">Outgoing</h4>
+                            <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                            <div class="heading-elements">
+                                <ul class="list-inline mb-0">
+                                    <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card-content collapse show">
+                            <div class="card-body card-dashboard">
+                            <div class="table-responsive">
+                            <table class="table table-striped table-bordered table-middle multi-ordering dataex-html5-selectors" data-page-length='15'>
+                                <thead>
+                                    <tr>
+                                        <td>Date</td>
+                                        <td>ID</td>
+                                        <td>Trans Type</td>
+                                        <td>Form No</td>
+                                        <td>Project Site</td>
+                                        <td>Item</td>
+                                        <td>Category</td>
+                                        <td>Quantity</td>
+                                        <td>Unit</td>
+                                        <td>Price</td>
+                                        <td>Released By</td>
+                                        <td>Released To</td>
+                                        <td>Released Out</td>
+                                        <td>Equipment Unit</td>
+                                        <td class="text-truncate">Details</td>
+                                        <td>Edit/View</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for outgoing in main_out %}
+                                    <tr>
+                                        <td class="text-truncate">{{ outgoing.trans_date|date:"Y-m-d" }}</td>
+                                        <td class="text-truncate">{{ outgoing.id }}</td>
+                                        <td class="text-truncate info">{{ outgoing.trans_type }}</td>
+                                        <td class="text-truncate">{{ outgoing.form_no }}</td>
+                                        <td class="text-truncate">{{ outgoing.project_site }}</td>
+                                        <td class="text-truncate">{{ outgoing.base_in.item }}</td>
+                                        <td class="text-truncate">{{ outgoing.base_in.item.item_category }}</td>
+                                        <td class="text-truncate danger">{{ outgoing.quantity|intcomma }}</td>
+                                        <td class="text-truncate">{{ outgoing.base_in.item.item_unit }}</td>
+                                        <td class="text-truncate">{{ outgoing.base_in.unit_price|intcomma }}</td>
+                                        <td class="text-truncate">{{ outgoing.released_by }}</td>
+                                        <td class="text-truncate">{{ outgoing.released_to }}</td>
+                                        <td class="text-truncate">{{ outgoing.released_out }}</td>
+                                        <td class="text-truncate">{{ outgoing.unit }}</td>
+                                        <td class="text-truncate"><p class="m-0">{{ outgoing.item_work }}</p><p class="m-0">{{ outgoing.details }}</p></td>
+                                        <td class="text-truncate">
+                                            <!--<a href="{% url 'admin:warehouse_incoming_change' outgoing.base_in.id %}" target="_blank"><i class="la la-pencil font-medium-3"></i></a>-->
+                                            {% if request.user|has_group:"Warehouse Level 3" %}
+                                                {% if outgoing.base_in.id %}
+                                                <a href="{% url 'warehouse:update_outgoing' outgoing.id outgoing.base_in.id %}" target="_blank">
+                                                    <i class="la la-pencil font-medium-3"></i>
+                                                </a>
+                                                {% else %}
+                                                <a href="#">
+                                                    <i class="la la-exclamation-triangle warning"></i>
+                                                </a>
+                                                {% endif %}
+                                            {% endif %}
+
+                                            {% if outgoing.base_in.id %}
+                                            <a href="{% url 'warehouse:checker_page' pk=outgoing.base_in.id %}" target="_blank">
+                                                <i class="la la-print font-medium-3"></i>
+                                            </a>
+                                            {% else %}
+                                            <a href="#">
+                                                <i class="la la-exclamation-triangle warning"></i>
+                                            </a>
+                                            {% endif %}
+
+                                            <a href="{% if outgoing.attachment %}{{ outgoing.attachment.url }}{% endif %}" target="_blank">
+                                                {% if outgoing.attachment == "None" or outgoing.attachment == "" %}
+                                                    <i class="la la-exclamation-triangle warning"></i>
+                                                {% else %}
+                                                    <i class="la la la-sticky-note"></i>
+                                                {% endif %}
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+
+        </section>
+    </div>
+
+    </div>
+{% endblock %}

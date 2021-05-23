@@ -1,0 +1,252 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load mathfilters %}
+{% load widget_tweaks %}
+{% load humanize %}
+
+{% block body_block %}
+
+<div class="row">
+<section class="col-md-3 col-12 p-0">
+	<div class="card border-warning mb-1">
+		<div class="card-header pb-0">
+			<h4 class="warning " id="basic-layout-tooltip">Search Utilization Report</h4>
+		</div>
+		<div class="card-content collapse show">
+		    <div class="card-body">
+                <form method="get">
+                    <div class="well">
+                        <div class="row">
+                            <div class="form-group col-12">
+                              Project Site: {% render_field search_ur.form.project_site class="form-control" %}
+                            </div>
+                            <div class="form-group col-12">
+                              Operator: {% render_field search_ur.form.operator class="form-control" %}
+                            </div>
+                        </div>
+
+                        <div class="well">
+                          <div class="row">
+                            <div class="form-group col-6">
+                                Unit: {% render_field search_ur.form.unit_id class="form-control" %}
+                            </div>
+                            <div class="form-group col-6">
+                                Unit Type: {% render_field search_ur.form.unit_type class="form-control" %}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="form-group col-12">
+                              Activity: {% render_field search_ur.form.activity class="form-control" %}
+                            </div>
+                            <div class="form-group col-12">
+                              Material: {% render_field search_ur.form.material class="form-control" %}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                              <div class="ml-1">
+                              Date Range (yyyy-mm-dd):
+                              <div class="form-group form-inline">
+                                  {% render_field search_ur.form.date class="form-control" %}
+                              </div>
+                              </div>
+                        </div>
+
+                    </div>
+                    <div class="form-actions right">
+						<button type="submit" class="btn btn-primary">
+							<i class="la la-check-square-o"></i> Search
+						</button>
+					</div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="alert alert-primary mb-2" role="alert">
+		<h4 class="mb-1">Note!</h4>
+		<p>Your interface has been modified to make it faster, the initial value on the table are the latest 300 transactions.
+		If you need to query older transactions or do refined queries, use the search form on top. The more specific your search is the faster its going to load.
+		</p>
+	</div>
+
+</section>
+<section class="col-md-9 col-12 pr-1">
+
+    {% if no_site > 0 %}
+    <div class="col-12 alert bg-danger mb-1" role="alert">
+		<span class="alert-icon"><i class="la la-warning"></i></span>
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true">×</span>
+		</button>
+		<strong>Warning!</strong> You have a total of
+		<span class="badge badge-pill badge-default badge-primary"><strong>{{ no_site }}</strong></span> Transactions without PROJECT SITE,
+		paano naman daw to?
+	</div>
+	{% endif %}
+
+	{% if no_unit > 0 %}
+    <div class="col-12 alert bg-danger mb-1" role="alert">
+		<span class="alert-icon"><i class="la la-warning"></i></span>
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true">×</span>
+		</button>
+		<strong>Warning manen!</strong> You have a total of
+		<span class="badge badge-pill badge-default badge-primary"><strong>{{ no_unit }}</strong></span> Transactions without UNIT,
+		anyare?
+	</div>
+	{% endif %}
+
+	{% if no_load > 0 %}
+    <div class="col-12 alert bg-danger mb-1" role="alert">
+		<span class="alert-icon"><i class="la la-warning"></i></span>
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true">×</span>
+		</button>
+		<strong>Warning!</strong> You have a total of
+		<span class="badge badge-pill badge-default badge-primary"><strong>{{ no_load }}</strong></span> Transactions with MATERIALS but NO LOAD,
+		lokohan nalang ba?
+	</div>
+	{% endif %}
+
+    <div class="card border-danger">
+        <div class="card-content collapse show">
+            <div class="card-body card-dashboard">
+        		<h4 class="warning mb-1" id="basic-layout-tooltip">Latest Utilization Report</h4>
+                <table class="table table-striped table-responsive table-bordered table-middle multi-ordering dataex-html5-selectors">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Operator</th>
+                            <th>Unit</th>
+                            <th>Project Site</th>
+                            <th>Start</th>
+                            <th>End</th>
+                            <th>Work Hour</th>
+                            <th>Activity</th>
+                            <th>Material</th>
+                            <th>Load</th>
+                            <th>SMR</th>
+                            <th>KMR</th>
+                            <th>Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ur in search_ur.qs %}
+                        <tr>
+                            <td class='text-truncate'><a href="{% url 'admin:fleet_utilizationreport_change' ur.id %}" target="_blank">{{ ur.date|date:'Y-m-d' }}</a></td>
+                            <td class='text-truncate'>{{ ur.operator }}</td>
+                            <td>{{ ur.unit_id }}</td>
+                            <td class='text-truncate'>{{ ur.project_site }}</td>
+                            <td>{{ ur.start_hour }}</td>
+                            <td>{{ ur.end_hour }}</td>
+                            <td>{{ ur.twh }}</td>
+                            <td class='text-truncate'>{{ ur.activity }}</td>
+                            <td class='text-truncate'>{{ ur.material }}</td>
+                            <td>{{ ur.load }}</td>
+                            <td class='text-truncate'>{{ ur.smr_start|intcomma }} - {{ ur.smr_end|intcomma }}</td>
+                            <td class='text-truncate'>{{ ur.kmr_start|intcomma }} - {{ ur.kmr_end|intcomma }}</td>
+                            <td class='text-truncate'>{{ ur.remarks }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-danger">
+        <div class="card-content collapse show">
+            <div class="card-body card-dashboard">
+                <p class="lead warning">Aggregates Per Unit Type</p>
+                <div class="nav-vertical">
+    				<ul class="nav nav-tabs nav-right">
+    				    {% for site in project_sites %}
+    					<li class="nav-item">
+    						<a class="nav-link {% if forloop.first %}active{% endif %} show" id="base-tab41" data-toggle="tab" aria-controls="tab41" href="#{{ site.project_code }}" aria-expanded="true">{{ site.project_code }}</a>
+    					</li>
+    					{% endfor %}
+    				</ul>
+    				<div class="tab-content">
+    				    {% for site in project_sites %}
+        					<div role="tabpanel" class="tab-pane px-1 {% if forloop.first %}active{% endif %} show" id="{{ site.project_code }}" aria-expanded="true" aria-labelledby="base-tab41">
+                                <table class="table table-striped table-middle border-danger mt-1">
+                                    <thead>
+                                        <tr>
+                                            <th>Unit Type</th>
+                                            <th></th>
+                                            <th>Base Course</th>
+                                            <th>Boulders</th>
+                                            <th>Fine Sand</th>
+                                            <th>Gravel</th>
+                                            <th>Rough Sand</th>
+                                            <th>Excavation</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for ur in per_type %}
+                                        {% if ur.project_site == site.project_code %}
+                                        <tr>
+                                            <td class='text-center text-truncate'>
+                                            <div>
+                                                {% if ur.unit_type == '10 Wheeler-DT' %}
+                                                    <img src="{% static "images/favicon/10Wheeler.gif" %}">
+                                                    <p class="m-0">{{ ur.unit_type }}</p>
+                                                {% elif ur.unit_type == 'Forward-DT' %}
+                                                    <img src="{% static "images/favicon/forward.gif" %}">
+                                                    <p class="m-0">{{ ur.unit_type }}</p>
+                                                {% elif ur.unit_type == 'Backhoe' %}
+                                                    <img src="{% static "images/favicon/Backhoe.gif" %}">
+                                                    <p class="m-0">{{ ur.unit_type }}</p>
+                                                {% elif ur.unit_type == 'Mini-DT' %}
+                                                    <img src="{% static "images/favicon/minidt.gif" %}">
+                                                    <p class="m-0">{{ ur.unit_type }}</p>
+                                                {% else %}
+                                                    {{ ur.unit_type }}
+                                                {% endif %}
+                                            </div>
+                                            </td>
+                                            <td><p class="mb-0 warning">Load:</p><p class="mb-0 blue">Hour:</p></td>
+                                            <td><p class="mb-0 warning">{{ ur.base_course_l|default_if_none:"" }}</p><p class="mb-0 blue">{{ ur.base_course_h|default_if_none:"" }}</p></td>
+                                            <td><p class="mb-0 warning">{{ ur.boulders_l|default_if_none:"" }}</p><p class="mb-0 blue">{{ ur.boulders_h|default_if_none:"" }}</p></td>
+                                            <td><p class="mb-0 warning">{{ ur.fine_sand_l|default_if_none:"" }}</p><p class="mb-0 blue">{{ ur.fine_sand_h|default_if_none:"" }}</p></td>
+                                            <td><p class="mb-0 warning">{{ ur.gravel_l|default_if_none:"" }}</p><p class="mb-0 blue">{{ ur.gravel_h|default_if_none:"" }}</p></td>
+                                            <td><p class="mb-0 warning">{{ ur.rough_sand_l|default_if_none:"" }}</p><p class="mb-0 blue">{{ ur.rough_sand_h|default_if_none:"" }}</p></td>
+                                            <td><p class="mb-0 warning">{{ ur.excavation_l|default_if_none:"" }}</p><p class="mb-0 blue">{{ ur.excavation_h|default_if_none:"" }}</p></td>
+                                        </tr>
+                                        {% endif %}
+                                        {% endfor %}
+
+                                        {% for ur in per_site %}
+                                        {% if ur.project_site == site.project_code %}
+                                        <tr class="bg-blue-grey bg-lighten-4">
+                                            <td class="lead warning text-center">Total</td>
+                                            <td><p class="mb-0 lead">Load:</p><p class="mb-0 lead">Hour:</p></td>
+                                            <td><p class="mb-0 lead warning">{{ ur.base_course_l|default_if_none:"" }}</p><p class="mb-0 lead blue">{{ ur.base_course_h|default_if_none:"" }}</p></td>
+                                            <td><p class="mb-0 lead warning">{{ ur.boulders_l|default_if_none:"" }}</p><p class="mb-0 lead blue">{{ ur.boulders_h|default_if_none:"" }}</p></td>
+                                            <td><p class="mb-0 lead warning">{{ ur.fine_sand_l|default_if_none:"" }}</p><p class="mb-0 lead blue">{{ ur.fine_sand_h|default_if_none:"" }}</p></td>
+                                            <td><p class="mb-0 lead warning">{{ ur.gravel_l|default_if_none:"" }}</p><p class="mb-0 lead blue">{{ ur.gravel_h|default_if_none:"" }}</p></td>
+                                            <td><p class="mb-0 lead warning">{{ ur.rough_sand_l|default_if_none:"" }}</p><p class="mb-0 lead blue">{{ ur.rough_sand_h|default_if_none:"" }}</p></td>
+                                            <td><p class="mb-0 lead warning">{{ ur.excavation_l|default_if_none:"" }}</p><p class="mb-0 lead blue">{{ ur.excavation_h|default_if_none:"" }}</p></td>
+                                        </tr>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+        					</div>
+    					{% endfor %}
+    				</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+</div>
+
+
+
+
+{% endblock %}

@@ -1,0 +1,276 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load humanize %}
+{% load widget_tweaks %}
+{% load extra_tags %}
+{% load mathfilters %}
+
+{% block body_block %}
+    <div class="alert bg-secondary alert-icon-left" role="alert">
+		<span class="alert-icon"><i class="la la-info"></i></span>
+		<p class="mb-0">Tip: If your internet is slow, use your phone to liquidate its much faster.</p>
+	</div>
+    <section class="row">
+
+    	<div class="col-12">
+            <div class="mb-0 badge badge-square badge-info font-medium-3"> Outgoings for {{incoming_detail.item.item_name}}</div>
+	        <hr class="m-0">
+
+    		<div id="invoice-items-details" class="pt-2">
+    		    <div class="media">
+            		<h4 class="media-body">
+                        <a href="{% url 'warehouse:update_incoming' incoming_detail.id %}" target="_blank">
+            		        <span class="badge badge-secondary"><i class="la la-pencil font-medium-3"></i></span>
+            		    </a>
+
+            		    {% comment %}
+            		    {% if request.user|has_group:"Cashier" %}
+            		    <a href="https://www.pythonanywhere.com/user/eakdev/files/home/eakdev/aip/templates/%7B%%20url%20&#39;accounting:update_entry&#39;%20pk=entry_detail.id%20%%7D" target="_blank">
+            		        <span class="badge badge-secondary"><i class="la la-pencil font-medium-3"></i></span>
+            		    </a>
+            		    <a href="https://www.pythonanywhere.com/user/eakdev/files/home/eakdev/aip/templates/%7B%%20url%20&#39;accounting:update_entry_liquidated&#39;%20pk=entry_detail.pk%20%%7D">
+                            <span class="badge {% if entry_detail.status == &#39;Unliquidated&#39; %}badge-danger {% else %}badge-success{% endif %}">
+                                <i class="la la-bolt font-medium-3"></i> Status: <strong>{{ entry_detail.status }}</strong>
+                            </span>
+                        </a>
+            		    {% else %}
+            		        <span class="badge bg-blue-grey bg-lighten-3"><i class="la la-pencil font-medium-3"></i></span>
+            		        <span class="badge bg-blue-grey bg-lighten-3">
+                                <i class="la la-bolt font-medium-3"></i> Status: <strong>{{ entry_detail.status }}</strong>
+                            </span>
+            		    {% endif %}
+            		    {% endcomment %}
+
+            		     Incoming Details
+            		</h4>
+            		<div class="media-right badge badge-square badge-warning font-medium-3">Quantity: {{ incoming_detail.quantity|intcomma }} {{incoming_detail.item.item_unit}} | Price: P {{incoming_detail.unit_price|intcomma}}</div>
+        	    </div>
+    			<div class="row">
+    				<div class="table-responsive col-sm-12">
+    					<table class="table">
+                            <thead class="bg-blue-grey bg-lighten-4">
+                                <tr>
+                                    <th class="border-top-0">Date</th>
+                                    <th class="border-top-0">Form No</th>
+                                    <th class="border-top-0">Received By</th>
+                                    <th class="border-top-0">Tracking No</th>
+                                    <th class="border-top-0">Project Site</th>
+                                    <th class="border-top-0">Details</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="bg-success bg-accent-1">
+                                    <td class="text-truncate">{{ incoming_detail.trans_date }}</td>
+                                    <td class="info text-truncate">{{ incoming_detail.form_no }}</td>
+                                    <td class="text-truncate">{{ incoming_detail.received_by }}</td>
+                                    <td class="text-truncate danger">{{ incoming_detail.trans_no }}</td>
+                                    <td class="text-truncate danger">{{ incoming_detail.project_site.name }}</td>
+                                    <td class="text-truncate">{{ incoming_detail.details }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+    		</div>
+
+    		<div id="invoice-items-details" class="pt-2">
+    		    <div class="media">
+            		<h4 class="media-body">
+            		    {% if available_incoming == 0 %}
+            		        <a class="disabled" href="#" target="_blank"><span class="badge badge-secondary">
+            		        <i class="la la-lock font-medium-3"></i></span></a> Outgoings
+            		    {% else %}
+            		        <a href="{% url 'warehouse:new_outgoing' incoming_detail.id %}" target="_blank"><span class="badge badge-warning">
+            		        <i class="la la-plus font-medium-3"></i></span></a> Outgoings
+            		    {% endif %}
+            		</h4>
+            		<div class="media-right badge badge-square badge-warning font-medium-3">Total: {% if outgoings %}{{ total_outgoings|intcomma }} {{incoming_detail.item.item_unit}} {% else %}None{% endif %}</div>
+        	    </div>
+    			<div class="row">
+    				<div class="table-responsive col-sm-12">
+
+                            <table class="table">
+                            <thead class="bg-blue-grey bg-lighten-4">
+                                <tr>
+                                    <th></th>
+                                    <th class="border-top-0">Date</th>
+                                    <th class="border-top-0">Type</th>
+                                    <th class="border-top-0">Form No</th>
+                                    <th class="border-top-0">Project Site</th>
+                                    <th class="border-top-0">Quantity</th>
+                                    <th class="border-top-0">Details</th>
+                                    <th class="border-top-0">Released by</th>
+                                    <th class="border-top-0">Released to</th>
+                                    <th class="border-top-0">Unit</th>
+                                    <th class="border-top-0">Work Item</th>
+                                    <th class="border-top-0">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for outgoing in outgoings %}
+                                <tr>
+
+                                    <td class="text-truncate">
+                                        {% if request.user|has_group:"Warehouse Level 3" %}
+                                        <a href="{% url 'warehouse:update_outgoing' outgoing.id incoming_detail.id %}" target="_blank">
+                                            <span class="badge badge-warning"><i class="la la-pencil font-medium-1"></i></span>
+                                        </a>
+                                        {% else %}
+                                        <a class="disabled" href="#" target="_blank">
+                                            <span class="badge badge-secondary"><i class="la la-lock font-medium-1"></i></span>
+                                        </a>
+                                        {% endif %}
+                                    </td>
+
+                                    {% comment %}
+                                    <td class="text-truncate">
+                                        <a href="{% url 'admin:warehouse_outgoing' outgoing.id %}" target="_blank">
+                                            <span class="badge badge-secondary"><i class="la la-pencil font-medium-1"></i></span>
+                                        </a>
+                                        {% if transactions.base_por %}
+                                        <a href="https://www.pythonanywhere.com/user/eakdev/files/home/eakdev/aip/templates/%7B%%20if%20transactions.base_por.id%20%%7D%7B%%20url%20&#39;accounting:purchase_detail_page&#39;%20transactions.base_por.id%20%%7D%7B%%20endif%20%%7D" target="_blank">
+                                            <span class="badge badge-success"><i class="la la-eye font-medium-1"></i></span>
+                                        </a>
+                                        {% else %}
+                                        <a href="https://www.pythonanywhere.com/user/eakdev/files/home/eakdev/aip/templates/%7B%%20if%20transactions.base_por.id%20%%7D%7B%%20url%20&#39;accounting:purchase_detail_page&#39;%20transactions.base_por.id%20%%7D%7B%%20endif%20%%7D" target="_blank">
+                                            <span class="badge badge-danger"><i class="la la-warning font-medium-1"></i></span>
+                                        </a> {{ transactions.trans_date }}
+                                        {% endif %}
+                                    </td>
+                                    {% endcomment %}
+                                    <td class="text-truncate">{{ outgoing.trans_date }}</td>
+                                    <td class="text-truncate">{{ outgoing.trans_type }}</td>
+                                    <td class="text-truncate">{{ outgoing.form_no }}</td>
+                                    <td class="text-truncate danger">{{ outgoing.project_site }}</td>
+                                    <td class="text-truncate danger">{{ outgoing.quantity }}</td>
+                                    <td class="text-truncate danger">{{ outgoing.details }}</td>
+                                    <td class="text-truncate danger">{{ outgoing.released_by }}</td>
+                                    <td class="text-truncate">{{ outgoing.released_to }}</td>
+                                    <td class="text-truncate">{{ outgoing.unit }}</td>
+                                    <td class="text-truncate">{{ outgoing.item_work }}</td>
+                                    <td class="text-truncate">{{ outgoing.status }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+    					</table>
+    				</div>
+    			</div>
+
+    			<hr class="m-0">
+		        <div class="m-0 text-right"><p class="m-0 badge badge-square badge-info font-medium-3">Nabati:
+		            <strong>{{available_incoming}}</strong> {{incoming_detail.item.item_unit}}
+		            {% comment %}<strong>{% if liquidations %}{{ given|subtract:consumed.liq|floatformat:2|intcomma }}{% else %}{{ given|floatformat:2|intcomma }}{% endif %}</strong> {% endcomment %}
+		        </p></div>
+    		</div>
+
+            {% comment %}
+    		<div id="invoice-items-details" class="pt-2">
+    		    <div class="media">
+            		<h4 class="media-body">
+            		    <a href="https://www.pythonanywhere.com/user/eakdev/files/home/eakdev/aip/templates/%7B%%20url%20&#39;accounting:new_entry&#39;%20%%7D" target="_blank"><span class="badge badge-warning">
+            		        <i class="la la-plus font-medium-3"></i>
+            		    </span></a> CDV
+            		</h4>
+        	    </div>
+    			<div class="row">
+    				<div class="table-responsive col-sm-12">
+
+                                {% if cluster %}
+                                {% for transactions in cluster.all %}
+
+                                {% endfor %}
+                                {% else %}
+
+                				{% endif %}
+
+                                {% if cash_return %}
+                				{% for transactions in cash_return.all %}
+
+                                {% endfor %}
+                				{% endif %}
+
+                                {% if reimbursement %}
+                				{% for transactions in reimbursement.all %}
+
+                                {% endfor %}
+                				{% endif %}
+
+
+                				{% if cdv %}
+                                {% for transactions in cdv.all %}
+
+                                {% endfor %}
+                                {% else %}
+
+                				{% endif %}
+
+
+                            <table class="table">
+                            <thead class="bg-blue-grey bg-lighten-4">
+                                <tr>
+                                    <th class="border-top-0">Account Name</th>
+                                    <th class="border-top-0">Debit</th>
+                                    <th class="border-top-0">Credit</th>
+                                    <th class="border-top-0">Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody><tr>
+                                    <td class="text-truncate">
+                                        <span class="badge bg-blue-grey bg-lighten-3"><i class="la la-pencil font-medium-1"></i></span>
+                                         {{ transactions.account_code__item_code }} {{ transactions.sc1 }} {{ transactions.sc2 }}
+                                    </td>
+                                    <td class="text-truncate info">{{ transactions.total|intcomma }}</td>
+                                    <td class="text-truncate danger"></td>
+                                    <td class="text-truncate">{{ transactions.remarks }}</td>
+                                </tr><tr>
+                				    <td class="text-center warning" colspan="7">..........No liquidations yet..........</td>
+                				</tr><tr>
+                                    <td class="text-truncate">
+                                        <a href="https://www.pythonanywhere.com/user/eakdev/files/home/eakdev/aip/templates/%7B%%20url%20&#39;accounting:update_entry&#39;%20pk=transactions.id%20%%7D%20%20target=" _blank""="">
+                                            <span class="badge badge-secondary"><i class="la la-pencil font-medium-1"></i></span>
+                                             {{ transactions.account_code }}
+                                        </a>
+                                    </td>
+                                    <td class="text-truncate info">{% if transactions.entry_debit %}{{ transactions.debit|intcomma }}{% endif %}</td>
+                                    <td class="text-truncate danger">{% if transactions.entry_credit %}{{ transactions.debit|intcomma }}{% endif %}</td>
+                                    <td class="text-truncate">{{ transactions.remarks }}</td>
+                                </tr><tr>
+                                    <td class="text-truncate">
+                                        <a href="https://www.pythonanywhere.com/user/eakdev/files/home/eakdev/aip/templates/%7B%%20url%20&#39;accounting:update_entry&#39;%20pk=transactions.id%20%%7D%20%20target=" _blank""="">
+                                            <span class="badge badge-secondary"><i class="la la-pencil font-medium-1"></i></span>
+                                             {{ transactions.account_code }}
+                                        </a>
+                                    </td>
+                                    <td class="text-truncate info">{% if transactions.entry_debit %}{{ transactions.debit|intcomma }}{% endif %}</td>
+                                    <td class="text-truncate danger">{% if transactions.entry_credit %}{{ transactions.debit|intcomma }}{% endif %}</td>
+                                    <td class="text-truncate">{{ transactions.remarks }}</td>
+                                </tr><tr>
+                                    <td class="text-truncate">
+                                        <a href="https://www.pythonanywhere.com/user/eakdev/files/home/eakdev/aip/templates/%7B%%20url%20&#39;accounting:update_entry&#39;%20pk=transactions.id%20%%7D" target="_blank">
+                                            <span class="badge badge-secondary"><i class="la la-pencil font-medium-1"></i></span>
+                                             {{ transactions.account_code }}
+                                        </a>
+                                    </td>
+                                    <td class="text-truncate info">{% if transactions.entry_debit %}{{ transactions.debit|intcomma }}{% endif %}</td>
+                                    <td class="text-truncate danger">{% if transactions.entry_credit %}{{ transactions.debit|intcomma }}{% endif %}</td>
+                                    <td class="text-truncate">{{ transactions.remarks }}</td>
+                                </tr><tr>
+                				    <td class="text-center warning" colspan="7">..........No CDV Details yet..........</td>
+                				</tr></tbody>
+    					</table>
+    				</div>
+    			</div>
+
+    		</div>
+            {% endcomment %}
+
+    	</div>
+    </section>
+
+
+{% endblock %}
+
+
+
+
+</body></html>

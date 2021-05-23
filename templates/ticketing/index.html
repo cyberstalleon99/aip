@@ -1,0 +1,102 @@
+{% extends "workforce/base.html" %}
+{% load staticfiles %}
+
+{% block body_block %}
+<div class="container">
+
+    <!--Basic Card-->
+    <div id="basic-card" class="section">
+      <h4 class="header">Unresolved Tickets Assigned to {{ user.username }}</h4>
+      <div class="row">
+        <div class="col s12 m12 l12">
+          <div class="row">
+            {% for ticket in ticketing_index %}
+            {% if user.is_authenticated and user == ticket.assigned_to %}
+            <div class="col s12 m4 l4">
+              <div class="card light-blue">
+                <div class="card-content white-text">
+                  <span class="card-title">{{ ticket.title }}</span>
+                  <p>Date Filed: {{ ticket.start_date }}</p>
+                  <p>Due Date: {{ ticket.due_date }}</p>
+                  <p>By: {{ ticket.created_by }} | Priority Level: {{ ticket.priority }}</p>
+                  <p class="divider"></p>
+                  <p>{{ ticket.note|truncatechars:200 }}</p>
+                </div>
+                <div class="card-action">
+                  <a href="{% url 'ticketing:ticket_detail' pk=ticket.id %}">Edit</a>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <div id="row-grouping" >
+          <div class="row">
+            <div class="col s12">
+              <table id="data-table-row-grouping" class="display" cellspacing="0" width="100%">
+                <thead>
+                  <tr>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th class="hide-on-small-only">Start Date</th>
+                    <th class="hide-on-small-only">Due Date</th>
+                    <th class="hide-on-small-only">Created By</th>
+                    <th>Assigned To</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tfoot>
+                  <tr>
+                    <th>Title</th>
+                    <th class="hide-on-small-only">Start Date</th>
+                    <th>Category</th>
+                    <th class="hide-on-small-only">Due Date</th>
+                    <th class="hide-on-small-only">Created By</th>
+                    <th>Assigned To</th>
+                    <th>Status</th>
+                  </tr>
+                </tfoot>
+                <tbody>
+                  {% for task in ticketing_index %}
+                  <tr>
+                    <td><a href="{% url 'ticketing:ticket_detail' pk=task.id %}">{{ task.title }}</a></td>
+                    <td>{{ task.category }}</td>
+                    <td class="hide-on-small-only">{{ task.start_date }}</td>
+                    <td class="hide-on-small-only">{{ task.due_date }}</td>
+                    <td class="hide-on-small-only">{{ task.created_by }}</td>
+                    <td>{{ task.assigned_to }}</td>
+                    <td>
+                        {% if task.completed %}
+                            <i class="material-icons red-text">check_circle</i>
+                        {% else %}
+                            <i class="material-icons green-text text-darken-4">clear</i>
+                        {% endif %}
+                        <a href="{% url 'ticketing:edit_ticket' pk=task.id %}"><i class="material-icons">create</i></a>
+
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+    </div>
+</div>
+
+<div class="fixed-action-btn">
+  <a class="btn-floating btn-large red">+
+    <i class="large mdi-editor-mode-edit"></i>
+  </a>
+  <ul>
+    <li><a href="{% url "ticketing:new_ticket" %}" class="btn-floating red">NT<i class="large mdi-editor-insert-chart"></i></a>
+    </li>
+    <li><a href="{% url "ticketing:new_category" %}" class="btn-floating yellow darken-1">NC<i class="large mdi-editor-format-quote"></i></a>
+    </li>
+  </ul>
+</div>
+
+{% endblock %}

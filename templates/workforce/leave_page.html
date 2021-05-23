@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load mathfilters %}
+
+{% block body_block %}
+    <div class="content-header row">
+      <div class="content-header-left col-md-6 col-12 mb-2">
+        <h3 class="content-header-title">Leaves</h3>
+      </div>
+      <div class="content-header-right col-md-6 col-12">
+        <div class="btn-group float-md-right" role="group" aria-label="Edit Options">
+          <button class="btn btn-info round dropdown-toggle dropdown-menu-right box-shadow-2 px-2" id="btnGroupDrop1" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <i class="ft-settings icon-left"></i> Actions
+          </button>
+          <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+              <a class="dropdown-item" href="{% url "workforce:new_leave" %}" target="_blank">Leave Application</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-body">
+        {% if messages %}
+            {% for message in messages %}
+                <div
+                    {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %} class="alert alert-success alert-dismissible"
+                    {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %} class="alert alert-danger alert-dismissible"
+                    {% elif message.level == DEFAULT_MESSAGE_LEVELS.INFO %} class="alert alert-info alert-dismissible"
+                    {% endif %}>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+    	<section class="row match-height mt-2">
+    		<div class="col-lg-4 col-md-12">
+    			<div class="card">
+    				<div class="card-header bg-danger text-white">
+    					<h4 class="card-title">For Approval</h4>
+    				</div>
+    				<div class="card-content">
+    					<div class="card-body p-0">
+    						<div class="media-list list-group">
+                                <div class="vertical-scroll large-margin height-300 p-0 border-bottom-danger border-bottom-2">
+    						    {% for employee in for_approval %}
+    							<div class="list-group-item list-group-item-action media">
+    								<!--<a class="media-link" href="{% url 'admin:workforce_leave_change' employee.id %}" target="_blank">-->
+    								    <a class="media-link" href="{% url 'workforce:update_leave' employee.id %}" target="_blank">
+    									<span class="media-left">
+    										<img class="media-object rounded-circle" src="{{ employee.base_profile.profile_pic.url }}" alt="Generic placeholder image" style="width: 48px;height: 48px;">
+    									</span>
+    									<span class="media-body">
+    										{{ employee.base_profile.fname }} {{ employee.base_profile.lname }}
+    										<br>
+    										{{ employee.base_profile.employee_profile.project_site }}
+    										<br>
+    										{{ employee.date_from|date:"d-m-y" }} - {{ employee.date_to|date:"d-m-y" }}
+    									</span>
+    								</a>
+    							</div>
+    							{% endfor %}
+            					</div>
+    						</div>
+    					</div>
+    				</div>
+    			</div>
+    		</div>
+    		<div class="col-lg-4 col-md-12">
+    			<div class="card">
+    				<div class="card-header bg-success text-white">
+    					<h4 class="card-title">Approved Leaves</h4>
+    				</div>
+    				<div class="card-content">
+    					<div class="card-body p-0">
+    						<div class="media-list list-group">
+                                <div class="vertical-scroll large-margin height-300 p-0 border-bottom-success border-bottom-2">
+    						    {% for employee in approved %}
+    							<div class="list-group-item list-group-item-action media">
+    								<!--<a class="media-link" href="{% url 'admin:workforce_leave_change' employee.id %}" target="_blank">-->
+    								<a class="media-link" href="{% url 'workforce:update_leave' employee.id %}" target="_blank">
+    									<span class="media-left">
+    										<img class="media-object rounded-circle" src="{{ employee.base_profile.profile_pic.url }}" alt="Generic placeholder image" style="width: 48px;height: 48px;">
+    									</span>
+    									<span class="media-body">
+    										{{ employee.base_profile.fname }} {{ employee.base_profile.lname }}
+    										<br>
+    										{{ employee.base_profile.employee_profile.project_site }}
+    										<br>
+    										{{ employee.date_from|date:"m-d-Y" }} - {{ employee.date_to|date:"m-d-Y" }}
+    									</span>
+    								</a>
+    							</div>
+    							{% endfor %}
+            					</div>
+    						</div>
+    					</div>
+    				</div>
+    			</div>
+    		</div>
+    		<div class="col-lg-4 col-12">
+    			<div class="card">
+    				<div class="card-header bg-warning text-white">
+    					<h4 class="card-title">Denied/Canceled</h4>
+    				</div>
+    				<div class="card-content">
+    					<div class="card-body p-0">
+    						<div class="media-list list-group">
+                                <div class="vertical-scroll large-margin height-300 p-0 border-bottom-warning border-bottom-2">
+    						    {% for employee in denied %}
+    							<div class="list-group-item list-group-item-action media">
+    							    <a class="media-link" href="{% url 'workforce:update_leave' employee.id %}" target="_blank">
+    								<!--<a class="media-link" href="{% url 'admin:workforce_leave_change' employee.id %}" target="_blank">-->
+    									<span class="media-left">
+    										<img class="media-object rounded-circle" src="{{ employee.base_profile.profile_pic.url }}" alt="Generic placeholder image" style="width: 48px;height: 48px;">
+    									</span>
+    									<span class="media-body">
+    										{{ employee.base_profile.fname }} {{ employee.base_profile.lname }}
+    										<br>
+    										{{ employee.base_profile.employee_profile.project_site }}
+    										<br>
+    										{{ employee.date_from|date:"d-m-y" }} - {{ employee.date_to|date:"m-d-Y" }}
+    									</span>
+    								</a>
+    							</div>
+    							{% endfor %}
+            					</div>
+    						</div>
+    					</div>
+    				</div>
+    			</div>
+    		</div>
+    	</section>
+
+    	<section class="row match-height">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Leave Applications</h4>
+                        <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                        <div class="heading-elements">
+                            <ul class="list-inline mb-0">
+                                <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
+                                <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                                <li><a data-action="close"><i class="ft-x"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card-content collapse show">
+                        <div class="card-body card-dashboard">
+                            <table class="table table-striped table-bordered table-middle multi-ordering table-responsive dataex-html5-selectors">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Name</th>
+                                        <th>Start Date</th>
+                                        <th>End Date</th>
+                                        <th>Type</th>
+                                        <th>Reason</th>
+                                        <th>Approval</th>
+                                        <th>Approved By</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for leave in all %}
+                                    <tr>
+                                        <td class="text-truncate">
+                                            <!--If ADMIN-->
+                                            {% if leave.approved_by.id == user.basicprofile.id %}
+                                                <a href="{% url 'workforce:approve_leave_admin' leave.id %}" target="_blank"><i class="la la-pencil font-medium-3"></i></a>
+                                            <!--If SUPERVISOR-->
+                                            {% elif leave.approved_by_super.id == user.basicprofile.id %}
+                                                <a href="{% url 'workforce:approve_leave_super' leave.id %}" target="_blank"><i class="la la-pencil font-medium-3"></i></a>
+                                            {% endif %}
+                                            <a href="{% url 'workforce:update_leave' leave.id %}" target="_blank"><i class="la la-eye font-medium-3"></i></a>
+                                        </td>
+                                        <td class="text-truncate">
+                                            <!--<a href="{% url 'admin:workforce_leave_change' leave.id %}" target="_blank">{{ leave.base_profile.fullname }}</a><br>-->
+                                            <!--<a href="{% url 'workforce:update_leave' leave.id %}" target="_blank">{{ leave.base_profile.fullname }}</a>-->
+                                            {{leave.base_profile.fullname}}
+                                        </td>
+                                        <td class="text-truncate">{{ leave.date_from|date:"m-d-Y" }}</td>
+                                        <td class="text-truncate">{{ leave.date_to|date:"m-d-Y" }}</td>
+                                        <td class="text-truncate">{{ leave.leave_type }}</td>
+                                        <td>{{ leave.reason }}</td>
+                                        <td class="text-truncate">{{ leave.approval }}</td>
+                                        <td class="text-truncate">{{ leave.approved_by }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+    </div>
+
+
+
+{% endblock %}

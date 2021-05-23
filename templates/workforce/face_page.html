@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load mathfilters %}
+
+{% block body_block %}
+    <div class="content-header row">
+      <div class="content-header-left col-md-6 col-12 mb-2">
+        <h3 class="content-header-title">Faces of AIP</h3>
+      </div>
+      <div class="content-header-right col-md-6 col-12">
+        <div class="btn-group float-md-right" role="group" aria-label="Edit Options">
+          <button class="btn btn-info round dropdown-toggle dropdown-menu-right box-shadow-2 px-2" id="btnGroupDrop1" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <i class="ft-settings icon-left"></i> Actions
+          </button>
+          <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+              <a class="dropdown-item" href="{% url "admin:workforce_basicprofile_add" %}" target="_blank">New Employee</a>
+              <a class="dropdown-item" href="{% url "admin:workforce_leave_add" %}" target="_blank">Leave Application</a>
+              <a class="dropdown-item" href="{% url "workforce:new_leave" %}" target="_blank">Leave Application (For Testing)</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-body">
+
+        <!-- Simple User Cards with Shadow-->
+        <section id="user-cards-with-square-thumbnail" class="row mt-2">
+    	    <div class=" col col-12">
+	            <div class="bs-callout-success callout-border-left mt-1 p-1">
+                    <strong>Mga Loyal! Ang mga tunay na "endangered species"</strong>
+                </div>
+                <hr>
+            </div>
+
+            {% for employee in active %}
+            <div class="col-lg-3 col-12">
+                <div class="card box-shadow-1">
+                    <div class="text-center">
+                        <div class="card-body">
+                            <img src="{{ employee.profile_pic.url }}" class="rounded-circle  height-150" alt="Card image">
+                        </div>
+                        <div class="card-body">
+                            <h4 class="card-title">{{ employee.fullname }}</h4>
+                            <h6 class="card-subtitle text-muted">{{ employee.employee_profile.designation }}</h6>
+                        </div>
+                        <div class="text-center">
+                            <a href="{% url 'admin:workforce_basicprofile_change' employee.id %}" target="_blank" class="btn btn-social-icon mr-1 mb-1 btn-outline-facebook"><span class="la la-pencil"></span></a>
+                            <a href="{% url 'workforce:profile_detail' pk=employee.id %}" target="_blank" class="btn btn-social-icon mr-1 mb-1 btn-outline-twitter"><span class="la la-eye"></span></a>
+                            <a class="btn btn-social-icon mb-1 btn-outline-linkedin"><span class="la la-trash font-medium-4"></span></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </section>
+        <!-- Simple User Card with Border-->
+
+        <!-- Simple User Cards with Shadow-->
+        <section id="user-cards-with-square-thumbnail" class="row mt-2">
+    	    <div class=" col col-12">
+	            <div class="bs-callout-success callout-border-left mt-1 p-1">
+                    <strong>Mga Nang-iwan! Ganyan naman kayo, kahit binibigay na lahat nang-iiwan parin.</strong>
+                </div>
+                <hr>
+            </div>
+
+            {% for employee in resigned %}
+            <div class="col-lg-3 col-12">
+                <div class="card box-shadow-1">
+                    <div class="text-center">
+                        <div class="card-body">
+                            <img src="{{ employee.profile_pic.url }}" class="rounded-circle  height-150" alt="Card image">
+                        </div>
+                        <div class="card-body">
+                            <h4 class="card-title">{{ employee.fullname }}</h4>
+                            <h6 class="card-subtitle text-muted">{{ employee.employee_profile.designation }}</h6>
+                        </div>
+                        <div class="text-center">
+                            <a href="{% url 'admin:workforce_basicprofile_change' employee.id %}" target="_blank" class="btn btn-social-icon mr-1 mb-1 btn-outline-facebook"><span class="la la-pencil"></span></a>
+                            <a href="{% url 'workforce:profile_detail' pk=employee.id %}" target="_blank" class="btn btn-social-icon mr-1 mb-1 btn-outline-twitter"><span class="la la-eye"></span></a>
+                            <a class="btn btn-social-icon mb-1 btn-outline-linkedin"><span class="la la-trash font-medium-4"></span></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </section>
+        <!-- Simple User Card with Border-->
+
+
+    </div>
+
+
+
+{% endblock %}

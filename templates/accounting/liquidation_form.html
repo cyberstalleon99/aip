@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load humanize %}
+{% load widget_tweaks %}
+{% load extra_tags %}
+{% load mathfilters %}
+
+{% block body_block %}
+
+    <section class="row">
+
+        <div class="col-md-6 col-12">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+        		<div class="card">
+        			<div class="card-header pb-1 bg-dark">
+        				<h2 class="white" id="basic-layout-icons">
+        				    <a href="" class="white">
+        				        Add/Edit Liquidation
+        				    </a>
+        				</h2>
+        			</div>
+        			<div class="card-content collapse show pink">
+        				<div class="card-body">
+
+                            <form class="form">
+                              <div class="form-body">
+
+                                <div class="row">
+                                    <div class="col-md-6 col-12">
+                                        <div class="well">
+                                            <div class="row">
+                                                <div class="form-group col-md-6 col-12">
+                        							<label for="timesheetinput1">Trans Date</label>
+                                                    <div class="position-relative has-icon-left">
+                                                        {{form.trans_date|add_class:"form-control"}}
+                                                        <div class="form-control-position">
+                                                          <i class="la la-file"></i>
+                                                        </div>
+                                                    </div>
+                        						</div>
+                        						<div class="form-group col-md-6 col-12">
+                        							<label for="projectinput1">Payment</label>
+                        							<div class="position-relative has-icon-left">
+                                                        {{form.payment|add_class:"form-control"}}
+                                                        <div class="form-control-position">
+                                                          <i class="la la-file"></i>
+                                                        </div>
+                                                    </div>
+                        						</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                          <label for="timesheetinput1">CRS No.</label>
+                                          <div class="position-relative">
+                                            {{form.base_budget|add_class:"form-control"}}
+                                          </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                          <label for="timesheetinput1">POR Tracking No.</label>
+                                          <div class="position-relative">
+                                            {{form.base_por|add_class:"form-control"}}
+                                          </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                          <label for="timesheetinput1">Project Site</label>
+                                          <div class="position-relative">
+                                            {{ form.media }}
+                                            {{form.project_site|add_class:"form-control"}}
+                                          </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                          <label for="timesheetinput1">Liquidation By</label>
+                                          <div class="position-relative">
+                                            {{form.issued_by|add_class:"form-control"}}
+                                          </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group">
+                                          <label for="timesheetinput1">Item</label>
+                                          <div class="position-relative">
+                                            {{form.item|add_class:"form-control"}}
+                                          </div>
+                                        </div>
+
+                                        <div class="well">
+                                            <div class="row">
+                                                <div class="form-group col-md-6 col-12">
+                        							<label for="timesheetinput1">Quantity</label>
+                                                    <div class="position-relative has-icon-left">
+                                                        {{form.quantity|add_class:"form-control"}}
+                                                        <div class="form-control-position">
+                                                          <i class="la la-file"></i>
+                                                        </div>
+                                                    </div>
+                        						</div>
+                        						<div class="form-group col-md-6 col-12">
+                        							<label for="projectinput1">Amount</label>
+                        							<div class="position-relative has-icon-left">
+                                                        {{form.amount|add_class:"form-control"}}
+                                                        <div class="form-control-position">
+                                                          <i class="la la-file"></i>
+                                                        </div>
+                                                    </div>
+                        						</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                          <label for="timesheetinput1">Supplier</label>
+                                          <div class="position-relative">
+                                            {{form.supplier|add_class:"form-control"}}
+                                          </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                          <label for="timesheetinput1">Remarks</label>
+                                          <div class="position-relative has-icon-left">
+                                            {{form.detail|add_class:"form-control"}}
+                                            <div class="form-control-position">
+                                              <i class="la la-file"></i>
+                                            </div>
+                                          </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        {% if request.user|has_group:"Accounting Level 2" %}
+                                        <h4>For Bookkeeper</h4>
+                                        <hr class="mt-0">
+
+                                        <div class="well">
+                                            <div class="row">
+                                                <div class="form-group col-md-6 col-12">
+                        							<label for="timesheetinput1">Category</label>
+                                                      <div class="position-relative has-icon-left">
+                                                        {{form.category|add_class:"form-control"}}
+                                                        <div class="form-control-position">
+                                                          <i class="la la-calendar"></i>
+                                                        </div>
+                                                      </div>
+                        						</div>
+                        						<div class="form-group col-md-6 col-12">
+                        							<label for="projectinput1">Item Code</label>
+                        							<div class="position-relative has-icon-left">
+                                                        {{form.item_code|add_class:"form-control"}}
+                                                        <div class="form-control-position">
+                                                          <i class="la la-plus"></i>
+                                                        </div>
+                                                      </div>
+                        						</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="well">
+                                            <div class="row">
+                                                <div class="form-group col-md-6 col-12">
+                        							<label for="timesheetinput1">Transaction Type</label>
+                                                      <div class="position-relative has-icon-left">
+                                                        {{form.trans_type|add_class:"form-control"}}
+                                                        <div class="form-control-position">
+                                                          <i class="la la-calendar"></i>
+                                                        </div>
+                                                      </div>
+                        						</div>
+                        						<div class="form-group col-md-6 col-12">
+                        							<label for="projectinput1">Vat</label>
+                        							<div class="position-relative has-icon-left">
+                                                        {{form.vat|add_class:"form-control"}}
+                                                        <div class="form-control-position">
+                                                          <i class="la la-plus"></i>
+                                                        </div>
+                                                      </div>
+                        						</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="well">
+                                            <div class="row">
+                                                <div class="form-group">
+                        							{{form.incoming_vat|attr:"hidden"|add_class:"form-control"}}
+                                                    {{form.vatable_sales|attr:"hidden"|add_class:"form-control"}}
+                        						</div>
+                                            </div>
+                                        </div>
+                                        {% else %}
+                                        <div class="form-group">
+                                            {{form.category|attr:"hidden"|add_class:"form-control"}}
+                                            {{form.item_code|attr:"hidden"|add_class:"form-control"}}
+                                            {{form.trans_type|attr:"hidden"|add_class:"form-control"}}
+                                            {{form.incoming_vat|attr:"hidden"|add_class:"form-control"}}
+                                            {{form.vatable_sales|attr:"hidden"|add_class:"form-control"}}
+                                            {{form.vat|attr:"hidden"|add_class:"form-control"}}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+        						</div>
+                              </div>
+
+                              <div class="form-actions right">
+                                <button type="submit" class="btn btn-pink"><i class="la la-check-square-o"></i> Submit</button>
+                                <button type="submit" class="btn btn-pink" name="add_another"><i class="la la-check-square-o"></i> Submit & Add Another</button>
+                              </div>
+
+                            </form>
+
+        				</div>
+        			</div>
+        		</div>
+    		</form>
+    	</div>
+
+    </section>
+
+
+{% endblock body_block %}

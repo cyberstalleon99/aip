@@ -1,0 +1,338 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load mathfilters %}
+{% load extra_tags %}
+{% load humanize %}
+
+{% block extra_head %}
+<style>
+	.blink-bg{
+		animation: blinkingBackground 1s infinite;
+	}
+	@keyframes blinkingBackground{
+		0%		{ background-color: #ff9149;}
+		100%	{ background-color: #28d094;}
+	}
+</style>
+{% endblock extra_head %}
+
+{% block body_block %}
+
+    <div class="content-header row">
+      <div class="content-header-left col-md-6 col-12 mb-2">
+        <h3 class="content-header-title">Job Orders</h3>
+      </div>
+      <div class="content-header-right col-md-6 col-12">
+        <div class="btn-group float-md-right" role="group" aria-label="Edit Options">
+          <button class="btn btn-info round dropdown-toggle dropdown-menu-right box-shadow-2 px-2" id="btnGroupDrop1" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <i class="ft-settings icon-left"></i> Actions
+          </button>
+          <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+              <a class="dropdown-item" href="{% url "admin:fleet_joborder_add" %}" target="_blank">New JO</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xl-2 col-lg-6 col-12">
+            <div class="card">
+                <div class="card-content">
+                    <div class="media align-items-stretch">
+                        <div class="p-2 text-center bg-red rounded-left">
+                             <span class='font-large-2 text-white'>{{ jo_count }}</span>
+                        </div>
+                        <div class="py-1 px-2 media-body">
+                            <h5 class="info">For Approval</h5>
+                            <h5 class="text-bold-400">Job Orders for Approval</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-lg-6 col-12">
+            <div class="card">
+                <div class="card-content">
+                    <div class="media align-items-stretch">
+                        <div class="p-2 text-center bg-info rounded-left">
+                             <span class='font-large-2 text-white'>{{ scheduled_count }}</span>
+                        </div>
+                        <div class="py-1 px-2 media-body">
+                            <h5 class="info">Scheduled</h5>
+                            <h5 class="text-bold-400">No need to rush</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-lg-6 col-12">
+            <div class="card">
+                <div class="card-content">
+                    <div class="media align-items-stretch">
+                        <div class="p-2 text-center bg-danger rounded-left">
+                            <span class='font-large-2 text-white'>{{ unscheduled_count }}</span>
+                        </div>
+                        <div class="py-1 px-2 media-body">
+                            <h5 class="danger">Unscheduled</h5>
+                            <h5 class="text-bold-400">Repairs that needs priority</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-lg-6 col-12">
+            <div class="card">
+                <div class="card-content">
+                    <div class="media align-items-stretch">
+                        <div class="p-2 text-center bg-warning rounded-left">
+                            <span class='font-large-2 text-white'>{{ capital_count }}</span>
+                        </div>
+                        <div class="py-1 px-2 media-body">
+                            <h5 class="warning">Capital Repair</h5>
+                            <h5 class="text-bold-400">Repairs that takes more than a week.</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-lg-6 col-12">
+            <div class="card">
+                <div class="card-content">
+                    <div class="media align-items-stretch">
+                        <div class="p-2 text-center bg-blue rounded-left">
+                            <span class='font-large-2 text-white'>{{ sustained_count }}</span>
+                        </div>
+                        <div class="py-1 px-2 media-body">
+                            <h5 class="success">Sustained</h5>
+                            <h5 class="text-bold-400">Working units with issues.</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-lg-6 col-12">
+            <div class="card">
+                <div class="card-content">
+                    <div class="media align-items-stretch">
+                        <div class="p-2 text-center bg-success rounded-left">
+                            <span class='font-large-2 text-white'>{{ pms_count }}</span>
+                        </div>
+                        <div class="py-1 px-2 media-body">
+                            <h5 class="success">For PMS</h5>
+                            <h5 class="text-bold-400">Scheduled Maintenance</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="row">
+    	<div id="pills-elements" class="match-height col-12">
+			<div class="card">
+
+				<div class="card-content">
+					<div class="card-body">
+						<ul class="nav nav-pills">
+							<li class="nav-item">
+								<a class="nav-link active" id="base-pending" data-toggle="pill" href="#scheduled" aria-expanded="true"><span class="badge badge-pill badge-glow badge-default badge-success">{{ pending_count }}</span> Scheduled Repairs</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" id="base-active" data-toggle="pill" href="#unscheduled" aria-expanded="false"><span class="badge badge-pill badge-glow badge-default badge-primary ml-1">{{ active_count }}</span> Unscheduled Repairs</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" id="active-dmhp" data-toggle="pill" href="#capital" aria-expanded="false"><span class="badge badge-pill badge-glow badge-default badge-secondary ml-1">{{ active_dmhp_count }}</span> Capital Repairs</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" id="base-invalid" data-toggle="pill" href="#sustained" aria-expanded="false"><span class="badge badge-pill badge-glow badge-default badge-warning ml-1">{{ invalid_count }}</span> Sustained Repairs</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" id="base-invalid" data-toggle="pill" href="#pms" aria-expanded="false"><span class="badge badge-pill badge-glow badge-default badge-warning ml-1">{{ invalid_count }}</span> PMS</a>
+							</li>
+						</ul>
+						<div class="tab-content px-1 pt-1">
+							<div role="tabpanel" class="tab-pane active" id="scheduled" aria-expanded="true" aria-labelledby="base-pending">
+
+							    <hr class="m-0">
+							    <div class="table-responsive">
+                                    <table class="table table-striped table-bordered table-middle dataex-html5-selectors" data-page-length='15'>
+                                    <thead>
+                                        <tr>
+                                            <th class="border-top-0">JO Number</th>
+                                            <th class="border-top-0">Unit</th>
+                                            <th class="border-top-0">Date Start</th>
+                                            <th class="border-top-0">Cause of Repair</th>
+                                            <th class="border-top-0">Work Done</th>
+                                            <th class="border-top-0">Remarks</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for repair in scheduled.all %}
+                                        <tr class="{% if repair.running_days > 60 %}blink-bg{% endif %}">
+                                            <td class="text-truncate">
+                                                <span class="badge badge-pill badge-glow badge-default badge-danger">{{ repair.running_days }} </span>
+                                                <a href="{% url 'fleet:jo_detail' pk=repair.base_jo.id %}" target="_blank"> {{ repair.base_jo }}</a>
+                                            </td>
+                                            <td>{{ repair.base_jo.base_unit }}</td>
+                                            <td class="text-truncate">{{ repair.date_start }}</td>
+                                            <td>{{ repair.repair_cause }}</td>
+                                            <td>{{ repair.work_done }}</td>
+                                            <td>{{ repair.remarks }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                                </div>
+
+							</div>
+
+							<div class="tab-pane fade" id="unscheduled" aria-labelledby="base-active">
+
+							    <hr class="m-0">
+							    <div class="table-responsive">
+                                    <table class="table table-striped table-bordered table-middle dataex-html5-selectors" data-page-length='15'>
+                                    <thead>
+                                        <tr>
+                                            <th class="border-top-0">JO Number</th>
+                                            <th class="border-top-0">Unit</th>
+                                            <th class="border-top-0">Date Start</th>
+                                            <th class="border-top-0">Cause of Repair</th>
+                                            <th class="border-top-0">Work Done</th>
+                                            <th class="border-top-0">Remarks</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for repair in unscheduled.all %}
+                                        <tr class="{% if repair.running_days > 60 %}blink-bg{% endif %}">
+                                            <td class="text-truncate">
+                                                <span class="badge badge-pill badge-glow badge-default badge-danger">{{ repair.running_days }} </span>
+                                                <a href="{% url 'fleet:jo_detail' pk=repair.base_jo.id %}" target="_blank"> {{ repair.base_jo }}</a>
+                                            </td>
+                                            <td>{{ repair.base_jo.base_unit }}</td>
+                                            <td class="text-truncate">{{ repair.date_start }}</td>
+                                            <td>{{ repair.repair_cause }}</td>
+                                            <td>{{ repair.work_done }}</td>
+                                            <td>{{ repair.remarks }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                                </div>
+
+							</div>
+
+							<div class="tab-pane fade" id="capital" aria-labelledby="base-active_dmhp">
+
+							    <hr class="m-0">
+							    <div class="table-responsive">
+                                    <table class="table table-striped table-bordered table-middle dataex-html5-selectors" data-page-length='15'>
+                                    <thead>
+                                        <tr>
+                                            <th class="border-top-0">JO Number</th>
+                                            <th class="border-top-0">Unit</th>
+                                            <th class="border-top-0">Date Start</th>
+                                            <th class="border-top-0">Cause of Repair</th>
+                                            <th class="border-top-0">Work Done</th>
+                                            <th class="border-top-0">Remarks</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for repair in capital_repair.all %}
+                                        <tr class="{% if repair.running_days > 60 %}blink-bg{% endif %}">
+                                            <td class="text-truncate">
+                                                <span class="badge badge-pill badge-glow badge-default badge-danger">{{ repair.running_days }} </span>
+                                                <a href="{% url 'fleet:jo_detail' pk=repair.base_jo.id %}" target="_blank"> {{ repair.base_jo }}</a>
+                                            </td>
+                                            <td>{{ repair.base_jo.base_unit }}</td>
+                                            <td class="text-truncate">{{ repair.date_start }}</td>
+                                            <td>{{ repair.repair_cause }}</td>
+                                            <td>{{ repair.work_done }}</td>
+                                            <td>{{ repair.remarks }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                                </div>
+
+							</div>
+
+							<div class="tab-pane fade" id="sustained" aria-labelledby="base-active_dmhp">
+
+							    <hr class="m-0">
+							    <div class="table-responsive">
+                                    <table class="table table-striped table-bordered table-middle dataex-html5-selectors" data-page-length='15'>
+                                    <thead>
+                                        <tr>
+                                            <th class="border-top-0">JO Number</th>
+                                            <th class="border-top-0">Unit</th>
+                                            <th class="border-top-0">Date Start</th>
+                                            <th class="border-top-0">Cause of Repair</th>
+                                            <th class="border-top-0">Work Done</th>
+                                            <th class="border-top-0">Remarks</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for repair in sustained.all %}
+                                        <tr class="{% if repair.running_days > 60 %}blink-bg{% endif %}">
+                                            <td class="text-truncate">
+                                                <span class="badge badge-pill badge-glow badge-default badge-danger">{{ repair.running_days }} </span>
+                                                <a href="{% url 'fleet:jo_detail' pk=repair.base_jo.id %}" target="_blank"> {{ repair.base_jo }}</a>
+                                            </td>
+                                            <td>{{ repair.base_jo.base_unit }}</td>
+                                            <td class="text-truncate">{{ repair.date_start }}</td>
+                                            <td>{{ repair.repair_cause }}</td>
+                                            <td>{{ repair.work_done }}</td>
+                                            <td>{{ repair.remarks }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                                </div>
+
+							</div>
+
+							<div class="tab-pane fade" id="pms" aria-labelledby="base-active_dmhp">
+
+							    <hr class="m-0">
+							    <div class="table-responsive">
+                                    <table class="table table-striped table-bordered table-middle dataex-html5-selectors" data-page-length='15'>
+                                    <thead>
+                                        <tr>
+                                            <th class="border-top-0">JO Number</th>
+                                            <th class="border-top-0">Unit</th>
+                                            <th class="border-top-0">Date Start</th>
+                                            <th class="border-top-0">Cause of Repair</th>
+                                            <th class="border-top-0">Work Done</th>
+                                            <th class="border-top-0">Remarks</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for repair in pms.all %}
+                                        <tr class="{% if repair.running_days > 60 %}blink-bg{% endif %}">
+                                            <td class="text-truncate">
+                                                <span class="badge badge-pill badge-glow badge-default badge-danger">{{ repair.running_days }} </span>
+                                                <a href="{% url 'fleet:jo_detail' pk=repair.base_jo.id %}" target="_blank"> {{ repair.base_jo }}</a>
+                                            </td>
+                                            <td>{{ repair.base_jo.base_unit }}</td>
+                                            <td class="text-truncate">{{ repair.date_start }}</td>
+                                            <td>{{ repair.repair_cause }}</td>
+                                            <td>{{ repair.work_done }}</td>
+                                            <td>{{ repair.remarks }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                                </div>
+
+							</div>
+
+
+						</div>
+					</div>
+				</div>
+			</div>
+    	</div>
+    </section>
+
+
+{% endblock %}

@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+    <meta name="description" content="AIP, Construction">
+    <meta name="keywords" content="AIP, Aip Construction">
+    <meta name="author" content="Eric Kiser">
+    <title>AIP</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.5.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.5.0/mapbox-gl.css' rel='stylesheet' />
+    <style>
+    body { margin: 0; padding: 0; }
+    #map { position: absolute; top: 0; bottom: 0; width: 100%; };
+    </style>
+</head>
+<body>
+<style>
+    #menu {
+        background: #fff;
+        position: absolute;
+        z-index: 1;
+        top: 10px;
+        right: 10px;
+        border-radius: 3px;
+        width: 120px;
+        border: 1px solid rgba(0,0,0,0.4);
+        font-family: 'Open Sans', sans-serif;
+    }
+
+    #menu a {
+        font-size: 13px;
+        color: #404040;
+        display: block;
+        margin: 0;
+        padding: 0;
+        padding: 10px;
+        text-decoration: none;
+        border-bottom: 1px solid rgba(0,0,0,0.25);
+        text-align: center;
+    }
+
+    #menu a:last-child {
+        border: none;
+    }
+
+    #menu a:hover {
+        background-color: #f8f8f8;
+        color: #404040;
+    }
+
+    #menu a.active {
+        background-color: #3887be;
+        color: #ffffff;
+    }
+
+    #menu a.active:hover {
+        background: #3074a4;
+    }
+</style>
+
+<nav id="menu"></nav>
+<div id="map"></div>
+
+<script>
+    mapboxgl.accessToken = 'pk.eyJ1IjoiZWFrZGV2IiwiYSI6ImNrM2Z2YmE2dTA4ODczc3Q2OTBibXhtajcifQ.rwwuHWi1rgxwwIQXfGQvOg';
+
+
+    var map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/streets-v11',
+        zoom: 7,
+        center: [121.188245, 16.318431]
+    });
+
+    // Size used for the pulsing dot
+    var size = 200;
+    var size2 = 150;
+
+    // Pulsing dot template for main branches
+    var iconMain = {
+        width: size,
+        height: size,
+        data: new Uint8Array(size * size * 4),
+
+        // get rendering context for the map canvas when layer is added to the map
+        onAdd: function() {
+            var canvas = document.createElement('canvas');
+            canvas.width = this.width;
+            canvas.height = this.height;
+            this.context = canvas.getContext('2d');
+        },
+
+        // called once before every frame where the icon will be used
+        render: function() {
+            var duration = 1000;
+            var t = (performance.now() % duration) / duration;
+
+            var radius = size / 2 * 0.3;
+            var outerRadius = size / 2 * 0.7 * t + radius;
+            var context = this.context;
+
+            // draw outer circle
+            context.clearRect(0, 0, this.width, this.height);
+            context.beginPath();
+            context.arc(this.width / 2, this.height / 2, outerRadius, 0, Math.PI * 2);
+            context.fillStyle = 'rgba(255, 200, 200,' + (1 - t) + ')';
+            context.fill();
+
+            // draw inner circle
+            context.beginPath();
+            context.arc(this.width / 2, this.height / 2, radius, 0, Math.PI * 2);
+            context.fillStyle = 'rgba(255, 100, 100, 1)';
+            context.strokeStyle = 'white';
+            context.lineWidth = 2 + 4 * (1 - t);
+            context.fill();
+            context.stroke();
+
+            // update this image's data with data from the canvas
+            this.data = context.getImageData(0, 0, this.width, this.height).data;
+
+            // continuously repaint the map, resulting in the smooth animation of the dot
+            map.triggerRepaint();
+
+            // return `true` to let the map know that the image was updated
+            return true;
+        }
+    };
+
+    // Pulsing dot template for project sites
+    var iconSites = {
+        width: size2,
+        height: size2,
+        data: new Uint8Array(size2 * size2 * 4),
+
+        // get rendering context for the map canvas when layer is added to the map
+        onAdd: function() {
+            var canvas = document.createElement('canvas');
+            canvas.width = this.width;
+            canvas.height = this.height;
+            this.context = canvas.getContext('2d');
+        },
+
+        // called once before every frame where the icon will be used
+        render: function() {
+            var duration = 1000;
+            var t = (performance.now() % duration) / duration;
+
+            var radius = size2 / 2 * 0.3;
+            var outerRadius = size2 / 2 * 0.7 * t + radius;
+            var context = this.context;
+
+            // draw outer circle
+            context.clearRect(0, 0, this.width, this.height);
+            context.beginPath();
+            context.arc(this.width / 2, this.height / 2, outerRadius, 0, Math.PI * 2);
+            context.fillStyle = 'rgba(255, 200, 200,' + (1 - t) + ')';
+            context.fill();
+
+            // draw inner circle
+            context.beginPath();
+            context.arc(this.width / 2, this.height / 2, radius, 0, Math.PI * 2);
+            context.fillStyle = 'rgba(30, 139, 195, 1)';
+            context.strokeStyle = 'white';
+            context.lineWidth = 2 + 4 * (1 - t);
+            context.fill();
+            context.stroke();
+
+            // update this image's data with data from the canvas
+            this.data = context.getImageData(0, 0, this.width, this.height).data;
+
+            // continuously repaint the map, resulting in the smooth animation of the dot
+            map.triggerRepaint();
+
+            // return `true` to let the map know that the image was updated
+            return true;
+        }
+    };
+
+
+    map.on('load', function () {
+
+        map.addImage('icon-main', iconMain, { pixelRatio: 2 });
+        map.addImage('icon-sites', iconSites, { pixelRatio: 2 });
+
+        //Layer 1: Main Branches
+        map.addLayer({
+            'id': 'Main Branch',
+            'type': 'symbol',
+
+            'source': {
+                "type": "geojson",
+                "data": {
+                    "type": "FeatureCollection",
+                    "features": [
+                        {% for site in main %}
+                        {
+                        "type": "Feature",
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [{{ site.lon }}, {{ site.lat }}]
+                        },
+                        "properties": {
+                            "title": "{{ site.project_code }}"
+
+                        }
+                        }
+                        {% if not forloop.last %}, {% endif %}{% endfor %}
+
+                    ]
+                }
+            },
+
+
+            'layout': {
+                'visibility': 'visible',
+                "text-field": ["get", "title"],
+                "text-variable-anchor": ["top", "bottom", "left", "right"],
+                "text-radial-offset": 0.8,
+                "text-justify": "auto",
+                "icon-image": "icon-main",
+                "icon-padding": 0,
+                "icon-allow-overlap": true
+            }
+        });
+
+        //Layer 1: Project Sites
+        map.addLayer({
+            'id': 'Project Sites',
+            'type': 'symbol',
+
+            'source': {
+                "type": "geojson",
+                "data": {
+                    "type": "FeatureCollection",
+                    "features": [
+                        {% for site in sites %}
+                        {
+                        "type": "Feature",
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [{{ site.lon }}, {{ site.lat }}]
+                        },
+                        "properties": {
+                            "title": "{{ site.project_code }}",
+                            "description": "<h2>{{ site.project_code }}</h2><strong>{{ site.project_status }}</strong><p>{{ site.name }}</p>"
+                        }
+                        }
+                        {% if not forloop.last %}, {% endif %}{% endfor %}
+
+                    ]
+                }
+            },
+
+
+            'layout': {
+                'visibility': 'visible',
+                "text-field": ["get", "title"],
+                "text-variable-anchor": ["top", "bottom", "left", "right"],
+                "text-radial-offset": 0.8,
+                "text-justify": "auto",
+                "icon-image": "icon-sites",
+                "icon-padding": 0,
+                "icon-allow-overlap": true
+            }
+        });
+
+
+        //Layer 1: Hydraulic Excavator
+        map.addLayer({
+            'id': 'Hydraulic Excavator',
+            'type': 'symbol',
+
+            'source': {
+                "type": "geojson",
+                "data": {
+                    "type": "FeatureCollection",
+                    "features": [
+                        {% for unit in he %}
+                        {
+                        "type": "Feature",
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [{{ unit.project_site.lon }}+((Math.floor(Math.random() * 5) - 5)/1000), {{ unit.project_site.lat }}+((Math.floor(Math.random() * 5) - 5)/1000)]
+                        },
+                        "properties": {
+                            "title": "{{ unit.body_no }}",
+                            "description": "<h3>{{ unit.body_no }}: {{ unit.operator }}</h3><strong>{{ unit.project_site }}: {{ unit.status }}</strong>"
+                        }
+                        }
+                        {% if not forloop.last %}, {% endif %}{% endfor %}
+
+                    ]
+                },
+                "cluster": true,
+                "clusterMaxZoom": 8, // Max zoom to cluster points on
+                "clusterRadius": 50
+            },
+
+            'layout': {
+                'visibility': 'visible',
+                "text-field": ["get", "title"],
+                "text-variable-anchor": ["top", "bottom", "left", "right"],
+                "text-radial-offset": 0.8,
+                "text-justify": "auto",
+                "icon-image": "car-15",
+                "icon-padding": 0,
+                "icon-allow-overlap": true
+            }
+
+        });
+
+
+
+    });
+
+
+
+
+
+
+    var toggleableLayerIds = [ 'Main Branch', 'Project Sites', 'Hydraulic Excavator' ];
+
+    for (var i = 0; i < toggleableLayerIds.length; i++) {
+        var id = toggleableLayerIds[i];
+
+        var link = document.createElement('a');
+        link.href = '#';
+        link.className = 'active';
+        link.textContent = id;
+
+        link.onclick = function (e) {
+        var clickedLayer = this.textContent;
+        e.preventDefault();
+        e.stopPropagation();
+
+        var visibility = map.getLayoutProperty(clickedLayer, 'visibility');
+
+        if (visibility === 'visible') {
+            map.setLayoutProperty(clickedLayer, 'visibility', 'none');
+            this.className = '';
+        } else {
+            this.className = 'active';
+            map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
+        }
+        };
+
+        var layers = document.getElementById('menu');
+        layers.appendChild(link);
+    }
+
+
+    // Create a popup, but don't add it to the map yet.
+    var popup = new mapboxgl.Popup({
+        closeButton: false,
+        closeOnClick: false
+    });
+
+    map.on('mouseenter', 'Hydraulic Excavator', function(e) {
+        // Change the cursor style as a UI indicator.
+        map.getCanvas().style.cursor = 'pointer';
+
+        var coordinates = e.features[0].geometry.coordinates.slice();
+        var description = e.features[0].properties.description;
+
+        // Ensure that if the map is zoomed out such that multiple
+        // copies of the feature are visible, the popup appears
+        // over the copy being pointed to.
+        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+            coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+        }
+
+        // Populate the popup and set its coordinates
+        // based on the feature found.
+        popup.setLngLat(coordinates)
+        .setHTML(description)
+        .addTo(map);
+    });
+
+    map.on('mouseleave', 'Project Sites', function() {
+        map.getCanvas().style.cursor = '';
+        popup.remove();
+    });
+
+
+
+</script>
+
+</body>
+</html>

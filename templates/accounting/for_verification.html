@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load humanize %}
+{% load widget_tweaks %}
+{% load extra_tags %}
+{% load mathfilters %}
+
+{% block body_block %}
+    {% if request.user|has_group:"Cashier" %}
+
+    <div class="row">
+
+        <section class="col-12">
+            <div class="card">
+                <div class="card-header pb-0">
+                    <h4 class="primary">Liquidations for Verification (assign account code and review details)</h4>
+                    <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                    <div class="heading-elements">
+                        <ul class="list-inline mb-0">
+                            <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-content collapse show">
+                    <div class="card-body">
+
+                        <ul class="nav nav-pills">
+							<li class="nav-item">
+								<a class="nav-link active" id="base-baguio" data-toggle="pill" href="#baguio" aria-expanded="true"><span class="badge badge-pill badge-glow badge-default badge-success">{{ pending_count }}</span> Baguio</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" id="base-bontoc" data-toggle="pill" href="#bontoc" aria-expanded="false"><span class="badge badge-pill badge-glow badge-default badge-primary ml-1">{{ active_count }}</span> Bontoc</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" id="base-tagaytay" data-toggle="pill" href="#tagaytay" aria-expanded="false"><span class="badge badge-pill badge-glow badge-default badge-warning ml-1">{{ invalid_count }}</span> Tagaytay</a>
+							</li>
+						</ul>
+						<div class="tab-content px-1 pt-1">
+							<div role="tabpanel" class="tab-pane active" id="baguio" aria-expanded="true" aria-labelledby="base-baguio">
+                                <div class="table-responsive">
+                                <table class="table table-striped table-bordered table-middle multi-ordering dataex-html5-selectors" data-page-length='15'>
+                                    <thead>
+                                        <tr>
+                                            <th class="border-top-0">No.</th>
+                                            <th class="border-top-0">Date</th>
+                                            <th class="border-top-0">Form No.</th>
+                                            <th class="border-top-0">Transaction By</th>
+                                            <th class="border-top-0">Project Site</th>
+                                            <th class="border-top-0">Debit</th>
+                                            <th class="border-top-0">Credit</th>
+                                            <th class="border-top-0">Vat</th>
+                                            <th class="border-top-0">Vatable Amount</th>
+                                            <th class="border-top-0">Item</th>
+                                            <th class="border-top-0">Remarks/Particulars</th>
+                                            <th class="border-top-0">Delete</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for entry in for_verification_22 %}
+                                            <tr class='bg-accent-1'>
+                                                <td class="text-truncate">{{ entry.id }}</td>
+                                                <td class="text-truncate">
+                                                    <a href="{% url 'accounting:update_entry' entry.id %}" target="_blank">
+                                                        <span class="badge badge-secondary"><i class="la la-pencil font-medium-3"></i></span>
+                                                    </a>
+                                                    <a href="{% if entry.base_por.id %}{% url 'accounting:purchase_detail_page' pk=entry.base_por.id %}{% endif %}" target="_blank">
+                                                       <span class="badge badge-success"><i class="la la-eye font-medium-3"></i></span>
+                                                    </a>
+                                                     {{ entry.trans_date }}
+                                                </td>
+                                                <td class="text-truncate">{{ entry.form_no }}</td>
+                                                <td class="text-truncate">{{ entry.transaction_by }}</td>
+                                                <td class="text-truncate">{{ entry.project_site }}</td>
+                                                <td class="text-truncate">{% if entry.entry_type == "Receipts" %}{{ entry.debit|intcomma }}{% endif %}</td>
+                                                <td class="text-truncate">{% if entry.entry_type == "Disbursements" %}{{ entry.debit|intcomma }}{% endif %}</td>
+                                                <td class="text-truncate ">{{ entry.incoming_vat|intcomma }}</td>
+                                                <td class="text-truncate ">{{ entry.vatable_sales|intcomma }}</td>
+                                                <td class="text-truncate">{{ entry.item }}</td>
+                                                <td class="text-truncate">{{ entry.remarks }}</td>
+                                                <td class="text-truncate">
+                                                    <a href="{% url 'accounting:delete_entry' entry.id %}"><span class="badge badge-danger"><i class="la la-close font-medium-3"></i></span></a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                                </div>
+							</div>
+
+							<div class="tab-pane fade" id="bontoc" aria-labelledby="base-bontoc">
+                                <div class="table-responsive">
+                                <table class="table table-striped table-bordered table-middle multi-ordering dataex-html5-selectors" data-page-length='15'>
+                                    <thead>
+                                        <tr>
+                                            <th class="border-top-0">No.</th>
+                                            <th class="border-top-0">Date</th>
+                                            <th class="border-top-0">Form No.</th>
+                                            <th class="border-top-0">Transaction By</th>
+                                            <th class="border-top-0">Project Site</th>
+                                            <th class="border-top-0">Debit</th>
+                                            <th class="border-top-0">Credit</th>
+                                            <th class="border-top-0">Vat</th>
+                                            <th class="border-top-0">Vatable Amount</th>
+                                            <th class="border-top-0">Item</th>
+                                            <th class="border-top-0">Remarks/Particulars</th>
+                                            <th class="border-top-0">Delete</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for entry in for_verification_26 %}
+                                            <tr class='bg-accent-1'>
+                                                <td class="text-truncate">{{ entry.id }}</td>
+                                                <td class="text-truncate">
+                                                    <a href="{% url 'accounting:update_entry' entry.id %}" target="_blank">
+                                                        <span class="badge badge-secondary"><i class="la la-pencil font-medium-3"></i></span>
+                                                    </a>
+                                                    <a href="{% if entry.base_por.id %}{% url 'accounting:purchase_detail_page' pk=entry.base_por.id %}{% endif %}" target="_blank">
+                                                       <span class="badge badge-success"><i class="la la-eye font-medium-3"></i></span>
+                                                    </a>
+                                                     {{ entry.trans_date }}
+                                                </td>
+                                                <td class="text-truncate">{{ entry.form_no }}</td>
+                                                <td class="text-truncate">{{ entry.transaction_by }}</td>
+                                                <td class="text-truncate">{{ entry.project_site }}</td>
+                                                <td class="text-truncate">{% if entry.entry_type == "Receipts" %}{{ entry.debit|intcomma }}{% endif %}</td>
+                                                <td class="text-truncate">{% if entry.entry_type == "Disbursements" %}{{ entry.debit|intcomma }}{% endif %}</td>
+                                                <td class="text-truncate ">{{ entry.incoming_vat|intcomma }}</td>
+                                                <td class="text-truncate ">{{ entry.vatable_sales|intcomma }}</td>
+                                                <td class="text-truncate">{{ entry.item }}</td>
+                                                <td class="text-truncate">{{ entry.remarks }}</td>
+                                                <td class="text-truncate">
+                                                    <a href="{% url 'accounting:delete_entry' entry.id %}" target="_blank"><span class="badge badge-danger"><i class="la la-close font-medium-3"></i></span></a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                                </div>
+							</div>
+							<div class="tab-pane fade" id="tagaytay" aria-labelledby="base-tagaytay">
+                                <div class="table-responsive">
+                                <table class="table table-striped table-bordered table-middle multi-ordering dataex-html5-selectors" data-page-length='15'>
+                                    <thead>
+                                        <tr>
+                                            <th class="border-top-0">No.</th>
+                                            <th class="border-top-0">Date</th>
+                                            <th class="border-top-0">Form No.</th>
+                                            <th class="border-top-0">Transaction By</th>
+                                            <th class="border-top-0">Project Site</th>
+                                            <th class="border-top-0">Debit</th>
+                                            <th class="border-top-0">Credit</th>
+                                            <th class="border-top-0">Vat</th>
+                                            <th class="border-top-0">Vatable Amount</th>
+                                            <th class="border-top-0">Item</th>
+                                            <th class="border-top-0">Remarks/Particulars</th>
+                                            <th class="border-top-0">Delete</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for entry in for_verification_82 %}
+                                            <tr class='bg-accent-1'>
+                                                <td class="text-truncate">{{ entry.id }}</td>
+                                                <td class="text-truncate">
+                                                    <a href="{% url 'accounting:update_entry' entry.id %}" target="_blank">
+                                                        <span class="badge badge-secondary"><i class="la la-pencil font-medium-3"></i></span>
+                                                    </a>
+                                                    <a href="{% if entry.base_por.id %}{% url 'accounting:purchase_detail_page' pk=entry.base_por.id %}{% endif %}" target="_blank">
+                                                       <span class="badge badge-success"><i class="la la-eye font-medium-3"></i></span>
+                                                    </a>
+                                                     {{ entry.trans_date }}
+                                                </td>
+                                                <td class="text-truncate">{{ entry.form_no }}</td>
+                                                <td class="text-truncate">{{ entry.transaction_by }}</td>
+                                                <td class="text-truncate">{{ entry.project_site }}</td>
+                                                <td class="text-truncate">{% if entry.entry_type == "Receipts" %}{{ entry.debit|intcomma }}{% endif %}</td>
+                                                <td class="text-truncate">{% if entry.entry_type == "Disbursements" %}{{ entry.debit|intcomma }}{% endif %}</td>
+                                                <td class="text-truncate ">{{ entry.incoming_vat|intcomma }}</td>
+                                                <td class="text-truncate ">{{ entry.vatable_sales|intcomma }}</td>
+                                                <td class="text-truncate">{{ entry.item }}</td>
+                                                <td class="text-truncate">{{ entry.remarks }}</td>
+                                                <td class="text-truncate">
+                                                    <a href="{% url 'accounting:delete_entry' entry.id %}" target="_blank"><span class="badge badge-danger"><i class="la la-close font-medium-3"></i></span></a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                                </div>
+							</div>
+						</div>
+
+
+
+                    </div>
+                </div>
+            </div>
+
+    	</section>
+    </div>
+
+    {% else %}
+
+    <div class="col-sm-5 offset-sm-1 col-md-6 offset-md-3 col-lg-5 offset-lg-4 box-shadow-2">
+    	<div class="card border-danger bg-danger border-lighten-3 px-2 my-0 row">
+    		<div class="no-border pb-1">
+    			<div class="card-body">
+    				<h2 class="text-uppercase text-center mb-2 white display-4 text-bold-400">Forbidden</h2>
+    				<h3 class="text-center">Access Level Clearance Insufficient </h3>
+    			</div>
+    			<div class="card-footer">
+    			    <h4 class="text-center">For upgrade, contact your superior</h3>
+    			</div>
+    		</div>
+    	</div>
+    </div>
+
+    {% endif %}
+
+
+{% endblock %}
+
+{% block extra_js %}
+
+{% endblock extra_js %}

@@ -1,0 +1,295 @@
+{% extends "base_print.html" %}
+{% load staticfiles %}
+{% load humanize %}
+
+{% block body_block %}
+    <div>
+
+        <section class="card">
+        	<div id="invoice-template" class="card-body">
+        		<!-- Invoice Company Details -->
+        		<div id="invoice-company-details" class="row">
+        			<div class="col-md-8 col-sm-12 text-center text-md-left">
+        				<div class="media">
+        					<img src="{% static "app-assets/images/ico/AIP-Logo-(128x128).png" %}" alt="company logo" class=""/>
+        					<div class="media-body">
+        						<ul class="ml-2 px-0 list-unstyled">
+        							<li class="text-bold-800">AIP Construction</li>
+        							<li>Unit 111-B, EGI Albergo Hotel</li>
+        							<li>#1 Villamor Drive, Barangay Lualhati</li>
+        							<li>Baguio City, Philippines 2600</li>
+        							<li>TeleFax: (074) 424-6179, (074) 483-0373</li>
+        						</ul>
+        					</div>
+        				</div>
+        			</div>
+        			<div class="col-md-4 col-sm-12 text-center text-md-right">
+        				<h2>General Stats</h2>
+        			</div>
+        		</div>
+        		<!--/ Invoice Company Details -->
+
+        		<!-- Invoice Customer Details -->
+
+                <div class="bs-callout-danger callout-border-left mt-1 p-1">
+                    <strong>Warning!</strong>
+                    <p>The estimated cost here are conservative and considered minimum, actual cost are higher due to item transactions under investigation.</p>
+                </div>
+                <div class="bs-callout-success callout-border-left mt-1 p-1">
+                    <strong>Challenge to all Mechanics!</strong>
+                    <p>How can we reduce the number of repairs, lower down fuel consumptions to reduce cost?</p>
+                </div>
+                <hr>
+
+        		<div class="pt-2">
+        			<div class="row">
+        				<div class="col-lg-4 col-12 ">
+        				    <p class="lead info">Top Units with Most Repairs</p>
+        					<table class="table table-striped table-bordered table-middle dataex-html5-selectors " data-page-length='10'>
+                                <thead class="bg-blue-grey bg-lighten-4">
+                                    <tr>
+                                        <th class="border-top-0">Unit</th>
+                                        <th class="border-top-0">Description</th>
+                                        <th class="border-top-0">WO Count</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for unit in units %}
+                                    <tr>
+                                        <td><a href="{% url 'fleet:unit_detail' pk=unit.id %}" target="_blank">{{ unit.body_no }}</a></td>
+                                        <td>{{ unit.unit_desc }}</td>
+                                        <td class="danger">{{ unit.wo }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+        					</table>
+        				</div>
+
+        				<div class="col-lg-4 col-12 ">
+        				    <p class="lead info">Top Units w/ Lots of Materials Used</p>
+        					<table class="table table-striped table-bordered table-middle dataex-html5-selectors " data-page-length='10'>
+                                <thead class="bg-blue-grey bg-lighten-4">
+                                    <tr>
+                                        <th class="border-top-0">Unit</th>
+                                        <th class="border-top-0">No. of Materials Used</th>
+                                        <th class="border-top-0">Estimated Cost</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for unit in materials_used %}
+                                    <tr>
+                                        <td>{{ unit.unit__body_no }}</td>
+                                        <td class="danger">{{ unit.material_count }}</td>
+                                        <td class="warning">{{ unit.est_cost|intcomma }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+        					</table>
+        				</div>
+
+        				<div class="col-lg-4 col-12 ">
+        				    <p class="lead info">Top Units Consuming Fuel</p>
+        					<table class="table table-striped table-bordered table-middle dataex-html5-selectors " data-page-length='10'>
+                                <thead class="bg-blue-grey bg-lighten-4">
+                                    <tr>
+                                        <th class="border-top-0">Unit</th>
+                                        <th class="border-top-0">Total in Liters</th>
+                                        <th class="border-top-0">Estimated Cost</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for fuel in fuel_used %}
+                                    <tr>
+                                        <td>{{ fuel.unit__body_no }}</td>
+                                        <td class="danger">{{ fuel.fuel_amount|intcomma }}</td>
+                                        <td class="warning">{{ fuel.fuel_cost|intcomma }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+        					</table>
+        				</div>
+
+        			</div>
+        		</div>
+
+
+
+        	</div>
+        </section>
+
+        <section class="row match-height">
+            <div class="col">
+                <div class="card border-danger">
+                    <div class="card-content">
+                        <div class="card-body card-dashboard">
+                            <div id="monthly_container"></div>
+
+                            <script src="https://code.highcharts.com/highcharts.src.js"></script>
+                            <script>
+                            Highcharts.chart('monthly_container', {
+                                chart: {
+                                    type: 'line'
+                                },
+                                title: {
+                                    text: 'Monthly Comparison of Unit Breakdowns vs Repaired Units'
+                                },
+                                subtitle: {
+                                    text: ''
+                                },
+                                xAxis: {
+                                    categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+                                },
+                                yAxis: {
+
+                                },
+                                plotOptions: {
+                                    line: {
+                                        dataLabels: {
+                                            enabled: true
+                                        },
+                                        enableMouseTracking: false
+                                    }
+                                },
+                                series: [{
+                                    name: 'Incoming Repairs',
+                                    data: [{% for month in work_stat %}{{ month.total_count }}{% if not forloop.last %}, {% endif %}{% endfor %}]
+                                }, {
+                                    name: 'Units Repaired',
+                                    data: [{% for repaired in work_end %}{{ repaired.total_count }}{% if not forloop.last %}, {% endif %}{% endfor %}]
+                                }]
+                            });
+                            </script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="row match-height">
+
+            <div class="col-lg-4 col-12">
+                <div class="card border-primary">
+                    <div class="card-content">
+                        <div class="card-body card-dashboard">
+                            <div id="material_container"></div>
+
+                            <script src="https://code.highcharts.com/highcharts.js"></script>
+                            <script src="https://code.highcharts.com/modules/variable-pie.js"></script>
+                            <script src="https://code.highcharts.com/modules/exporting.js"></script>
+                            <script src="https://code.highcharts.com/modules/export-data.js"></script>
+                            <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+                            <script>
+                            Highcharts.chart('material_container', {
+                                chart: {
+                                    type: 'variablepie'
+                                },
+                                accessibility: {
+                                    description: ''
+                                },
+                                title: {
+                                    text: 'Top 10 Common Materials Being Used'
+                                },
+                                tooltip: {
+                                    headerFormat: '',
+                                    pointFormat: '<span style="color:{point.color}">\u25CF</span> <b> {point.name}</b><br/>' +
+                                        'Frequency of Usage: <b>{point.y}</b><br/>' +
+                                        'Total Cost: <b>{point.z}</b><br/>'
+                                },
+                                series: [{
+                                    minPointSize: 10,
+                                    innerSize: '20%',
+                                    zMin: 0,
+                                    name: 'Materials',
+                                    data: [{% for item in top_materials %}{
+                                        name: '{{ item.base_in__item__item_name }}',
+                                        y: {{ item.total_count }},
+                                        z: {{ item.total_sum }}
+                                    }{% if not forloop.last %}, {% endif %}{% endfor %}]
+                                }]
+                            });
+
+                            </script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-12">
+                <div class="card border-info">
+                    <div class="card-content">
+                        <div class="card-body card-dashboard">
+                            <div id="cause_repair"></div>
+
+                            <script src="https://code.highcharts.com/highcharts.js"></script>
+                            <script src="https://code.highcharts.com/modules/variable-pie.js"></script>
+                            <script src="https://code.highcharts.com/modules/exporting.js"></script>
+                            <script src="https://code.highcharts.com/modules/export-data.js"></script>
+                            <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+                            <script>
+                            Highcharts.chart('cause_repair', {
+                                chart: {
+                                    type: 'variablepie'
+                                },
+                                accessibility: {
+                                    description: ''
+                                },
+                                title: {
+                                    text: 'Common Cause of Repair'
+                                },
+                                tooltip: {
+                                    headerFormat: '',
+                                    pointFormat: '<span style="color:{point.color}">\u25CF</span> <b> {point.name}</b><br/>' +
+                                        'Total {point.name}: <b>{point.y}</b><br/>'
+                                },
+                                series: [{
+                                    minPointSize: 10,
+                                    innerSize: '20%',
+                                    zMin: 0,
+                                    name: 'countries',
+                                    data: [{% for wo in cause_of_repair %}{
+                                        name: '{{ wo.repair_cause }}',
+                                        y: {{ wo.total_count }},
+                                        z: 30
+                                    }{% if not forloop.last %}, {% endif %}{% endfor %}]
+                                }]
+                            });
+
+                            </script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+
+        <section>
+            <div class="row">
+				<div class="col-lg-4 col-12 ">
+				    <p class="lead info">Test Area</p>
+					<table class="table table-striped table-bordered table-middle" data-page-length='10'>
+                        <thead class="bg-blue-grey bg-lighten-4">
+                            <tr>
+                                <th class="border-top-0">Unit</th>
+                                <th class="border-top-0">Description</th>
+                                <th class="border-top-0">WO Count</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for unit in top_materials %}
+                            <tr>
+                                <td><a href="" target="_blank">{{ unit.base_in__item__item_name }}</a></td>
+                                <td>{{ unit.total_count }}</td>
+                                <td class="danger">{{ unit.total_sum }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+					</table>
+				</div>
+            </div>
+        </section>
+
+    </div>
+
+
+{% endblock %}

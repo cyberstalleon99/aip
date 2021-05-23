@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load humanize %}
+{% load widget_tweaks %}
+{% load extra_tags %}
+{% load mathfilters %}
+
+{% block body_block %}
+    {% if request.user|has_group:"Cashier" %}
+
+    <section class="row">
+        <div class="content-header-left col-md-6 col-12 mb-1">
+            <h3 class="content-header-title">Daily Transactions</h3>
+        </div>
+    	<div class="col-12">
+    	    <div class="mb-0 badge badge-square badge-info font-medium-3">Entries for Today by <strong>{{ user.get_username }}</strong></div>
+    	    <a href="{% url 'accounting:new_entry' %}" target="_blank"><span class="badge badge-warning"><i class="la la-plus font-medium-3"></i></span></a>
+    	    <div class="mb-0 badge badge-square badge-warning font-medium-4 float-right">Cash On Hand:</strong></div>
+    	    <hr class="m-0">
+    		<div id="invoice-items-details" class="pt-2">
+    			<div class="row">
+    				<div class="table-responsive col-sm-12">
+    					<table class="table">
+                            <thead class="bg-blue-grey bg-lighten-4">
+                                <tr>
+                                    <th class="border-top-0">Date</th>
+                                    <th class="border-top-0">Form No.</th>
+                                    <th class="border-top-0">Transaction By</th>
+                                    <th class="border-top-0">Project Site</th>
+                                    <th class="border-top-0">Debit</th>
+                                    <th class="border-top-0">Credit</th>
+                                    <th class="border-top-0">.......Remarks/Particulars......</th>
+                                    <th class="border-top-0">Delete</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if daily_entry %}
+                                {% for trans in daily_entry %}
+                                <tr class='bg-accent-1'>
+                                    <td class="text-truncate">
+                                        <a href="{% url 'accounting:update_entry' trans.id %}" target="_blank">
+                                            <span class="badge badge-secondary"><i class="la la-pencil font-medium-3"></i></span>
+                                        </a>
+                                        <a href="{% url 'accounting:detail_entry' trans.id %}" target="_blank">
+                                            <span class="badge badge-success"><i class="la la-eye font-medium-3"></i></span>
+                                        </a>
+                                         {{ trans.trans_date }}
+                                    </td>
+                                    <td class="text-truncate">{{ trans.id }}</td>
+                                    <td class="text-truncate">{{ trans.transaction_by }}</td>
+                                    <td class="text-truncate">{{ trans.project_site }}</td>
+                                    <td class="text-truncate info">{% if trans.entry_debit %}{{ trans.debit|intcomma }}{% endif %}</td>
+                                    <td class="text-truncate danger">{% if trans.entry_credit %}{{ trans.debit|intcomma }}{% endif %}</td>
+                                    <td class="">{{ trans.remarks }}</td>
+                                    <td class="text-truncate">
+                                        <a href="{% url 'accounting:delete_entry' trans.id %}" target="_blank"><span class="badge badge-danger"><i class="la la-close font-medium-3"></i></span></a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+
+                                {% else %}
+                				<tr>
+                				    <td class="text-center warning" colspan=9>..........Good day! Wala ka pang ginagawa ngayon..........</td>
+                				</tr>
+                				{% endif %}
+
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+    		</div>
+
+            <div class="row">
+                <div class="col-md-8 col-12">
+            		<div class="mt-1 badge badge-square badge-warning font-medium-3">Unliquidated Cash Advances Issued by you</div>
+            	    <hr class="m-0">
+            		<div id="invoice-items-details" class="pt-2">
+            			<div class="row">
+            				<div class="table-responsive col-sm-12">
+            					<table class="table">
+                                    <thead class="bg-blue-grey bg-lighten-4">
+                                        <tr>
+                                            <th class="border-top-0">Date</th>
+                                            <th class="border-top-0">Form No.</th>
+                                            <th class="border-top-0">Transaction By</th>
+                                            <th class="border-top-0">Project Site</th>
+                                            <th class="border-top-0">Debit</th>
+                                            <th class="border-top-0">Credit</th>
+                                            <th class="border-top-0">Type</th>
+                                            <th class="border-top-0">.......Remarks/Particulars......</th>
+                                            <th class="border-top-0">Delete</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% if unliquidated %}
+                                        {% for trans in unliquidated %}
+                                        <tr class='bg-accent-1'>
+                                            <td class="text-truncate">
+                                                <a href="{% url 'accounting:update_entry' trans.id %}" target="_blank">
+                                                    <span class="badge badge-secondary"><i class="la la-pencil font-medium-3"></i></span>
+                                                </a>
+                                                <a href="{% url 'accounting:detail_entry' trans.id %}" target="_blank">
+                                                    <span class="badge badge-success"><i class="la la-eye font-medium-3"></i></span>
+                                                </a>
+                                                <a href="{% url 'accounting:detail_entry_print' trans.id %}"  target="_blank">
+                                                    <span class="badge badge-warning"><i class="la la-print font-medium-3"></i></span>
+                                                </a>
+                                                 {{ trans.trans_date }}
+                                            </td>
+                                            <td class="text-truncate">{{ trans.form_no }}</td>
+                                            <td class="text-truncate">{{ trans.transaction_by }}</td>
+                                            <td class="text-truncate">{{ trans.project_site }}</td>
+                                            <td class="text-truncate info">{% if trans.entry_debit %}{{ trans.debit|intcomma }}{% endif %}</td>
+                                            <td class="text-truncate danger">{% if trans.entry_credit %}{{ trans.debit|intcomma }}{% endif %}</td>
+                                            <td class="text-truncate danger">{{ trans.entry_type }}</td>
+                                            <td class="">{{ trans.remarks }}</td>
+                                            <td class="text-truncate">
+                                                <a href="{% url 'accounting:delete_entry' trans.id %}" target="_blank"><span class="badge badge-danger"><i class="la la-close font-medium-3"></i></span></a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+
+                                        {% else %}
+                        				<tr>
+                        				    <td class="text-center warning" colspan=9>..........Good job! Your transactions are cleared..........</td>
+                        				</tr>
+                        				{% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+            		</div>
+                </div>
+                <div class="col-md-4 col-12">
+            		<div id="heading31" class="card-header bg-info p-1 bg-lighten-1 mt-1 font-medium-3">
+                        Budget Request Addressed to You
+                    </div>
+                    <div class="card-content">
+                        <div class="card-body p-0">
+                            <div class="media-list list-group">
+                                {% for trans in fund_requests %}
+                                <div class="list-group-item list-group-item-action media p-1">
+                                    <a class="media-link" href="{% url 'accounting:update_fr' trans.id %}" target="_blank">
+                                        <div class="media-left">
+                                            <p class="text-bold-600 m-0">Request by: {{ trans.created_by }}</p>
+                                            <p class="font-small-2 text-muted m-0">Application Date: {{ trans.created_at }}</p>
+                                            <p class="font-small-2 text-muted m-0">Receiving Date: {{ trans.trans_date }}</p>
+                                        </div>
+                                        <div class="media-body text-right">
+                                            <p class="text-bold-600 m-0">{{ trans.amount|intcomma }}</p>
+                                            <p class="font-small-2 text-muted m-0 success">{{ trans.project_site }}</p>
+                                            <p class="font-small-2 text-muted m-0 warning">{{ trans.remarks }}</p>
+                                        </div>
+
+                                    </a>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+
+    	</div>
+    </section>
+
+    {% else %}
+
+    <div class="col-sm-5 offset-sm-1 col-md-6 offset-md-3 col-lg-5 offset-lg-4 box-shadow-2">
+    	<div class="card border-danger bg-danger border-lighten-3 px-2 my-0 row">
+    		<div class="no-border pb-1">
+    			<div class="card-body">
+    				<h2 class="text-uppercase text-center mb-2 white display-4 text-bold-400">Forbidden</h2>
+    				<h3 class="text-center">Access Level Clearance Insufficient </h3>
+    			</div>
+    			<div class="card-footer">
+    			    <h4 class="text-center">For upgrade, contact your superior</h3>
+    			</div>
+    		</div>
+    	</div>
+    </div>
+
+    {% endif %}
+
+
+{% endblock body_block %}

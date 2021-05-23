@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load humanize %}
+{% load widget_tweaks %}
+
+{% block body_block %}
+
+<section class="flexbox-container">
+    <div class="col-12 d-flex align-items-center justify-content-center">
+        <div class="col-md-4 col-10 p-0">
+            <form method="post">{% csrf_token %}
+            <div class="card-header bg-transparent border-0">
+
+                    <h3 class="text-center">Transaction Successful!</h3>
+                    <h2 class="text-center danger">"Don't be busy, be productive!"</h2>
+                    <hr>
+            </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+{% endblock body_block %}

@@ -1,0 +1,430 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load mathfilters %}
+{% load extra_tags %}
+{% load humanize %}
+
+{% block body_block %}
+
+    <div class="content-header row">
+      <div class="content-header-left col-md-6 col-12 mb-2">
+        <h3 class="content-header-title">Purchase & Delivery</h3>
+      </div>
+      <div class="content-header-right col-md-6 col-12">
+        <div class="btn-group float-md-right" role="group" aria-label="Edit Options">
+          <button class="btn btn-info round dropdown-toggle dropdown-menu-right box-shadow-2 px-2" id="btnGroupDrop1" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <i class="ft-settings icon-left"></i> Actions
+          </button>
+          <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+              <!--<a class="dropdown-item" href="{% url "admin:accounting_orderrequest_add" %}" target="_blank">Purchase Order Request</a>-->
+              <a class="dropdown-item" href="{% url 'accounting:new_por' %}" target="_blank">Purchase Order Request</a>
+              <a class="dropdown-item" href="{% url "admin:accounting_liquidation_add" %}" target="_blank">New Liquidation</a>
+              <a class="dropdown-item" href="{% url "admin:accounting_item_add" %}" target="_blank">Add Item</a>
+              <a class="dropdown-item" href="{% url "admin:accounting_supplier_add" %}" target="_blank">Add Supplier</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section class="row">
+    	<div id="pills-elements" class="match-height col-12">
+			<div class="card">
+				<div class="card-header">
+					<h4 class="card-title">Pending Request for Approval and Purchase</h4>
+                    <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                    <div class="heading-elements">
+                        <ul class="list-inline mb-0">
+                            <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                        </ul>
+                    </div>
+				</div>
+				<div class="card-content">
+					<div class="card-body">
+						<ul class="nav nav-pills">
+							<li class="nav-item">
+								<a class="nav-link active" id="base-pending" data-toggle="pill" href="#pending" aria-expanded="true"><span class="badge badge-pill badge-glow badge-default badge-success">{{ pending_count }}</span> Pending</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" id="base-active" data-toggle="pill" href="#active" aria-expanded="false"><span class="badge badge-pill badge-glow badge-default badge-primary ml-1">{{ active_count }}</span> Active</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" id="active-dmhp" data-toggle="pill" href="#dmhp" aria-expanded="false"><span class="badge badge-pill badge-glow badge-default badge-secondary ml-1">{{ active_dmhp_count }}</span> Active (DMHP)</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" id="base-invalid" data-toggle="pill" href="#invalid" aria-expanded="false"><span class="badge badge-pill badge-glow badge-default badge-warning ml-1">{{ invalid_count }}</span> Invalid</a>
+							</li>
+						</ul>
+						<div class="tab-content px-1 pt-1">
+							<div role="tabpanel" class="tab-pane active" id="pending" aria-expanded="true" aria-labelledby="base-pending">
+							    {% if request.user|has_group:"POR_Approver" %}
+
+							    <h4 class="mt-1">Operations (Construction Materials, Aggregates)</h4>
+							    <hr class="m-0">
+							    <div class="table-responsive">
+                                    <table class="table table-striped table-bordered table-middle dataex-html5-selectors" data-page-length='15'>
+                                    <thead>
+                                        <tr>
+                                            <th>Date (Request | Applied)</th>
+                                            <th>Form No. </th>
+                                            <th>Project Site</th>
+                                            <th>Item</th>
+                                            <th>Quantity</th>
+                                            <th>Unit</th>
+                                            <th>Category</th>
+                                            <th>Details</th>
+                                            <th>Request By</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for order in pending_operation %}
+        					            <tr>
+        					                <td class="text-bold-600 primary text-truncate">
+        					                    <a href="{% url 'accounting:update_por' pk=order.id %}" target="_blank">
+        					                        <span class="badge badge-secondary"><i class="la la-pencil font-medium-3"></i></span>
+                                    		    </a>
+                                    		    <a href="{% url 'accounting:por_process' pk=order.id %}">
+                                                    <span class="badge bg-teal"><i class="la la-thumbs-up font-medium-3"></i></span>
+                                                </a>
+                                                <a href="{% url 'accounting:por_cancel' pk=order.id %}">
+                                                    <span class="badge bg-amber bg-accent-4"><i class="la la-thumbs-down font-medium-3"></i></span>
+                                                </a>
+        					                    {{ order.request_date|date:"Y-m-d" }} | {{ order.create_date|date:"Y-m-d" }}
+        					                </td>
+        					                <td class="text-truncate">{{ order.request_form }}</td>
+        					                <td>{{ order.project_site }}</td>
+        					                <td class="text-bold-600 info text-truncate">{{ order.item }}</td>
+        				                    <td class="text-center">
+                                                <span class="badge badge-pill badge-glow badge-default badge-success">{{ order.quantity|intcomma }}</span>
+                                            </td>
+                                            <td class="text-truncate">{{ order.item.item_unit }}</td>
+                                            <td class="text-truncate">{{ order.item.item_category }}</td>
+                                            <td class="text-truncate">{{ order.details }}</td>
+                                            <td class="text-truncate">{{ order.request_by }}</td>
+        					            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                                </div>
+
+                                <h4 class="mt-1">Equipment (Spare Parts, Oil & Lubricants, Tools & Machineries)</h4>
+							    <hr class="m-0">
+							    <div class="table-responsive">
+                                    <table class="table table-striped table-bordered table-middle dataex-html5-selectors" data-page-length='15'>
+                                    <thead>
+                                        <tr>
+                                            <th>Date (Request | Applied)</th>
+                                            <th>Form No. </th>
+                                            <th>Project Site</th>
+                                            <th>Item</th>
+                                            <th>Quantity</th>
+                                            <th>Unit</th>
+                                            <th>Category</th>
+                                            <th>Details</th>
+                                            <th>Request By</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for order in pending_equipment %}
+        					            <tr>
+        					                <td class="text-bold-600 primary text-truncate">
+        					                    <a href="{% url 'accounting:update_por' pk=order.id %}" target="_blank"><span class="badge badge-secondary">
+                                    		        <i class="la la-pencil font-medium-3"></i>
+                                    		    </a>
+                                    		    <a href="{% url 'accounting:por_process' pk=order.id %}">
+                                                    <span class="badge bg-teal"><i class="la la-thumbs-up font-medium-3"></i></span>
+                                                </a>
+                                                <a href="{% url 'accounting:por_cancel' pk=order.id %}">
+                                                    <span class="badge bg-amber bg-accent-4"><i class="la la-thumbs-down font-medium-3"></i></span>
+                                                </a>
+        					                    {{ order.request_date|date:"Y-m-d" }} | {{ order.create_date|date:"Y-m-d" }}
+        					                </td>
+        					                <td class="text-truncate">{{ order.request_form }}</td>
+        					                <td>{{ order.project_site }}</td>
+        					                <td class="text-bold-600 info text-truncate">{{ order.item }}</td>
+        				                    <td class="text-center">
+                                                <span class="badge badge-pill badge-glow badge-default badge-success">{{ order.quantity|intcomma }}</span>
+                                            </td>
+                                            <td class="text-truncate">{{ order.item.item_unit }}</td>
+                                            <td class="text-truncate">{{ order.item.item_category }}</td>
+                                            <td class="text-truncate">{{ order.details }}</td>
+                                            <td class="text-truncate">{{ order.request_by }}</td>
+        					            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                                </div>
+
+                                <h4 class="mt-1">Admin (PPE, Office Supply, Food Supply, Kitchen Utensils, Fuel)</h4>
+							    <hr class="m-0">
+							    <div class="table-responsive">
+                                    <table class="table table-striped table-bordered table-middle dataex-html5-selectors" data-page-length='15'>
+                                    <thead>
+                                        <tr>
+                                            <th>Date (Request | Applied)</th>
+                                            <th>Form No. </th>
+                                            <th>Project Site</th>
+                                            <th>Item</th>
+                                            <th>Quantity</th>
+                                            <th>Unit</th>
+                                            <th>Category</th>
+                                            <th>Details</th>
+                                            <th>Request By</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for order in pending_admin %}
+        					            <tr>
+        					                <td class="text-bold-600 primary text-truncate">
+        					                    <a href="{% url 'accounting:update_por' pk=order.id %}" target="_blank"><span class="badge badge-secondary">
+                                    		        <i class="la la-pencil font-medium-3"></i>
+                                    		    </a>
+                                    		    <a href="{% url 'accounting:por_process' pk=order.id %}">
+                                                    <span class="badge bg-teal"><i class="la la-thumbs-up font-medium-3"></i></span>
+                                                </a>
+                                                <a href="{% url 'accounting:por_cancel' pk=order.id %}">
+                                                    <span class="badge bg-amber bg-accent-4"><i class="la la-thumbs-down font-medium-3"></i></span>
+                                                </a>
+        					                    {{ order.request_date|date:"Y-m-d" }} | {{ order.create_date|date:"Y-m-d" }}
+        					                </td>
+        					                <td class="text-truncate">{{ order.request_form }}</td>
+        					                <td>{{ order.project_site }}</td>
+        					                <td class="text-bold-600 info text-truncate">{{ order.item }}</td>
+        				                    <td class="text-center">
+                                                <span class="badge badge-pill badge-glow badge-default badge-success">{{ order.quantity|intcomma }}</span>
+                                            </td>
+                                            <td class="text-truncate">{{ order.item.item_unit }}</td>
+                                            <td class="text-truncate">{{ order.item.item_category }}</td>
+                                            <td class="text-truncate">{{ order.details }}</td>
+                                            <td class="text-truncate">{{ order.request_by }}</td>
+        					            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                                </div>
+
+                                {% else %}
+
+                                <div class="col-sm-5 offset-sm-1 col-md-6 offset-md-3 col-lg-5 offset-lg-4 box-shadow-2">
+                                	<div class="card border-danger bg-danger border-lighten-3 px-2 my-0 row">
+                                		<div class="no-border pb-1">
+                                			<div class="card-body">
+                                				<h2 class="text-uppercase text-center mb-2 white display-4 text-bold-400">Forbidden</h2>
+                                				<h3 class="text-center">Access Level Clearance Insufficient </h3>
+                                			</div>
+                                			<div class="card-footer">
+                                			    <h4 class="text-center">For upgrade, contact your superior</h3>
+                                			</div>
+                                		</div>
+                                	</div>
+                                </div>
+
+                                {% endif %}
+
+							</div>
+
+							<div class="tab-pane fade" id="active" aria-labelledby="base-active">
+							    <div class="table-responsive">
+                                    <table class="table table-striped table-bordered table-middle dataex-html5-selectors" data-page-length='15'>
+                                    <thead>
+                                        <tr>
+                                            <th>Request Date </th>
+                                            <th>ID</th>
+                                            <th>Form No. </th>
+                                            <th>Project Site</th>
+                                            <th>Item</th>
+                                            <th>Quantity</th>
+                                            <th>U/M</th>
+                                            <th>Category</th>
+                                            <th>Details</th>
+                                            <th>Request By</th>
+                                            <th>Purchaser</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for order in active_request %}
+        					            <tr>
+        					                <td class="text-bold-600 primary text-truncate">
+        					                    <a href="{% url 'accounting:update_por' pk=order.id %}" target="_blank">
+        					                        <span class="badge badge-secondary"><i class="la la-pencil font-medium-3"></i></span>
+                                    		    </a>
+                                    		    <a href="{% url 'accounting:new_entry2' pk=order.id %}" target="_blank">
+                                    		        <span class="badge badge-warning"><i class="la la-plus font-medium-3"></i></span>
+                                    		    </a>
+                                    		    <a href="{% url 'accounting:purchase_detail_page' pk=order.id %}" target="_blank">
+                                    		        <span class="badge badge-success"><i class="la la-eye font-medium-3"></i></span>
+                                    		    </a>
+                                    		    <a href="{% url 'accounting:today_status' pk=order.id %}">
+                                    		        {% if order.today is False %}
+                                    		            <span class="badge bg-teal bg-lighten-2"><i class="la la-cart-plus font-medium-3"></i> Tomorrow</span>
+                                    		        {% else %}
+                                    		            <span class="badge badge-info"><i class="la la-cart-plus font-medium-3"></i> Today</span>
+                                    		        {% endif %}
+                                    		    </a>
+        					                    {{ order.request_date|date:"Y-m-d" }}
+        					                </td>
+        					                <td class="text-truncate">{{ order.id }}</td>
+        					                <td class="text-truncate">{{ order.request_form }}</td>
+        					                <td>{{ order.project_site }}</td>
+        					                <td class="text-bold-600 info text-truncate">{{ order.item }}</td>
+        				                    <td class="text-center">
+                                                <span class="badge badge-pill badge-glow badge-default badge-success">{{ order.tot_entry }}/{{ order.tot_purchased|intcomma }}/{{ order.quantity|intcomma }}</span>
+                                            </td>
+                                            <td class="text-truncate">{{ order.item.item_unit }}</td>
+                                            <td class="text-truncate">{{ order.item.item_category }}</td>
+                                            <td class="text-truncate">{{ order.details }}</td>
+                                            <td class="text-truncate">{{ order.request_by }}</td>
+                                            <td class="text-truncate">
+                                                {% if order.purchaser == None %}
+                                                    <span class="badge badge-pill badge-glow badge-default badge-danger">Maid</span>
+                                                {% else %} {{ order.purchaser }}
+                                                {% endif %}
+                                            </td>
+        					            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                                </div>
+							</div>
+
+							<div class="tab-pane fade" id="dmhp" aria-labelledby="base-active_dmhp">
+							    <div class="table-responsive">
+                                    <table class="table table-striped table-bordered table-middle dataex-html5-selectors" data-page-length='15'>
+                                    <thead>
+                                        <tr>
+                                            <th>Request Date </th>
+                                            <th>ID</th>
+                                            <th>Form No. </th>
+                                            <th>Project Site</th>
+                                            <th>Item</th>
+                                            <th>Quantity</th>
+                                            <th>U/M</th>
+                                            <th>Category</th>
+                                            <th>Details</th>
+                                            <th>Request By</th>
+                                            <th>Purchaser</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for order in active_dmhp %}
+        					            <tr>
+        					                <td class="text-bold-600 primary text-truncate">
+        					                    <a href="{% url 'accounting:update_por' pk=order.id %}" target="_blank">
+        					                        <span class="badge badge-secondary"><i class="la la-pencil font-medium-3"></i></span>
+                                    		    </a>
+                                    		    <a href="{% url 'accounting:new_entry2' pk=order.id %}" target="_blank">
+                                    		        <span class="badge badge-warning"><i class="la la-plus font-medium-3"></i></span>
+                                    		    </a>
+                                    		    <a href="{% url 'accounting:purchase_detail_page' pk=order.id %}" target="_blank">
+                                    		        <span class="badge badge-success"><i class="la la-eye font-medium-3"></i></span>
+                                    		    </a>
+                                    		    <a href="{% url 'accounting:today_status' pk=order.id %}">
+                                    		        {% if order.today is False %}
+                                    		            <span class="badge bg-teal bg-lighten-2"><i class="la la-cart-plus font-medium-3"></i> Tomorrow</span>
+                                    		        {% else %}
+                                    		            <span class="badge badge-info"><i class="la la-cart-plus font-medium-3"></i> Today</span>
+                                    		        {% endif %}
+                                    		    </a>
+        					                    {{ order.request_date|date:"Y-m-d" }}
+        					                </td>
+        					                <td class="text-truncate">{{ order.id }}</td>
+        					                <td class="text-truncate">{{ order.request_form }}</td>
+        					                <td>{{ order.project_site }}</td>
+        					                <td class="text-bold-600 info text-truncate">{{ order.item }}</td>
+        				                    <td class="text-center">
+                                                <span class="badge badge-pill badge-glow badge-default badge-success">{{ order.tot_entry }}/{{ order.tot_purchased|intcomma }}/{{ order.quantity|intcomma }}</span>
+                                            </td>
+                                            <td class="text-truncate">{{ order.item.item_unit }}</td>
+                                            <td class="text-truncate">{{ order.item.item_category }}</td>
+                                            <td class="text-truncate">{{ order.details }}</td>
+                                            <td class="text-truncate">{{ order.request_by }}</td>
+                                            <td class="text-truncate">
+                                                {% if order.purchaser == None %}
+                                                    <span class="badge badge-pill badge-glow badge-default badge-danger">Maid</span>
+                                                {% else %} {{ order.purchaser }}
+                                                {% endif %}
+                                            </td>
+        					            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                                </div>
+							</div>
+
+							<div class="tab-pane fade" id="invalid" aria-labelledby="base-invalid">
+							    <div class="table-responsive">
+                                    <table class="table table-striped table-bordered table-middle dataex-html5-selectors" data-page-length='15'>
+                                    <thead>
+                                        <tr>
+                                            <th>Request Date </th>
+                                            <th>ID</th>
+                                            <th>Form No. </th>
+                                            <th>Form ?</th>
+                                            <th>JO No. ?</th>
+                                            <th>Project Site</th>
+                                            <th>Item</th>
+                                            <th>Quantity</th>
+                                            <th>Category</th>
+                                            <th>Details</th>
+                                            <th>Request By</th>
+                                            <th>Purchaser</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for order in invalid_request %}
+        					            <tr>
+        					                <td class="text-bold-600 primary text-truncate">
+        					                    <a href="{% url 'accounting:update_por' pk=order.id %}" target="_blank"><span class="badge badge-secondary">
+                                    		        <i class="la la-pencil font-medium-3"></i>
+                                    		    </a>
+        					                    {{ order.request_date|date:"Y-m-d" }}
+        					                </td>
+        					                <td class="text-truncate">{{ order.id }}</td>
+        					                <td class="text-truncate">{{ order.request_form }}</td>
+        					                <td class="text-truncate text-center">
+        					                    {% if order.form_attach == "None" or order.form_attach == "" %}
+                                                    <i class="la la-times-circle-o warning text-bold-600"></i>
+                                                {% else %}
+                                                    <i class="la la-check-circle-o success text-bold-600"></i>
+                                                {% endif %}
+        					                </td>
+        					                <td class="text-truncate text-center">
+        					                    {% if order.item.item_category == "Spare Parts" %}
+        					                        {% if order.jo_no == None or order.jo_no == "" %}
+                                                        <i class="la la-times-circle-o warning text-bold-600"></i>
+                                                    {% else %}
+                                                        <i class="la la-check-circle-o success text-bold-600"></i>
+                                                    {% endif %}
+                                                {% else %}
+                                                    <span>N/A</span>
+                                                {% endif %}
+        					                </td>
+        					                <td>{{ order.project_site }}</td>
+        					                <td class="text-bold-600 info text-truncate">{{ order.item }}</td>
+        				                    <td class="text-center">
+                                                <span class="badge badge-pill badge-glow badge-default badge-success">{{ order.tot_purchased|intcomma }}/{{ order.quantity|intcomma }}</span>
+                                            </td>
+                                            <td class="text-truncate">{{ order.item.item_category }}</td>
+                                            <td class="text-truncate">{{ order.details }}</td>
+                                            <td class="text-truncate">{{ order.request_by }}</td>
+                                            <td class="text-truncate">
+                                                {% if order.purchaser == None %}
+                                                    <span class="badge badge-pill badge-glow badge-default badge-danger">Maid</span>
+                                                {% else %} {{ order.purchaser }}
+                                                {% endif %}
+                                            </td>
+        					            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                                </div>
+							</div>
+
+						</div>
+					</div>
+				</div>
+			</div>
+    	</div>
+    </section>
+
+
+{% endblock %}

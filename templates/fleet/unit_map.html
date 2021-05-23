@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+    <meta name="description" content="AIP, Construction">
+    <meta name="keywords" content="AIP, Aip Construction">
+    <meta name="author" content="Eric Kiser">
+    <title>AIP</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.5.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.5.0/mapbox-gl.css' rel='stylesheet' />
+    <style>
+    body { margin: 0; padding: 0; }
+    #map { position: absolute; top: 0; bottom: 0; width: 100%; };
+    </style>
+</head>
+<body>
+<style>
+    #menu {
+        background: #fff;
+        position: absolute;
+        z-index: 1;
+        top: 10px;
+        right: 10px;
+        border-radius: 3px;
+        width: 120px;
+        border: 1px solid rgba(0,0,0,0.4);
+        font-family: 'Open Sans', sans-serif;
+    }
+
+    #menu a {
+        font-size: 13px;
+        color: #404040;
+        display: block;
+        margin: 0;
+        padding: 0;
+        padding: 10px;
+        text-decoration: none;
+        border-bottom: 1px solid rgba(0,0,0,0.25);
+        text-align: center;
+    }
+
+    #menu a:last-child {
+        border: none;
+    }
+
+    #menu a:hover {
+        background-color: #f8f8f8;
+        color: #404040;
+    }
+
+    #menu a.active {
+        background-color: #3887be;
+        color: #ffffff;
+    }
+
+    #menu a.active:hover {
+        background: #3074a4;
+    }
+</style>
+
+<nav id="menu"></nav>
+<div id="map"></div>
+
+<script>
+    mapboxgl.accessToken = 'pk.eyJ1IjoiZWFrZGV2IiwiYSI6ImNrM2Z2YmE2dTA4ODczc3Q2OTBibXhtajcifQ.rwwuHWi1rgxwwIQXfGQvOg';
+
+
+    var map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/streets-v11',
+        zoom: 7,
+        center: [121.188245, 16.318431]
+    });
+
+    // Size used for the pulsing dot
+    var size = 200;
+    var size2 = 150;
+
+    // Pulsing dot template for main branches
+    var iconMain = {
+        width: size,
+        height: size,
+        data: new Uint8Array(size * size * 4),
+
+        // get rendering context for the map canvas when layer is added to the map
+        onAdd: function() {
+            var canvas = document.createElement('canvas');
+            canvas.width = this.width;
+            canvas.height = this.height;
+            this.context = canvas.getContext('2d');
+        },
+
+        // called once before every frame where the icon will be used
+        render: function() {
+            var duration = 1000;
+            var t = (performance.now() % duration) / duration;
+
+            var radius = size / 2 * 0.3;
+            var outerRadius = size / 2 * 0.7 * t + radius;
+            var context = this.context;
+
+            // draw outer circle
+            context.clearRect(0, 0, this.width, this.height);
+            context.beginPath();
+            context.arc(this.width / 2, this.height / 2, outerRadius, 0, Math.PI * 2);
+            context.fillStyle = 'rgba(255, 200, 200,' + (1 - t) + ')';
+            context.fill();
+
+            // draw inner circle
+            context.beginPath();
+            context.arc(this.width / 2, this.height / 2, radius, 0, Math.PI * 2);
+            context.fillStyle = 'rgba(255, 100, 100, 1)';
+            context.strokeStyle = 'white';
+            context.lineWidth = 2 + 4 * (1 - t);
+            context.fill();
+            context.stroke();
+
+            // update this image's data with data from the canvas
+            this.data = context.getImageData(0, 0, this.width, this.height).data;
+
+            // continuously repaint the map, resulting in the smooth animation of the dot
+            map.triggerRepaint();
+
+            // return `true` to let the map know that the image was updated
+            return true;
+        }
+    };
+
+    // Pulsing dot template for project sites
+    var iconSites = {
+        width: size2,
+        height: size2,
+        data: new Uint8Array(size2 * size2 * 4),
+
+        // get rendering context for the map canvas when layer is added to the map
+        onAdd: function() {
+            var canvas = document.createElement('canvas');
+            canvas.width = this.width;
+            canvas.height = this.height;
+            this.context = canvas.getContext('2d');
+        },
+
+        // called once before every frame where the icon will be used
+        render: function() {
+            var duration = 1000;
+            var t = (performance.now() % duration) / duration;
+
+            var radius = size2 / 2 * 0.3;
+            var outerRadius = size2 / 2 * 0.7 * t + radius;
+            var context = this.context;
+
+            // draw outer circle
+            context.clearRect(0, 0, this.width, this.height);
+            context.beginPath();
+            context.arc(this.width / 2, this.height / 2, outerRadius, 0, Math.PI * 2);
+            context.fillStyle = 'rgba(255, 200, 200,' + (1 - t) + ')';
+            context.fill();
+
+            // draw inner circle
+            context.beginPath();
+            context.arc(this.width / 2, this.height / 2, radius, 0, Math.PI * 2);
+            context.fillStyle = 'rgba(30, 139, 195, 1)';
+            context.strokeStyle = 'white';
+            context.lineWidth = 2 + 4 * (1 - t);
+            context.fill();
+            context.stroke();
+
+            // update this image's data with data from the canvas
+            this.data = context.getImageData(0, 0, this.width, this.height).data;
+
+            // continuously repaint the map, resulting in the smooth animation of the dot
+            map.triggerRepaint();
+
+            // return `true` to let the map know that the image was updated
+            return true;
+        }
+    };
+
+
+    map.on('load', function () {
+
+        map.addImage('icon-main', iconMain, { pixelRatio: 2 });
+        map.addImage('icon-sites', iconSites, { pixelRatio: 2 });
+
+        //Layer 1: Main Branches
+        map.addLayer({
+            'id': 'Main Branch',
+            'type': 'symbol',
+
+            'source': {
+                "type": "geojson",
+                "data": {
+                    "type": "FeatureCollection",
+                    "features": [
+                        {% for site in main %}
+                        {
+                        "type": "Feature",
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [{{ site.lon }}, {{ site.lat }}]
+                        },
+                        "properties": {
+                            "title": "{{ site.project_code }}"
+
+                        }
+                        }
+                        {% if not forloop.last %}, {% endif %}{% endfor %}
+
+                    ]
+                }
+            },
+
+
+            'layout': {
+                'visibility': 'visible',
+                "text-field": ["get", "title"],
+                "text-variable-anchor": ["top", "bottom", "left", "right"],
+                "text-radial-offset": 0.8,
+                "text-justify": "auto",
+                "icon-image": "icon-main",
+                "icon-padding": 0,
+                "icon-allow-overlap": true
+            }
+        });
+
+        //Layer 1: Project Sites
+        map.addLayer({
+            'id': 'Project Sites',
+            'type': 'symbol',
+
+            'source': {
+                "type": "geojson",
+                "data": {
+                    "type": "FeatureCollection",
+                    "features": [
+                        {% for site in sites %}
+                        {
+                        "type": "Feature",
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [{{ site.lon }}, {{ site.lat }}]
+                        },
+                        "properties": {
+                            "title": "{{ site.project_code }}",
+                            "description": "<h2>{{ site.project_code }}</h2><strong>{{ site.project_status }}</strong><p>{{ site.name }}</p>"
+                        }
+                        }
+                        {% if not forloop.last %}, {% endif %}{% endfor %}
+
+                    ]
+                }
+            },
+
+
+            'layout': {
+                'visibility': 'visible',
+                "text-field": ["get", "title"],
+                "text-variable-anchor": ["top", "bottom", "left", "right"],
+                "text-radial-offset": 0.8,
+                "text-justify": "auto",
+                "icon-image": "icon-sites",
+                "icon-padding": 0,
+                "icon-allow-overlap": true
+            }
+        });
+
+
+        //Layer HE
+        map.addSource("HE-Source", {
+            type: "geojson",
+            "data": {
+                "type": "FeatureCollection",
+                "features": [
+                    {% for unit in he %}
+                    {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [{{ unit.project_site.lon }}+((Math.floor(Math.random() * 5) - 5)/1000), {{ unit.project_site.lat }}+((Math.floor(Math.random() * 5) - 5)/1000)]
+                    },
+                    "properties": {
+                        "title": "{{ unit.body_no }}",
+                        "description": "<h3>{{ unit.body_no }}: {{ unit.operator }}</h3><strong>{{ unit.project_site }}: {{ unit.status }}</strong>"
+                    }
+                    }
+                    {% if not forloop.last %}, {% endif %}{% endfor %}
+
+                ]
+            },
+            cluster: true,
+            clusterMaxZoom: 14, // Max zoom to cluster points on
+            clusterRadius: 40 // Radius of each cluster when clustering points (defaults to 50)
+        });
+
+        map.addLayer({
+            id: "HE",
+            type: "circle",
+            source: "HE-Source",
+            filter: ["has", "point_count"],
+            paint: {
+                "circle-color": [
+                    "step",
+                    ["get", "point_count"],
+                    "#51bbd6",
+                    100,
+                    "#f1f075",
+                    750,
+                    "#f28cb1"
+                ],
+                    "circle-radius": [
+                    "step",
+                    ["get", "point_count"],
+                    20, 100, 30, 750, 40
+                ]
+            }
+        });
+
+        map.addLayer({
+            id: "cluster-count",
+            type: "symbol",
+            source: "HE-Source",
+            filter: ["has", "point_count"],
+            layout: {
+            "text-field": "HE:{point_count_abbreviated}",
+            "text-font": ["DIN Offc Pro Medium", "Arial Unicode MS Bold"],
+            "text-size": 12
+            }
+        });
+
+        map.addLayer({
+            id: "unclustered-point",
+            type: "symbol",
+            source: "HE-Source",
+            filter: ["!", ["has", "point_count"]],
+            layout: {
+            "text-field": ["get", "title"],
+            "text-font": ["DIN Offc Pro Medium", "Arial Unicode MS Bold"],
+            "text-size": 14,
+            "text-variable-anchor": ["top", "bottom", "left", "right"],
+            "text-radial-offset": 0.8,
+            "text-justify": "auto",
+            "icon-image": "car-15",
+            "icon-padding": 0,
+            "icon-allow-overlap": true
+            }
+        });
+
+        // inspect a cluster on click
+        map.on('click', 'HE', function (e) {
+            var features = map.queryRenderedFeatures(e.point, { layers: ['HE'] });
+            var clusterId = features[0].properties.cluster_id;
+            map.getSource('HE-Source').getClusterExpansionZoom(clusterId, function (err, zoom) {
+            if (err)
+            return;
+
+            map.easeTo({
+            center: features[0].geometry.coordinates,
+            zoom: zoom
+            });
+            });
+        });
+
+        map.on('mouseenter', 'HE', function () {
+            map.getCanvas().style.cursor = 'pointer';
+        });
+        map.on('mouseleave', 'HE', function () {
+            map.getCanvas().style.cursor = '';
+        });
+        //End Layer
+
+        //Layer DT
+        map.addSource("DT-Source", {
+            type: "geojson",
+            "data": {
+                "type": "FeatureCollection",
+                "features": [
+                    {% for unit in dt %}
+                    {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [{{ unit.project_site.lon }}+((Math.floor(Math.random() * 5) - 5)/1000), {{ unit.project_site.lat }}+((Math.floor(Math.random() * 5) - 5)/1000)]
+                    },
+                    "properties": {
+                        "title": "{{ unit.body_no }}",
+                        "description": "<h3>{{ unit.body_no }}: {{ unit.operator }}</h3><strong>{{ unit.project_site }}: {{ unit.status }}</strong>"
+                    }
+                    }
+                    {% if not forloop.last %}, {% endif %}{% endfor %}
+
+                ]
+            },
+            cluster: true,
+            clusterMaxZoom: 14, // Max zoom to cluster points on
+            clusterRadius: 40 // Radius of each cluster when clustering points (defaults to 50)
+        });
+
+        map.addLayer({
+            id: "DT",
+            type: "circle",
+            source: "DT-Source",
+            filter: ["has", "point_count"],
+            paint: {
+                "circle-color": [
+                    "step",
+                    ["get", "point_count"],
+                    "#51bbd6",
+                    100,
+                    "#f1f075",
+                    750,
+                    "#f28cb1"
+                ],
+                    "circle-radius": [
+                    "step",
+                    ["get", "point_count"],
+                    20, 100, 30, 750, 40
+                ]
+            }
+        });
+
+        map.addLayer({
+            id: "dt-count",
+            type: "symbol",
+            source: "DT-Source",
+            filter: ["has", "point_count"],
+            layout: {
+            "text-field": "DT:{point_count_abbreviated}",
+            "text-font": ["DIN Offc Pro Medium", "Arial Unicode MS Bold"],
+            "text-size": 12
+            }
+        });
+
+        map.addLayer({
+            id: "dt-point",
+            type: "symbol",
+            source: "DT-Source",
+            filter: ["!", ["has", "point_count"]],
+            layout: {
+            "text-field": ["get", "title"],
+            "text-font": ["DIN Offc Pro Medium", "Arial Unicode MS Bold"],
+            "text-size": 14,
+            "text-variable-anchor": ["top", "bottom", "left", "right"],
+            "text-radial-offset": 0.8,
+            "text-justify": "auto",
+            "icon-image": "car-15",
+            "icon-padding": 0,
+            "icon-allow-overlap": true
+            }
+        });
+
+        // inspect a cluster on click
+        map.on('click', 'DT', function (e) {
+            var features = map.queryRenderedFeatures(e.point, { layers: ['DT'] });
+            var clusterId = features[0].properties.cluster_id;
+            map.getSource('DT-Source').getClusterExpansionZoom(clusterId, function (err, zoom) {
+            if (err)
+            return;
+
+            map.easeTo({
+            center: features[0].geometry.coordinates,
+            zoom: zoom
+            });
+            });
+        });
+
+        map.on('mouseenter', 'DT', function () {
+            map.getCanvas().style.cursor = 'pointer';
+        });
+        map.on('mouseleave', 'DT', function () {
+            map.getCanvas().style.cursor = '';
+        });
+        //End Layer
+
+
+
+
+
+    });
+
+
+
+
+
+
+    var toggleableLayerIds = [ 'Main Branch','Project Sites',('DT','HE') ];
+
+    for (var i = 0; i < toggleableLayerIds.length; i++) {
+        var id = toggleableLayerIds[i];
+
+        var link = document.createElement('a');
+        link.href = '#';
+        link.className = 'active';
+        link.textContent = id;
+
+        link.onclick = function (e) {
+        var clickedLayer = this.textContent;
+        e.preventDefault();
+        e.stopPropagation();
+
+        var visibility = map.getLayoutProperty(clickedLayer, 'visibility');
+
+        if (visibility === 'visible') {
+            map.setLayoutProperty(clickedLayer, 'visibility', 'none');
+            this.className = '';
+        } else {
+            this.className = 'active';
+            map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
+        }
+        };
+
+        var layers = document.getElementById('menu');
+        layers.appendChild(link);
+    }
+
+
+
+
+
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load humanize %}
+
+{% block body_block %}
+    <div class="content-body">
+
+        <section class="card">
+        	<div id="invoice-template" class="card-body">
+        		<div id="invoice-company-details" class="row">
+        			<div class="col-md-8 col-sm-12 text-center text-md-left">
+        				<div class="media">
+        					<img src="{% static "app-assets/images/ico/AIP-Logo-(128x128).png" %}" alt="company logo" class=""/>
+        					<div class="media-body">
+        						<ul class="ml-2 px-0 list-unstyled">
+        							<li class="text-bold-800">AIP Construction</li>
+        							<li>Unit 111-B, EGI Albergo Hotel</li>
+        							<li>#1 Villamor Drive, Barangay Lualhati</li>
+        							<li>Baguio City, Philippines 2600</li>
+        							<li>TeleFax: (074) 424-6179, (074) 483-0373</li>
+        						</ul>
+        					</div>
+        				</div>
+        			</div>
+        			<div class="col-md-4 col-sm-12 text-center text-md-right">
+        				<h2>Notifications</h2>
+        				<p class="pb-3">As of:</p>
+        			</div>
+        		</div>
+
+        		<div id="invoice-items-details" class="pt-2">
+        		    <p class="lead">Documents for Renewal</p>
+        			<div class="row">
+        				<div class="table-responsive col-sm-12">
+        					<table class="table">
+                                <thead>
+                                    <tr>
+                                        <th class="border-top-0">Title</th>
+                                        <th class="border-top-0">Type</th>
+                                        <th class="border-top-0">Expiry Date</th>
+                                        <th class="border-top-0">Requirements</th>
+                                        <th class="border-top-0">Processing</th>
+                                        <th class="border-top-0">Renewed</th>
+                                        <th class="border-top-0">Remarks</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in for_renewal %}
+                                    <tr>
+                                        <td class="text-truncate"><a href="{% url 'admin:workforce_filedocument_change' item.id %}" target="_blank">{{ item.document_title }}</a></td>
+                                        <td class="text-truncate">{{ item.document_type }}</td>
+                                        <td class="text-truncate">{{ item.expiry_date }}</td>
+
+                                        {% if item.status == "Documents" %}
+                                            <td><i class="la la-circle warning"></i></td>
+                                            <td></td>
+                                            <td></td>
+                                        {% elif item.status == "Processing" %}
+                                            <td><i class="la la-check success text-bold-700"></i></td>
+                                            <td><i class="la la-circle warning text-bold-700"></i></td>
+                                            <td></td>
+                                        {% elif item.status == "Renewed" %}
+                                            <td><i class="la la-check success"></i></td>
+                                            <td><i class="la la-check success"></i></td>
+                                            <td><i class="la la-check success"></i></td>
+                                        {% else %}
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        {% endif %}
+                                        <td class="text-truncate">{{ item.remarks }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+        		</div>
+
+        		<div id="invoice-items-details" class="pt-2">
+        		    <p class="lead">Documents for Renewal</p>
+        			<div class="row">
+        				<div class="table-responsive col-sm-12">
+        					<table class="table">
+                                <thead>
+                                    <tr>
+                                        <th class="border-top-0">Title</th>
+                                        <th class="border-top-0">Type</th>
+                                        <th class="border-top-0">Expiry Date</th>
+                                        <th class="border-top-0">Requirements</th>
+                                        <th class="border-top-0">Processing</th>
+                                        <th class="border-top-0">Renewed</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in for_renewal %}
+                                    <tr>
+                                        <td class="text-truncate"><a href="{% url 'admin:workforce_filedocument_change' item.id %}" target="_blank">{{ item.document_title }}</a></td>
+                                        <td class="text-truncate">{{ item.document_type }}</td>
+                                        <td class="text-truncate">{{ item.expiry_date }}</td>
+
+                                        {% if item.status == "Documents" %}
+                                            <td><i class="la la-circle warning"></i></td>
+                                            <td></td>
+                                            <td></td>
+                                        {% elif item.status == "Processing" %}
+                                            <td><i class="la la-check success text-bold-700"></i></td>
+                                            <td><i class="la la-circle warning text-bold-700"></i></td>
+                                            <td></td>
+                                        {% elif item.status == "Renewed" %}
+                                            <td><i class="la la-check success"></i></td>
+                                            <td><i class="la la-check success"></i></td>
+                                            <td><i class="la la-check success"></i></td>
+                                        {% else %}
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        {% endif %}
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+        		</div>
+
+        	</div>
+        </section>
+
+    </div>
+
+
+{% endblock %}

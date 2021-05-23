@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  </head>
+  <body>
+    Hello {{user}},
+    
+    <p>Good day!</p>
+
+    <p>{{intro_msg}}</p>
+    
+    <p>
+    Requested by: <strong>{{requested_by}}</strong><br/>
+    Date: {{date_of_leave}}<br/>
+    Total Days: {{totals_days}}<br/>
+    Reason: {{reason}}
+    </p>
+    
+    {% if status_super %}
+    <p>
+    Status (Supervisor): {{status_super}}<br/>
+    Remarks (Supervisor): {{remarks_super}}
+    </p>
+    {% endif %}
+    
+    {% if status_admin %}
+    <p>
+    Status (Admin): {{status_admin}}<br/>
+    Remarks (Admin): {{remarks_admin}}
+    </p>
+    {% endif %}
+    
+    <p>More Details: {{link}}</p>
+    
+
+    <p>Regards,<br/>AIP Mailer</p>
+    <!--<img src=>-->
+  </body>
+</html>

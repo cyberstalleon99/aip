@@ -1,0 +1,216 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load humanize %}
+{% load widget_tweaks %}
+{% load extra_tags %}
+{% load mathfilters %}
+
+{% block body_block %}
+
+    <section class="row">
+
+        <div class="col-lg-8 col-md-10 col-12">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+        		<div class="card">
+        			<div class="card-header pb-1 bg-dark">
+        				<h2 class="white" id="basic-layout-icons">
+        				    <a href="" class="white">
+        				        Add/Edit POR
+        				    </a>
+        				</h2>
+        			</div>
+        			<div class="card-content collapse show pink">
+        				<div class="card-body">
+                            {{form.errors}}
+                            <form class="form">
+                              <div class="form-body">
+                                <div class="row">
+                                    <div class="col-md-6 col-12">
+                                        {{ form.media }}
+
+                                        <h4 class="mb-0">General Fields</h4>
+                                        <hr class="mt-0">
+
+                                        <div class="well">
+                                            <div class="row">
+                                                <div class="form-group col-md-6 col-12">
+                        							<label for="timesheetinput1">Transaction Date</label>
+                                                      <div class="position-relative has-icon-left">
+                                                        {{form.request_date|add_class:"form-control"}}
+                                                        <div class="form-control-position">
+                                                          <i class="la la-calendar"></i>
+                                                        </div>
+                                                      </div>
+                        						</div>
+                        						<div class="form-group col-md-6 col-12">
+                        							<label for="timesheetinput1">POR No.</label>
+                                                      <div class="position-relative has-icon-left">
+                                                        {{form.request_form|add_class:"form-control"}}
+                                                        <div class="form-control-position">
+                                                          <i class="la la-clipboard"></i>
+                                                        </div>
+                                                      </div>
+                        						</div>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="form-group">
+                                          <label for="timesheetinput1">Request By</label>
+                                          <div class="position-relative">
+                                            {{form.request_by|add_class:"form-control"}}
+                                          </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                          <label for="timesheetinput1">Project Site</label>
+                                          <div class="position-relative">
+                                            {{form.project_site|add_class:"form-control"}}
+                                          </div>
+                                        </div>
+
+                                        <div class="well">
+                                            <div class="row">
+                                                <div class="form-group col-md-8 col-12">
+                                                  <label for="timesheetinput1">Item</label>
+                                                  <div class="position-relative">
+                                                    {{form.item|add_class:"form-control"}}
+                                                  </div>
+                                                </div>
+                        						<div class="form-group col-md-4 col-12">
+                        							<label for="timesheetinput1">Quantity</label>
+                                                  <div class="position-relative has-icon-left">
+                                                    {{form.quantity|add_class:"form-control"}}
+                                                    <div class="form-control-position">
+                                                      <i class="la la-money"></i>
+                                                    </div>
+                                                  </div>
+                        						</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                          <label for="timesheetinput1">JO No</label>
+                                          <div class="position-relative has-icon-left">
+                                            {{form.jo_no|add_class:"form-control"}}
+                                            <div class="form-control-position">
+                                              <i class="la la-clipboard"></i>
+                                            </div>
+                                          </div>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="col-md-6 col-12">
+                                        <h4 class="mb-0">Remarks/Details</h4>
+                                        <hr class="mt-0">
+
+                						<div class="form-group">
+                                          <div class="position-relative has-icon-left">
+                                            {{form.details|add_class:"form-control"}}
+                                            <div class="form-control-position">
+                                              <i class="la la-file"></i>
+                                            </div>
+                                          </div>
+                                        </div>
+
+                                        <h4 class="mb-0">For Approving Body</h4>
+                                        <hr class="mt-0">
+
+                                        {% if request.user|has_group:"POR_Approver2" %}
+
+                                        <div class="form-group">
+                                          <label for="timesheetinput1">Purchaser</label>
+                                          <div class="position-relative">
+                                            {{form.purchaser|add_class:"form-control"}}
+                                          </div>
+                                        </div>
+
+                                        <div class="well">
+                                            <div class="row">
+                        						<div class="form-group col-md-10 col-12">
+                        							<label for="timesheetinput1">Status</label>
+                                                  <div class="position-relative has-icon-left">
+                                                    {{form.status|add_class:"form-control"}}
+                                                    <div class="form-control-position">
+                                                      <i class="la la-file"></i>
+                                                    </div>
+                                                  </div>
+                        						</div>
+                        						<div class="form-group col-md-2 col-12">
+                        						  <label for="timesheetinput1">Today?</label>
+                                                  <div class="position-relative">
+                                                    {{form.today|add_class:"form-control"}}
+                                                  </div>
+                        						</div>
+                                            </div>
+                                        </div>
+
+                                        {% else %}
+
+                                        <div class="form-group">
+                                          <label for="timesheetinput1">Purchaser</label>
+                                          <div class="position-relative">
+                                            {{form.purchaser|attr:"readonly"|add_class:"form-control"}}
+                                          </div>
+                                        </div>
+
+                                        <div class="well">
+                                            <div class="row">
+                        						<div class="form-group col-md-10 col-12">
+                        							<label for="timesheetinput1">Status</label>
+                                                  <div class="position-relative has-icon-left">
+                                                    {{form.status|attr:"readonly"|add_class:"form-control"}}
+                                                    <div class="form-control-position">
+                                                      <i class="la la-file"></i>
+                                                    </div>
+                                                  </div>
+                        						</div>
+                        						<div class="form-group col-md-2 col-12">
+                        						  <label for="timesheetinput1">Today?</label>
+                                                  <div class="position-relative">
+                                                    {{form.today|attr:"readonly"|add_class:"form-control"}}
+                                                  </div>
+                        						</div>
+                                            </div>
+                                        </div>
+
+                                        {% endif %}
+
+                                        <h4 class="mb-0">Attachment</h4>
+                                        <hr class="mt-0">
+
+                                        <div class="form-group">
+                							<label id="projectinput7" class="file center-block">
+                								{{form.form_attach}}
+                								<span class="file-custom"></span>
+                							</label>
+                						</div>
+
+                                        <div class="form-group">
+                                            {{form.create_date|attr:"hidden"|add_class:"form-control"}}
+                                            {{form.updated_at|attr:"hidden"|add_class:"form-control"}}
+                                            {{form.created_by|attr:"hidden"|add_class:"form-control"}}
+                                            {{form.modified_by|attr:"hidden"|add_class:"form-control"}}
+                                        </div>
+
+                                    </div>
+        						</div>
+                              </div>
+
+                              <div class="form-actions right">
+                                <button type="submit" class="btn btn-pink"><i class="la la-check-square-o"></i> Submit</button>
+                              </div>
+
+                            </form>
+
+        				</div>
+        			</div>
+        		</div>
+    		</form>
+    	</div>
+
+    </section>
+
+{% endblock body_block %}

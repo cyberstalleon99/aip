@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block body_block %}
+    <div class="content-header row">
+      <div class="content-header-left col-md-6 col-12 mb-2">
+        <h3 class="content-header-title">Projects</h3>
+      </div>
+      <div class="content-header-right col-md-6 col-12">
+        <div class="btn-group float-md-right" role="group" aria-label="Edit Options">
+          <button class="btn btn-info round dropdown-toggle dropdown-menu-right box-shadow-2 px-2" id="btnGroupDrop1" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <i class="ft-settings icon-left"></i> Actions
+          </button>
+          <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+              <a class="dropdown-item" href="{% url "admin:operation_project_add" %}" target="_blank">New Project</a>
+              <a class="dropdown-item" href="{% url 'admin:operation_report_add'%}"  target="_blank">New Daily Report</a>
+              <a class="dropdown-item" href="{% url 'admin:operation_reporting_add'%}" target="_blank">Upload Report</a>
+              <a class="dropdown-item" href="https://eakdev.pythonanywhere.com/admin/gallery/album/" target="_blank">Upload Image</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="content-body">
+
+        <!-- Decks section start -->
+        <section id="projects">
+            <h3 class="content-header-title">On-Going Projects</h3>
+            <hr>
+        	<div class="row match-height">
+        	    {% for project in on_going %}
+        		<div class="col-xl-3 col-md-6 col-sm-12">
+					<div class="card">
+						<div class="card-content">
+							<a href="{% url 'operation:project_detail' pk=project.id %}">
+							    <img class="card-img-top img-fluid" src="{{ project.project_pic.url }}" alt="Card image cap"/>
+							</a>
+							<div class="card-body">
+								<h4 class="card-title">{{ project.project_code }}</h4>
+								<p class="card-text">{{ project.project_name }}</p>
+							</div>
+						</div>
+					</div>
+        		</div>
+        		{% endfor %}
+        	</div>
+        </section>
+        <!-- Decks section end -->
+
+        <!-- Decks section start -->
+        <section id="projects">
+            <h3 class="content-header-title">For Bidding Projects</h3>
+            <hr>
+        	<div class="row match-height">
+        	    {% for project in for_bidding %}
+        		<div class="col-xl-3 col-md-6 col-sm-12">
+					<div class="card">
+						<div class="card-content">
+							<a href="{% url 'operation:project_detail' pk=project.id %}">
+							    <img class="card-img-top img-fluid" src="{{ project.project_pic.url }}" alt="Card image cap"/>
+							</a>
+							<div class="card-body">
+								<h4 class="card-title">{{ project.project_code }}</h4>
+								<p class="card-text">{{ project.project_name }}</p>
+							</div>
+						</div>
+					</div>
+        		</div>
+        		{% endfor %}
+        	</div>
+        </section>
+        <!-- Decks section end -->
+
+        <!-- Decks section start -->
+        <section id="projects">
+            <h3 class="content-header-title">Completed Projects</h3>
+            <hr>
+        	<div class="row match-height">
+        	    {% for project in completed %}
+        		<div class="col-xl-3 col-md-6 col-sm-12">
+					<div class="card">
+						<div class="card-content">
+							<a href="{% url 'operation:project_detail' pk=project.id %}">
+							    <img class="card-img-top img-fluid" src="{{ project.project_pic.url }}" alt="Card image cap"/>
+							</a>
+							<div class="card-body">
+								<h4 class="card-title">{{ project.project_code }}</h4>
+								<p class="card-text">{{ project.project_name }}</p>
+							</div>
+						</div>
+					</div>
+        		</div>
+        		{% endfor %}
+        	</div>
+        </section>
+        <!-- Decks section end -->
+
+
+    </div>
+
+
+{% endblock %}

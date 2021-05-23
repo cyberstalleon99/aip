@@ -1,0 +1,248 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load humanize %}
+
+{% block body_block %}
+    <div class="content-header row">
+      <div class="content-header-left col-md-6 col-12 mb-2">
+        <h3 class="content-header-title">Warehouse Statistics</h3>
+      </div>
+    </div>
+    <div class="content-body">
+        <section class="row">
+            <div class="col-lg-4 col-md-6 col-12">
+                <div class="card">
+                    <div class="card-content">
+                        <div class="card-body card-dashboard">
+                            <div id="asset_container"></div>
+                            <script src="https://code.highcharts.com/highcharts.src.js"></script>
+                            <script>
+                                Highcharts.chart('asset_container', {
+                                    chart: {
+                                        type: 'pie'
+                                    },
+                                    title: {
+                                        text: 'Asset Value per Warehouse'
+                                    },
+                                    tooltip: {
+                                        headerFormat: '',
+                                        pointFormat: '<span style="color:{point.color}">\u25CF</span> <b> {point.name}</b><br/>' +
+                                                    'Asset Value in Peso: <b>{point.y}</b><br/>'
+                                    },
+                                    series: [{
+                                        minPointSize: 60,
+                                        innerSize: '30%',
+                                        zMin: 0,
+                                        name: 'Warehouse',
+                                        data: [
+                                            {% for incoming in stats %}
+                                                {% if incoming.site_value > 0 %}
+                                                    { name: "{{ incoming.project_site__project_code }}", y: {{ incoming.site_value }} },
+                                                {% endif %}
+                                            {% endfor %}
+                                            ]
+                                    },]
+                                });
+
+                            </script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 col-12">
+                <div class="card">
+                    <div class="card-content">
+                        <div class="card-body card-dashboard">
+                            <div id="category_container"></div>
+                            <script src="https://code.highcharts.com/highcharts.src.js"></script>
+                            <script>
+                                Highcharts.chart('category_container', {
+                                    chart: {
+                                        type: 'pie'
+                                    },
+                                    title: {
+                                        text: 'Cost Distribution: Item Category'
+                                    },
+                                    tooltip: {
+                                        headerFormat: '',
+                                        pointFormat: '<span style="color:{point.color}">\u25CF</span> <b> {point.name}</b><br/>' +
+                                                    'Total Expense: <b>{point.y}</b><br/>'
+                                    },
+                                    series: [{
+                                        minPointSize: 60,
+                                        innerSize: '30%',
+                                        zMin: 0,
+                                        name: 'Warehouse',
+                                        data: [
+                                            {% for incoming in stats_per_class %}
+                                                {% if incoming.out_value > 0 %}
+                                                    { name: "{{ incoming.item__item_category }}", y: {{ incoming.out_value }} },
+                                                {% endif %}
+                                            {% endfor %}
+                                            ]
+                                    },]
+                                });
+
+                            </script>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-lg-4 col-md-6 col-12">
+                <div class="card">
+                    <div class="card-content">
+                        <div class="card-body card-dashboard">
+                            <div id="name_container"></div>
+                            <script src="https://code.highcharts.com/highcharts.src.js"></script>
+                            <script>
+                                Highcharts.chart('name_container', {
+                                    chart: {
+                                        type: 'pie'
+                                    },
+                                    title: {
+                                        text: 'Cost Distribution per Item'
+                                    },
+                                    tooltip: {
+                                        headerFormat: '',
+                                        pointFormat: '<span style="color:{point.color}">\u25CF</span> <b> {point.name}</b><br/>' +
+                                                    'Total Expense: <b>{point.y}</b><br/>'
+                                    },
+                                    series: [{
+                                        minPointSize: 60,
+                                        innerSize: '30%',
+                                        zMin: 0,
+                                        name: 'Warehouse',
+                                        data: [
+                                            {% for incoming in stats_per_name %}
+                                                {% if incoming.out_value > 0 %}
+                                                    { name: "{{ incoming.item__general_name }}", y: {{ incoming.out_value }} },
+                                                {% endif %}
+                                            {% endfor %}
+                                            ]
+                                    },]
+                                });
+                            </script>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="row">
+            <div class="col-lg-6 col-12">
+                <div class="card">
+                  <div class="card-content">
+                    <div class="table-responsive">
+                      <table id="recent-orders" class="table table-hover table-xl mb-0">
+                        <thead>
+                          <tr>
+                            <th class="border-top-0">Branch</th>
+                            <th class="border-top-0">Incoming Value</th>
+                            <th class="border-top-0">Outgoing Value</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                        {% for incoming in stats %}
+                          <tr>
+                            <td class="text-truncate m-0 pb-0">
+                                <span class="success">{{incoming.project_site__project_code}}</span>
+                                <h1 class="text-bold-200 blue-grey darken-1 ">{{incoming.site_value|default:0|floatformat:2|intcomma}}</h1>
+                            </td>
+                            <td class="text-truncate m-0 pb-0">
+                                <ul class="list-inline clearfix ">
+                                    <li>
+                                        <h1 class="blue-grey darken-1 text-bold-400">{{incoming.in_quantity|default:0|floatformat:2|intcomma}}</h1>
+                                        <span class="success"><i class="la la-caret-up"></i> Incoming</span>
+                                    </li>
+                                </ul>
+                            </td>
+                            <td class="text-truncate m-0 pb-0">
+                                <ul class="list-inline clearfix">
+                                    <li class="pl-2">
+                                        <h1 class="blue-grey darken-1 text-bold-400">{{incoming.out_quantity|default:0|floatformat:2|intcomma}}</h1>
+                                        <span class="danger darken-2 "><i class="la la-caret-down"></i> Outgoing</span>
+                                    </li>
+                                </ul>
+                            </td>
+
+                          </tr>
+                        {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+
+            </div>
+            <div class="col-lg-6 col-12">
+    	            <div class="bs-callout-success callout-border-left mt-1 p-1">
+                        <strong>Warning</strong>
+                        <p>Your data is still incomplete, please complete data for accurate readings</p>
+                    </div>
+                    <hr>
+
+                <div class="card">
+                    <div class="card-content">
+                        <div class="card-body card-dashboard">
+                            <div id="unit_container" style="height: 400px; max-width: 800px; margin: 0 auto"></div>
+                            <script src="https://code.highcharts.com/highcharts.src.js"></script>
+                            <script src="http://code.highcharts.com/stock/highstock.js"></script>
+                            <script>
+                                Highcharts.chart('unit_container', {
+                                    chart: {
+                                        type: 'column',
+                                    },
+                                    title: {
+                                        text: 'Warehouse Expense per Unit'
+                                    },
+                                    xAxis: {
+                                        categories: [
+                                            {% for incoming in stat_per_item %}
+                                                {% if incoming.out_value > 0 %}
+                                                    '{{ incoming.unit__body_no }}'
+                                                    {% if not forloop.last %}, {% endif %}
+                                                {% endif %}
+                                            {% endfor %}
+                                            ],
+                                            min: 0,
+                                            max: 3,
+                                            scrollbar: {
+                                                enabled: true
+                                            },
+                                    },
+                                    plotOptions: {
+                                        series: {
+                                            borderWidth: 0,
+                                            dataLabels: {
+                                                enabled: true,
+                                                format: '{point.y:.0f}'
+                                            }
+                                        }
+                                    },
+                                    series: [{
+                                        colorByPoint: true,
+                                        data: [
+                                            {% for incoming in stat_per_item %}
+                                                {% if incoming.out_value > 0 %}
+                                                    {{ incoming.out_value }},
+                                                {% endif %}
+                                            {% endfor %}
+                                            ],
+                                        showInLegend: false
+                                    }]
+
+                                });
+                            </script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+    </div>
+
+
+{% endblock %}

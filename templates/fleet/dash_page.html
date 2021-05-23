@@ -1,0 +1,381 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load mathfilters %}
+
+{% block body_block %}
+    <div class="content-header row">
+      <div class="content-header-left col-md-6 col-12 mb-2">
+        <h3 class="content-header-title">Dashboard</h3>
+      </div>
+      <div class="content-header-right col-md-6 col-12">
+        <div class="btn-group float-md-right" role="group" aria-label="Edit Options">
+          <button class="btn btn-info round dropdown-toggle dropdown-menu-right box-shadow-2 px-2" id="btnGroupDrop1" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <i class="ft-settings icon-left"></i> Actions
+          </button>
+          <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+              <a class="dropdown-item" href="{% url "admin:fleet_joborder_add" %}" target="_blank">New JO</a>
+              <a class="dropdown-item" href="{% url "admin:fleet_unitprofile_add" %}" target="_blank">New Unit</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="content-body">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-content">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-2 col-md-6 col-12 border-right-blue-grey border-right-lighten-4">
+                                    <div class="text-center">
+                                        <span class="font-large-3 text-bold-300 violet">{{ total_units }}</span>
+                                    </div>
+                                    <div class="text-center">
+                                        <span class="blue-grey darken-1 block">Total Units</span>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-2 col-md-6 col-12 border-right-blue-grey border-right-lighten-4">
+                                    <div class="text-center">
+                                        <span class="font-large-3 text-bold-300 info pb-0">{{ total_operational }}</span>
+                                    </div>
+                                    <div class="text-center pb-1">
+                                        <span class="blue-grey darken-1 block">Operational</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2 col-md-6 col-12 border-right-blue-grey border-right-lighten-4">
+                                    <div class="text-center">
+                                        <span class="font-large-3 text-bold-300 danger">{{ total_idle }}</span>
+                                    </div>
+                                    <div class="text-center">
+                                        <span class="blue-grey darken-1 block">Idle</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2 col-md-6 col-12 border-right-blue-grey border-right-lighten-4">
+                                    <div class="text-center">
+                                        <span class="font-large-3 text-bold-300 success">{{ total_repair }}</span>
+                                    </div>
+                                    <div class="text-center">
+                                        <span class="blue-grey darken-1 block">Under Repair</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2 col-md-6 col-12 border-right-blue-grey border-right-lighten-4">
+                                    <div class="text-center">
+                                        <span class="font-large-3 text-bold-300 success">{{ total_pms }}</span>
+                                    </div>
+                                    <div class="text-center">
+                                        <span class="blue-grey darken-1 block">For PMS</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2 col-md-6 col-12 border-right-blue-grey border-right-lighten-4">
+                                    <div class="text-center">
+                                        <span class="font-large-3 text-bold-300 warning">{{ total_disposal }}</span>
+                                    </div>
+                                    <div class="text-center">
+                                        <span class="blue-grey darken-1 block">For Disposal</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-content">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-3 col-md-6 col-12 border-right-blue-grey border-right-lighten-5">
+                                    <div class="float-left pl-2">
+                                        <span class="font-large-3 text-bold-300 danger">{{ total_drivers }}</span>
+                                    </div>
+                                    <div class="float-left mt-2 ml-1">
+                                        <span class="blue-grey darken-1 block">Total</span>
+                                        <span class="blue-grey darken-1 block">Drivers</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 col-12 border-right-blue-grey border-right-lighten-5">
+                                    <div class="float-left pl-2">
+                                        <span class="font-large-3 text-bold-300 warning">{{ total_operators }}</span>
+                                    </div>
+                                    <div class="float-left mt-2 ml-1">
+                                        <span class="blue-grey darken-1 block">Total</span>
+                                        <span class="blue-grey darken-1 block">Operators</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 col-12 border-right-blue-grey border-right-lighten-5">
+                                    <div class="float-left pl-2">
+                                        <span class="font-large-3 text-bold-300 success">{{ total_mechanics }}</span>
+                                    </div>
+                                    <div class="float-left mt-2 ml-1">
+                                        <span class="blue-grey darken-1 block">Total</span>
+                                        <span class="blue-grey darken-1 block">Mechanics</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 col-12">
+                                    <div class="float-left pl-2">
+                                        <span class="font-large-3 text-bold-300 info">{{ total_helpers }}</span>
+                                    </div>
+                                    <div class="float-left mt-2 ml-1">
+                                        <span class="blue-grey darken-1 block">Total</span>
+                                        <span class="blue-grey darken-1 block">Helpers</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <section id="ordering">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-info">
+                            <h2 class="card-title m-0">Unit Location and Status</h2>
+                            <div class="heading-elements">
+                                <ul class="list-inline mb-0">
+                                    <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card-content collapse show">
+                            <div class="table-responsive dataTables_scrollBody" style="position: relative; overflow: auto; max-height: 500px; width: 100%;">
+                                <table class="table table-hover scroll-vertical table-middle table-l mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Project Site</th>
+                                            <th>Mechanics<span class="text-white">............</span></th>
+                                            {% for type in unit_type %}
+                                                <th>{{ type.unit_type }}</th>
+                                            {% endfor %}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for site in project_site %}
+
+                                            <tr>
+                                                <td>{{ site.project_code }}</td>
+                                                <td>
+                                                    <ul class="list-unstyled user-list m-0">
+                                                    {% for mechanic in mechanics %}
+                                                    {% if mechanic.project_site.project_code == site.project_code%}
+                                                        <li class="avatar avatar-sm pull-up" data-toggle="tooltip" data-popup="tooltip-custom" data-original-title="{{ mechanic.base_profile.fullname }}">
+                                                            <img class="media-object rounded-circle" src="{{ mechanic.base_profile.profile_pic.url }}">
+                                                        </li>
+                                                    {% endif %}
+                                                    {% endfor %}
+                                                    </ul>
+                                                </td>
+                                                {% for type in unit_type %}
+                                                    <td>
+                                                        {% for unit in units %}
+                                                        {% if unit.project_site__project_code == site.project_code and unit.unit_type == type.unit_type %}
+                                                        <span class="badge badge-pill badge-glow badge-default {% if unit.under_repair > 0 %}badge-warning{% elif unit.for_disposal > 0 %}badge-danger{% else %}badge-success{% endif %}">
+                                                            {{ unit.under_repair }}/{{ unit.operational }}{% if unit.for_disposal %}/{{ unit.for_disposal }}{% endif %}
+                                                        </span>
+                                                        {% endif %}
+                                                        {% endfor %}
+                                                    </td>
+                                                {% endfor %}
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="row match-height">
+            <div class="col-md-5 col-12">
+    		    <p class="lead warning">Puchase Orders for Approval</p>
+    		    <div class="row">
+				    <div class="col-md-4">
+			            <div class="card border-warning">
+                            <div class="card-content">
+                                <div class="card-body">
+                                    <div class="media d-flex">
+                                        <div class="align-self-center">
+                                            <img src="{% static "images/favicon/sp.gif" %}">
+                                        </div>
+                                        <div class="media-body text-right">
+                                            <h3 class="text-bold-700 ">{{ spare_parts }}</h3>
+                                            <span>Spare Parts</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+				    </div>
+				    <div class="col-md-4">
+			            <div class="card border-warning">
+                            <div class="card-content">
+                                <div class="card-body">
+                                    <div class="media d-flex">
+                                        <div class="align-self-center">
+                                            <img src="{% static "images/favicon/lubs.gif" %}">
+                                        </div>
+                                        <div class="media-body text-right">
+                                            <h3 class="text-bold-700 ">{{ lubricants }}</h3>
+                                            <span>Oil & Lubricants</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+				    </div>
+				    <div class="col-md-4">
+			            <div class="card border-warning">
+                            <div class="card-content">
+                                <div class="card-body">
+                                    <div class="media d-flex">
+                                        <div class="align-self-center">
+                                            <img src="{% static "images/favicon/tools.gif" %}">
+                                        </div>
+                                        <div class="media-body text-right">
+                                            <h3 class="text-bold-700 ">{{ tools }}</h3>
+                                            <span>Tools & Machs</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+				    </div>
+				</div>
+                <p class="lead warning">Job Orders for Approval</p>
+				<div class="table-responsive col-sm-12 border-danger">
+					<table class="table">
+                        <thead class="">
+                            <tr>
+                                <th class="border-top-0"></th>
+                                <th class="border-top-0"></th>
+                                <th class="border-top-0"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for jo in job_orders %}
+                            <tr>
+                                <td class="text-truncate">
+                                    <a class="media-link" href="{% url 'fleet:jo_detail' pk=jo.id %}" target="_blank">
+    									<span class="media-left">
+    										<img class="media-object rounded-circle" src="{{ jo.base_unit.profile_pic.url }}" alt="image" style="width: 48px;height: 48px;">
+    									</span>
+    								</a>
+                                </td>
+                                <td>
+                                    <p class="mb-0">Unit: <strong>{{ jo.base_unit.body_no }}</strong></p>
+                                    <p class="mb-0">JO #: <strong>{{ jo.jo_no }}</strong></p>
+                                </td>
+                                <td class="text-truncate">
+                                    <p class="mb-0">Date: <strong>{{ jo.request_date }}</strong></p>
+                                    <p class="mb-0">By: <strong>{{ jo.site }} | {{ jo.request_by }}</strong></p>
+                                    {{ jo.date_start }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+					</table>
+				</div>
+    		</div>
+
+            <div class="col-md-7 col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Unit Details</h4>
+                        <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                        <div class="heading-elements">
+                            <ul class="list-inline mb-0">
+                                <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card-content collapse show">
+                        <div class="card-body card-dashboard">
+                            <table class="table table-striped table-bordered table-middle multi-ordering dataex-html5-selectors">
+                                <thead>
+                                    <tr>
+                                        <th>Body No</th>
+                                        <th>Type</th>
+                                        <th>Plate No</th>
+                                        <th>Operator</th>
+                                        <th>Project Site</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for unit in all_units %}
+                                    <tr>
+                                        <td><a href="{% url 'fleet:unit_detail' pk=unit.id %}" target="_blank">{{ unit.body_no }}</a></td>
+                                        <td>{{ unit.unit_desc }}</td>
+                                        <td>{{ unit.plate_no }}</td>
+                                        <td>{{ unit.operator }}</td>
+                                        <td>{{ unit.project_site }}</td>
+                                        <td>{{ unit.status }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="row match-height">
+            <div class="col-md-5 col-12"></div>
+            <div class="col-md-7 col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Tools and Machines</h4>
+                        <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                        <div class="heading-elements">
+                            <ul class="list-inline mb-0">
+                                <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card-content collapse show">
+                        <div class="card-body card-dashboard">
+                            <table class="table table-striped table-bordered table-middle multi-ordering dataex-html5-selectors">
+                                <thead>
+                                    <tr>
+                                        <th>Body No</th>
+                                        <th>Type</th>
+                                        <th>Plate No</th>
+                                        <th>Operator</th>
+                                        <th>Project Site</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for tool in all_tools_and_mach %}
+                                    <tr>
+                                        <td><a href="{% url 'fleet:unit_detail' pk=tool.id %}" target="_blank">{{ tool.body_no }}</a></td>
+                                        <td>{{ tool.unit_desc }}</td>
+                                        <td>{{ tool.plate_no }}</td>
+                                        <td>{{ tool.operator }}</td>
+                                        <td>{{ tool.project_site }}</td>
+                                        <td>{{ tool.status }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+
+
+{% endblock %}

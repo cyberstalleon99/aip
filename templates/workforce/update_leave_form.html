@@ -1,0 +1,422 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load humanize %}
+{% load widget_tweaks %}
+{% load extra_tags %}
+{% load mathfilters %}
+
+{% block extra_head %}
+<link rel="stylesheet" type="text/css" href="{% static "app-assets/css/pages/timeline.css" %}">
+{% endblock extra_head %}
+
+{% block body_block %}
+
+    <section class="row">
+
+        <div class="col-lg-6 col-md-8 col-12">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+        		<div class="card">
+        			<div class="card-header pb-1 bg-dark">
+        				<h2 class="white" id="basic-layout-icons">
+        				    <a href="" class="white">
+        				        Add/Edit Leave
+        				    </a>
+        				</h2>
+        			</div>
+        			<div class="card-content collapse show pink">
+        				<div class="card-body">
+
+                            <form class="form">
+                              <div class="form-body">
+                                <div class="row">
+                                    <div class="col-md-12 col-12">
+                                        {{ form.media }}
+                                        {{ form.errors }}
+
+                                        <h4 class="mb-0">General Fields</h4>
+                                        <hr class="mt-0">
+
+                                        <div class="form-group">
+                                          <label for="timesheetinput1">Requested by</label>
+                                          <div class="position-relative">
+                                              {{form.base_profile|add_class:"form-control"|attr:"disabled"}}
+                                                {% comment %}
+                                                <input type="hidden" name="base_profile" value={{object.base_profile.id}}>
+                                                <input type="text" class="form-control"value="{{object.base_profile}}" readonly>
+                                                {% endcomment %}
+                                          </div>
+                                        </div>
+
+                                        <div class="well">
+                                            <div class="row">
+                                                <div class="form-group col-md-6 col-12">
+                        							<label for="timesheetinput1">From</label>
+                                                      <div class="position-relative has-icon-left">
+                                                            {{form.date_from|add_class:"form-control"|attr:"disabled"}}
+                                                            {% comment %}
+                                                            {% if user.basicprofile.id == object.base_profile.id and object.approval_super == "For Approval" %}
+                                                                {{form.date_from|add_class:"form-control"}}
+                                                            {% else %}
+                                                                {{form.date_from|add_class:"form-control"|attr:"readonly"}}
+                                                            {% endif %}
+                                                            {% endcomment %}
+                                                        <div class="form-control-position">
+                                                          <i class="la la-calendar"></i>
+                                                        </div>
+                                                      </div>
+                        						</div>
+                        						<div class="form-group col-md-6 col-12">
+                        							<label for="timesheetinput1">To</label>
+                                                      <div class="position-relative has-icon-left">
+                                                          {{form.date_to|add_class:"form-control"|attr:"disabled"}}
+                                                          {% comment %}
+                                                          {% if user.basicprofile.id == object.base_profile.id  and object.approval_super == "For Approval" %}
+                                                            {{form.date_to|add_class:"form-control"}}
+                                                          {% else %}
+                                                            {{form.date_to|add_class:"form-control"|attr:"readonly"}}
+                                                          {% endif %}
+                                                          {% endcomment %}
+                                                        <div class="form-control-position">
+                                                          <i class="la la-calendar"></i>
+                                                        </div>
+                                                      </div>
+                        						</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                              <label for="timesheetinput1">Leave Type</label>
+                                              <div class="position-relative">
+                                                    <input type="text" class="form-control" value="{{object.leave_type}}" disabled>
+                                                    {% comment %}
+                                                    {% if user.basicprofile.id == object.base_profile.id  and object.approval_super == "For Approval" %}
+                                                    {{form.leave_type|add_class:"form-control"}}
+                                                    {% else %}
+                                                    <input type="hidden" name="leave_type" value="{{object.leave_type}}">
+                                                    <input type="text" class="form-control" value="{{object.leave_type}}" readonly>
+                                                    {% endif %}
+                                                    {% endcomment %}
+                                              </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                          <label for="timesheetinput1">Reason</label>
+                                          {{form.reason|add_class:"form-control"|attr:"disabled"}}
+                                          <div class="position-relative">
+                                                  {% comment %}
+                                                  {% if user.basicprofile.id == object.base_profile.id  and object.approval_super == "For Approval" %}
+                                                  {{form.reason|add_class:"form-control"}}
+                                                  {% else %}
+                                                  {{form.reason|add_class:"form-control"|attr:"readonly"}}
+                                                  {% endif %}
+                                                {% endcomment %}
+                                          </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                          <label for="timesheetinput1">Attachment</label>
+                                          <div class="position-relative">
+                                              {{form.attachment|add_class:"form-control"|attr:"disabled"}}
+                                              {% comment %}
+                                                {% if user.basicprofile.id == object.base_profile.id  and object.approval_super == "For Approval" %}
+                                                {{form.attachment|add_class:"form-control"}}
+                                                {% else %}
+                                                {{form.attachment|add_class:"form-control"|attr:"hidden"}}
+                                                {{form.attachment|add_class:"form-control"|attr:"disabled"}}
+                                                {% endif %}
+                                                {% endcomment %}
+                                          </div>
+                                        </div>
+
+                                        {% comment %}
+                                        <h4 class="mb-0">Approval by Supervisor</h4>
+                                        <hr class="mt-0">
+
+                                        <div class="well">
+                                            <div class="row">
+                                                <div class="form-group col-md-6 col-12">
+                        							<label for="timesheetinput1">Approved by</label>
+                                                      <div class="position-relative has-icon-left">
+                                                            <input type="text" class="form-control" value="{{object.approved_by_super}}" disabled>
+                                                        <div class="form-control-position">
+                                                          <i class="la la-calendar"></i>
+                                                        </div>
+                                                      </div>
+                        						</div>
+                        						<div class="form-group col-md-6 col-12">
+                        							<label for="timesheetinput1">Date</label>
+                                                      <div class="position-relative has-icon-left">
+                                                        <input type="text" class="form-control" value="{{object.date_approved_super}}" disabled>
+                                                        <div class="form-control-position">
+                                                          <i class="la la-calendar"></i>
+                                                        </div>
+                                                      </div>
+                        						</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                          <label for="timesheetinput1">Status</label>
+                                          <div class="position-relative">
+                                                <input type="text" class="form-control" value="{{object.approval_super}}" disabled>
+                                          </div>
+                                        </div>
+
+
+                                        <h4 class="mb-0">Approval by Admin</h4>
+                                        <hr class="mt-0">
+
+                                        <div class="well">
+                                            <div class="row">
+                                                <div class="form-group col-md-6 col-12">
+                        							<label for="timesheetinput1">Approved by</label>
+                                                      <div class="position-relative has-icon-left">
+                                                            <input type="text" class="form-control" value="{{object.approved_by}}" disabled>
+                                                        <div class="form-control-position">
+                                                          <i class="la la-calendar"></i>
+                                                        </div>
+                                                      </div>
+                        						</div>
+                        						<div class="form-group col-md-6 col-12">
+                        							<label for="timesheetinput1">Date Approved</label>
+                                                      <div class="position-relative has-icon-left">
+                                                        <input type="text" class="form-control" value="{{object.date_approved}}" disabled>
+                                                        <div class="form-control-position">
+                                                          <i class="la la-calendar"></i>
+                                                        </div>
+                                                      </div>
+                        						</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                          <label for="timesheetinput1">Status</label>
+                                          <div class="position-relative">
+                                                <input type="text" class="form-control" value="{{object.approval}}" disabled>
+                                          </div>
+                                        </div>
+                                        {% endcomment %}
+                                    </div>
+        						</div>
+                              </div>
+
+                              <div class="form-actions right">
+                                    {% if user.basicprofile.id == object.base_profile.id  and object.approval_super == "For Approval" %}
+                                        <button type="submit" class="btn btn-pink"><i class="la la-check-square-o"></i> Submit</button>
+                                    {% else %}
+                                        <button type="button" class="btn btn-secondary"><i class="la la-check-square-o"></i>Submit</button>
+                                    {% endif %}
+                              </div>
+
+                            </form>
+
+        				</div>
+        			</div>
+        		</div>
+    		</form>
+    	</div>
+
+        <div class="col-lg-6 col-md-8 col-12">
+            <section id="timeline" class="timeline-left timeline-wrapper">
+					<h3 class="page-title text-center text-lg-left">History</h3>
+					<ul class="timeline">
+						<li class="timeline-line"></li>
+						<li class="timeline-group">
+							<!--<a href="#" class="btn btn-primary"><i class="ft-calendar"></i> Today</a>-->
+						</li>
+					</ul>
+					<ul class="timeline">
+						<li class="timeline-line"></li>
+						<li class="timeline-item">
+							<div class="timeline-badge">
+								<span class="avatar avatar-online" data-toggle="tooltip" data-placement="left"
+									title="Eu pid nunc urna integer"><img
+										src="{{object.base_profile.profile_pic.url}}"
+										alt="avatar"></span>
+							</div>
+							<div class="timeline-card card border-grey border-lighten-2">
+								<div class="card-header">
+									<h4 class="card-title"><a href="#">Requestor</a></h4>
+									<p class="card-subtitle text-muted pt-1">
+										<span class="font-small-3">{{object.create_date}}</span>
+									</p>
+									<a class="heading-elements-toggle"><i
+											class="la la-ellipsis-h font-medium-3"></i></a>
+									<div class="heading-elements">
+										<ul class="list-inline pt-1">
+										    {% if object.approval == "Denied" or object.approval == "AWOL"  %}
+										    <p class="text-danger">{{object.approval}}</p>
+										    {% elif object.approval == "Canceled"  %}
+										    <p class="text-warning">{{object.approval}}</p>
+										    {% elif object.approval == "For Approval" %}
+										    <p class="text-primary">{{object.approval}}</p>
+										    {% else %}
+										    <p class="text-success">{{object.approval}}</p>
+										    {% endif %}
+										</ul>
+									</div>
+								</div>
+								<div class="card-content">
+									<div class="card-body">
+										<div class="card-text">
+                                            <!--<p>Description lists with right aligned text in <code>&lt;dt&gt;</code> tag using <code>.text-right</code></p>-->
+                                            <dl class="row">
+                                                <dt class="col-sm-3 text-right">Requested by</dt>
+                                                <dd class="col-sm-9">{{object.base_profile.fullname}}</dd>
+                                            </dl>
+                                            <dl class="row">
+                                                <dt class="col-sm-3 text-right">Date of Leave</dt>
+                                                <dd class="col-sm-9">{{object.date_from}} - {{object.date_to}}</dd>
+                                            </dl>
+                                            <dl class="row">
+                                                <dt class="col-sm-3 text-right">Total Days</dt>
+                                                <dd class="col-sm-9">{{object.total_days}} day/s</dd>
+                                            </dl>
+                                            <dl class="row">
+                                                <dt class="col-sm-3 text-right">Type of Leave</dt>
+                                                <dd class="col-sm-9">{{object.leave_type}}</dd>
+                                            </dl>
+                                            <dl class="row">
+                                                <dt class="col-sm-3 text-right text-truncate">Remarks</dt>
+                                                <dd class="col-sm-9">{{object.reason}}</dd>
+                                            </dl>
+                                            <dl class="row">
+                                                <dt class="col-sm-3 text-right text-truncate">Attachment</dt>
+                                                {% if object.attachment.url != '/media/%20' %}
+                                                <dd class="col-sm-9">{{object.attachment.url}}</dd>
+                                                {% else %}
+                                                <dd class="col-sm-9">No attachment</dd>
+                                                {% endif %}
+                                            </dl>
+                                        </div>
+									</div>
+								</div>
+							</div>
+						</li>
+						{% if object.approval_super != "For Approval" %}
+						<li class="timeline-item">
+							<div class="timeline-badge">
+								<span class="avatar avatar-online" data-toggle="tooltip" data-placement="left"
+									title="Eu pid nunc urna integer"><img
+										src="{{object.approved_by_super.profile_pic.url}}"
+										alt="avatar"></span>
+							</div>
+							<div class="timeline-card card border-grey border-lighten-2">
+								<div class="card-header">
+									<h4 class="card-title"><a href="#">Supervisor</a></h4>
+									<p class="card-subtitle text-muted pt-1">
+										<span class="font-small-3">{{object.date_approved_super}}</span>
+									</p>
+									<a class="heading-elements-toggle"><i
+											class="la la-ellipsis-h font-medium-3"></i></a>
+									<div class="heading-elements">
+										<ul class="list-inline pt-1">
+											{% if object.approval_super == "Denied" %}
+										    <p class="text-danger">{{object.approval_super}}</p>
+										    {% elif object.approval_super == "For Approval"  %}
+										    <p class="text-primary">{{object.approval_super}}</p>
+										    {% else %}
+										    <p class="text-success">{{object.approval_super}}</p>
+										    {% endif %}
+										</ul>
+									</div>
+								</div>
+								<div class="card-content">
+									<div class="card-body">
+										<div class="card-text">
+                                            <dl class="row">
+                                                <dt class="col-sm-3 text-right">Approved by</dt>
+                                                <dd class="col-sm-9">{{object.approved_by_super.fullname}}</dd>
+                                            </dl>
+                                            <dl class="row">
+                                                <dt class="col-sm-3 text-right">Date approved</dt>
+                                                <dd class="col-sm-9">{{object.date_approved_super}}</dd>
+                                            </dl>
+                                            <dl class="row">
+                                                <dt class="col-sm-3 text-right">Status</dt>
+                                                <dd class="col-sm-9">{{object.approval_super}}</dd>
+                                            </dl>
+                                            <dl class="row">
+                                                <dt class="col-sm-3 text-right text-truncate">Remarks</dt>
+                                                {% if object.remarks_super %}
+                                                <dd class="col-sm-9">{{object.remarks_super}}</dd>
+                                                {% else %}
+                                                <dd class="col-sm-9">No remarks</dd>
+                                                {% endif %}
+                                            </dl>
+                                        </div>
+									</div>
+								</div>
+							</div>
+						</li>
+						{% endif %}
+
+						{% if object.approval != "For Approval" %}
+						<li class="timeline-item mt-0">
+							<div class="timeline-badge">
+								<span class="avatar avatar-online" data-toggle="tooltip" data-placement="left"
+									title="Eu pid nunc urna integer"><img
+										src="{{object.approved_by.profile_pic.url}}"
+										alt="avatar"></span>
+							</div>
+							<div class="timeline-card card border-grey border-lighten-2">
+								<div class="card-header">
+									<h4 class="card-title"><a href="#">Admin/HR</a></h4>
+									<p class="card-subtitle text-muted pt-1">
+										<span class="font-small-3">{{object.date_approved}}</span>
+									</p>
+									<a class="heading-elements-toggle"><i class="la la-check font-medium-3"></i></a>
+									<div class="heading-elements">
+										<ul class="list-inline mb-0">
+											{% if object.approval == "Denied" or object.approval == "AWOL"  %}
+										    <p class="text-danger">{{object.approval}}</p>
+										    {% elif object.approval == "Canceled"  %}
+										    <p class="text-warning">{{object.approval}}</p>
+										    {% elif object.approval == "For Approval" %}
+										    <p class="text-primary">{{object.approval}}</p>
+										    {% else %}
+										    <p class="text-success">{{object.approval}}</p>
+										    {% endif %}
+										</ul>
+									</div>
+								</div>
+								<div class="card-content">
+									<div class="card-body">
+										<div class="card-text">
+                                            <dl class="row">
+                                                <dt class="col-sm-3 text-right">Approved by</dt>
+                                                <dd class="col-sm-9">{{object.approved_by.fullname}}</dd>
+                                            </dl>
+                                            <dl class="row">
+                                                <dt class="col-sm-3 text-right">Date approved</dt>
+                                                <dd class="col-sm-9">{{object.date_approved}}</dd>
+                                            </dl>
+                                            <dl class="row">
+                                                <dt class="col-sm-3 text-right">Status</dt>
+                                                <dd class="col-sm-9">{{object.approval}}</dd>
+                                            </dl>
+                                            <dl class="row">
+                                                <dt class="col-sm-3 text-right text-truncate">Remarks</dt>
+                                                {% if object.remarks %}
+                                                <dd class="col-sm-9">{{object.remarks}}</dd>
+                                                {% else %}
+                                                <dd class="col-sm-9">No remarks</dd>
+                                                {% endif %}
+                                            </dl>
+                                        </div>
+									</div>
+								</div>
+							</div>
+						</li>
+                        {% endif %}
+					</ul>
+			</section>
+        </div>
+    </section>
+
+{% endblock body_block %}
+
+{% block extra_js %}
+<script src="{% static "app-assets/js/scripts/pages/timeline.js" %}"></script>
+{% endblock extra_js %}

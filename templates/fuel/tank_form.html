@@ -1,0 +1,20 @@
+{% extends 'base_form.html' %}
+
+{% block extrahead %}
+{{ form.media }}
+{% endblock %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <div class="panel">
+        <h1 class="mt-2">New Tank</h1>
+        <hr class="mt-0 mb-4">
+    </div>
+    <form method="post" novalidate>
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-primary">Submit Tank</button>
+        <p> </p>
+    </form>
+{% endblock %}

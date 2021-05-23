@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load humanize %}
+
+{% block body_block %}
+    <div class="content-header row">
+      <div class="content-header-left col-md-6 col-12 mb-2">
+        <h3 class="content-header-title">Project Status Summary</h3>
+      </div>
+      <div class="content-header-right col-md-6 col-12">
+      </div>
+    </div>
+    <div class="content-body">
+
+        <div class="row">
+            <div id="recent-transactions" class="col-12">
+                <div class="card">
+                    <div class="card-header bg-success">
+                        <h2 class="content-header-title"><span class="badge badge-pill badge-glow badge-default badge-info">{{ on_going_tot }}</span> On-Going Projects</h2>
+                    </div>
+                    <div class="card-content">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-middle table-xl mb-0">
+                                <thead>
+                                    <tr>
+                                        <th class="border-top-0">Project Name</th>
+                                        <th class="border-top-0">Completion</th>
+                                        <th class="border-top-0">Slippage</th>
+                                        <th class="border-top-0">Contract Cost</th>
+                                        <th class="border-top-0">Overall Expense</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for project in on_going %}
+                                    <tr>
+                                        <td class="text-truncate">
+                                            <div>
+                                                <a href="{% url 'operation:project_detail' pk=project.id %}"><h4><strong>{{ project.project_name }}</strong></h4></a>
+                                                <p>Project Code: {{ project.project_code }}</p>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="text-center" id="example-caption-1"><h2 class="success">{{ project.op_status.all.latest.work_accomplished }}%</h2></div>
+                                            <div class="progress">
+                    							<div class="progress-bar bg-success progress-bar-striped progress-bar-animated" role="progressbar"
+                    							aria-valuenow="{{ project.op_status.all.latest.work_accomplished }}"
+                    							aria-valuemin="0" aria-valuemax="100"
+                    							style="width:{{ project.op_status.all.latest.work_accomplished }}%;"></div>
+                    						</div>
+                                        </td>
+                                        <td>
+                                            <div class="text-center" id="example-caption-1"><h2 class="danger">{{ project.op_status.all.latest.slippage }}%</h2></div>
+                                            <div class="progress">
+                    							<div class="progress-bar bg-danger progress-bar-striped progress-bar-animated" role="progressbar"
+                    							aria-valuenow="{{ project.op_status.all.latest.slippage }}"
+                    							aria-valuemin="0" aria-valuemax="100"
+                    							style="width:{{ project.op_status.all.latest.slippage }}%;"></div>
+                    						</div>
+                                        </td>
+                                        <td class="text-truncate"><h2>P {{ project.detail.contract_cost|intcomma }}</h2></td>
+                                        <td class="text-truncate danger"><h2>P {{ project.major_expense.all.latest.total_expense|intcomma }}</h2></td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div id="recent-transactions" class="col-12">
+                <div class="card">
+                    <div class="card-header bg-info">
+                        <h2 class="content-header-title"><span class="badge badge-pill badge-glow badge-default badge-success">{{ completed_tot }}</span> Success Projects</h2>
+                    </div>
+                    <div class="card-content">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-middle table-xl mb-0">
+                                <thead>
+                                    <tr>
+                                        <th class="border-top-0">Project Name</th>
+                                        <th class="border-top-0">Start Date</th>
+                                        <th class="border-top-0">Completion Date</th>
+                                        <th class="border-top-0">Contract Cost</th>
+                                        <th class="border-top-0">Overall Expense</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for project in completed %}
+                                    <tr>
+                                        <td class="text-truncate">
+                                            <div>
+                                                <a href="{% url 'operation:project_detail' pk=project.id %}"><h4><strong>{{ project.project_name }}</strong></h4></a>
+                                                <p>Project Code: {{ project.project_code }}</p>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div><h2 class="success">{{ project.detail.effectivity_date }}</h2></div>
+                                        </td>
+                                        <td>
+                                            <div><h2 class="danger">{{ project.detail.expiry_date }}</h2></div>
+                                        </td>
+                                        <td class="text-truncate"><h2>P {{ project.detail.contract_cost|intcomma }}</h2></td>
+                                        <td class="text-truncate danger"><h2>P {{ project.major_expense.all.latest.total_expense|intcomma }}</h2></td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+{% endblock %}

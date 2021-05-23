@@ -1,0 +1,52 @@
+{% extends 'base_form.html' %}
+
+{% block extrahead %}
+{{ form.media }}
+{% endblock %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+<form method="post">
+  {% csrf_token %}
+  <h1 class="mt-2">New Ticket</h1>
+  <hr class="mt-0 mb-4">
+
+  {{ form.title|as_crispy_field }}
+  {{ form.category|as_crispy_field }}
+
+  <div class="form-row">
+    <div class="form-group col-md-6 mb-0">
+      {{ form.start_date|as_crispy_field }}
+    </div>
+    <div class="form-group col-md-6 mb-0">
+      {{ form.due_date|as_crispy_field }}
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-6 mb-0">
+      {{ form.created_by|as_crispy_field }}
+    </div>
+    <div class="form-group col-md-6 mb-0">
+      {{ form.assigned_to|as_crispy_field }}
+    </div>
+  </div>
+  {{ form.note|as_crispy_field }}
+  <div class="form-row">
+    <div class="form-group col-md-4 mb-0">
+      {{ form.completed|as_crispy_field }}
+    </div>
+    <div class="form-group col-md-4 mb-0">
+      {{ form.completed_date|as_crispy_field }}
+    </div>
+    <div class="form-group col-md-2 mb-0">
+      {{ form.priority|as_crispy_field }}
+    </div>
+    <div class="form-group col-md-2 mb-0">
+    </div>
+  </div>
+  <hr class="mt-0 mb-4">
+  <button type="submit" class="btn btn-primary">Save Ticket</button>
+  <p> </p>
+</form>
+{% endblock %}

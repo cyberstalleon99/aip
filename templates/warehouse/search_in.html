@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load humanize %}
+{% load widget_tweaks %}
+{% load extra_tags %}
+
+
+{% block body_block %}
+<div class="row">
+    <section class="col-md-12 col-12 p-1">
+        <div class="content-header row">
+          <div class="content-header-left col-md-6 col-12 mb-2">
+            <h3 class="content-header-title"></h3>
+          </div>
+          <div class="content-header-right col-md-6 col-12">
+            <div class="btn-group float-md-right" role="group" aria-label="Edit Options">
+              <button class="btn btn-info round dropdown-toggle dropdown-menu-right box-shadow-2 px-2" id="btnGroupDrop1" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <i class="ft-settings icon-left"></i> Actions
+              </button>
+              <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                  <!--<a class="dropdown-item" href="{% url "admin:warehouse_incoming_add" %}" target="_blank">New Incoming (Old)</a>-->
+                  <!--<a class="dropdown-item" href="{% url "warehouse:new_incoming" %}" target="_blank">New Incoming (New - Do not use this link yet)</a>-->
+                  <a class="dropdown-item" href="{% url "warehouse:new_incoming" %}" target="_blank">New Incoming</a>
+              </div>
+            </div>
+          </div>
+        </div>
+    </section>
+</div>
+
+<div class="row">
+
+    <section class="col-md-3 col-12 p-0">
+    	<div class="card border-warning mb-1">
+    		<div class="card-header pb-0">
+    			<h4 class="warning " id="basic-layout-tooltip">Advance Query - Incoming</h4>
+    		</div>
+    		<div class="card-content collapse show">
+			    <div class="card-body">
+                    <form method="get">
+                        <div class="well">
+                          <div class="row">
+                            <div class="form-group col-12">
+                              Project Site: {% render_field pasok.form.project_site class="form-control" %}
+                            </div>
+                            <div class="form-group col-12">
+                              Item {% render_field pasok.form.item__item_name class="form-control" %}
+                            </div>
+
+                            <div class="form-group col-12">
+                              Received By: {% render_field pasok.form.received_by class="form-control" %}
+                            </div>
+                          </div>
+
+                          <div class="well">
+                              <div class="row">
+                                <div class="form-group col-6">
+                                    Category: {% render_field pasok.form.item__item_category class="form-control" %}
+                                </div>
+                                <div class="form-group col-6">
+                                    General Name: {% render_field pasok.form.item__general_name class="form-control" %}
+                                </div>
+                              </div>
+                          </div>
+                          <div class="row">
+                              <div class="ml-1">
+                              Date Range: (yyyy-mm-dd):
+                              <div class="form-group form-inline">
+                                  {% render_field pasok.form.trans_date__date class="form-control" %}
+                              </div>
+                              </div>
+                          </div>
+                        </div>
+                        <div class="form-actions right">
+							<button type="submit" class="btn btn-primary">
+								<i class="la la-check-square-o"></i> Search
+							</button>
+						</div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="alert alert-primary mb-2" role="alert">
+			<h4 class="mb-2">Note!</h4>
+			<p>Use this if you want to do refined/specific queries, this is powerful if you know what you are doing. Initial value of table when no selection is done will be the latest 100 items.</p>
+			<strong>Sample cases you can do.</strong>
+			<ul class="mb-0 pl-1">
+    			<li>- Trace a specific ITEM from ALL project sites.</li>
+    			<li>- Query transaction from a specific DATE Range (daily, weekly, monthly, etc)</li>
+    			<li>- Get a specific CATEGORY from all project site (good for equipment analysis)</li>
+    			<li>- Determine all SPARE PARTS used for a specific UNIT regardless of its location. (for equipment analysis)</li>
+			</ul>
+		</div>
+
+
+	</section>
+
+    <section class="col-md-9 col-12 pr-0">
+        <div class="card">
+            <div class="card-header pb-0">
+                <h4 class="primary">Incoming Search Results</h4>
+                <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                <div class="heading-elements">
+                    <ul class="list-inline mb-0">
+                        <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card-content collapse show">
+                <div class="card-body card-dashboard">
+                <div class="table-responsive">
+                <table class="table table-striped table-bordered table-middle multi-ordering dataex-html5-selectors" data-page-length='15'>
+                    <thead>
+                        <tr>
+                            <td>Date</td>
+                            <td>ID</td>
+                            <td>Track No</td>
+                            <td>Form No</td>
+                            <td>Site</td>
+                            <td>Item</td>
+                            <td>Quantity</td>
+                            <td>Unit</td>
+                            <td>Unit Price</td>
+                            <td>Stock</td>
+                            <td>.............Details............</td>
+                            <td>Category</td>
+                            <td>Edit/View</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for incoming in pasok.qs %}
+                        <tr>
+                            <td class="text-truncate">{{ incoming.trans_date|date:'Y-m-d' }}</td>
+                            <td class="text-truncate">{{ incoming.id }}</td>
+                            <td class="text-truncate">{{ incoming.trans_no }}</td>
+                            <td class="text-truncate">{{ incoming.form_no }}</td>
+                            <td class="text-truncate">{{ incoming.project_site }}</td>
+                            <td class="text-truncate">{{ incoming.item }}</td>
+                            <td class="text-truncate danger">{{ incoming.quantity|intcomma }}</td>
+                            <td class="text-truncate">{{ incoming.item.item_unit }}</td>
+                            <td class="text-truncate warning">{{ incoming.unit_price|intcomma }}</td>
+                            <td class="text-truncate">{% if incoming.tot_out == None %}{{ incoming.quantity|intcomma }}{% else %}{{ incoming.current_count }}{% endif %}</td>
+                            <td class="">{{ incoming.details }}</td>
+                            <td class="text-truncate">{{ incoming.item.item_category }}</td>
+                            <td class="text-truncate">
+                                {% if request.user|has_group:"Warehouse Level 3" %}
+                                <a href="{% url 'warehouse:in_status' pk=incoming.id %}">
+                                    <span class="badge {% if incoming.status == 'For Verification' %}badge-danger{% else %}badge-info{% endif %}">{{ incoming.status }}</span>
+                                </a>
+                                {% endif %}
+                                <!--<a href="{% url 'warehouse:detail_incoming' incoming.id %}" target="_blank">New (Do not use me yet)</a>-->
+                                <!--<a href="{% url 'admin:warehouse_incoming_change' incoming.id %}" target="_blank"><i class="la la-pencil font-medium-3"></i></a>-->
+                                <a href="{% url 'warehouse:detail_incoming' incoming.id %}" target="_blank"><i class="la la-eye font-medium-3"></i></a>
+                                <a href="{% url 'warehouse:checker_page' incoming.id %}" target="_blank"><i class="la la-print font-medium-3"></i></a>
+                                <a href="{% if incoming.attachment %}{{ incoming.attachment.url }}{% endif %}" target="_blank">
+                                    {% if incoming.attachment == "None" or incoming.attachment == "" %}
+                                        <i class="la la-exclamation-triangle warning"></i>
+                                    {% else %}
+                                        <i class="la la la-sticky-note"></i>
+                                    {% endif %}
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="5" style="text-align:right">Total:</th>
+                            <th></th>
+                        </tr>
+                    </tfoot>
+                </table>
+                </div>
+                </div>
+            </div>
+        </div>
+
+	</section>
+</div>
+
+
+
+
+{% endblock %}
+
+{% block extra_js %}
+
+{% endblock extra_js %}
